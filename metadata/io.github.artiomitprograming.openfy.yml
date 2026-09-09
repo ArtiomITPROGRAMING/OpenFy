@@ -26,7 +26,6 @@ Builds:
   - versionName: 1.0.0-beta01
     versionCode: 1
     commit: v1.0.0-beta01
-    subdir: app
     gradle:
       - yes
 
