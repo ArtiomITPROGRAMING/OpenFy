@@ -1,8 +1,8 @@
 OpenFy v1.0.0-beta01:
-• 100% FOSS & Offline-first architecture (zero telemetry, no accounts).
-• Modern Material 3 UI with dynamic colors and pure OLED dark mode.
-• P2P Local Share & QR Scanner for offline playlist exchange.
-• Real-time synced lyrics (.lrc) with auto-discovery and embedded tag parser.
-• Hardware 5-band DSP Equalizer with Bass Boost, Virtualizer, and Reverb presets.
-• Sleep Timer with smooth countdown and volume fade-out.
-• Distraction-free Car Mode with oversized controls and vector icons.
+• 100% FOSS & Offline-first (zero telemetry, no accounts).
+• Modern Material 3 UI with dynamic colors & OLED dark mode.
+• P2P Local Share & QR Scanner for playlist transfer.
+• Real-time synced lyrics (.lrc) & tag extraction.
+• 5-band DSP Equalizer with Bass Boost & Virtualizer.
+• Sleep Timer with smooth volume fade-out.
+• Car Mode with large controls.
