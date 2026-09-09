@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.82"
+        android:scaleY="0.82"
+        android:pivotX="54"
+        android:pivotY="54">
+
+        <!-- Soft Ambient Violet Glow Behind Unclosed Ring -->
+        <path
+            android:pathData="M 68.5,31 A 27.5,27.5 0 1,1 39.5,31"
+            android:strokeWidth="9"
+            android:strokeColor="#359333EA"
+            android:strokeLineCap="round" />
+
+        <!-- Crisp Neon Violet / Purple Unclosed Ring -->
+        <path
+            android:pathData="M 68.5,31 A 27.5,27.5 0 1,1 39.5,31"
+            android:strokeWidth="4.5"
+            android:strokeLineCap="round">
+            <aapt:attr name="android:strokeColor">
+                <gradient
+                    android:type="linear"
+                    android:startX="39.5"
+                    android:startY="31"
+                    android:endX="68.5"
+                    android:endY="81.5">
+                    <item android:color="#FFE879F9" android:offset="0.0"/>
+                    <item android:color="#FFC084FC" android:offset="0.5"/>
+                    <item android:color="#FFA855F7" android:offset="1.0"/>
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Soft Glow Behind Play Button -->
+        <path
+            android:pathData="M 45,38.5 C 43,37.3 40.5,38.7 40.5,41 L 40.5,67 C 40.5,69.3 43,70.7 45,69.5 L 67.5,56.5 C 69.5,55.3 69.5,52.7 67.5,51.5 Z"
+            android:strokeWidth="6"
+            android:strokeColor="#309333EA"
+            android:strokeLineJoin="round" />
+
+        <!-- Center Crisp Play Triangle with Violet-White Apex Gradient -->
+        <path
+            android:pathData="M 46,39.5 C 44.2,38.4 42,39.7 42,41.8 L 42,66.2 C 42,68.3 44.2,69.6 46,68.5 L 67.5,56.3 C 69.2,55.3 69.2,52.7 67.5,51.7 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:type="linear"
+                    android:startX="42"
+                    android:startY="39"
+                    android:endX="68"
+                    android:endY="67">
+                    <item android:color="#FFFFFFFF" android:offset="0.0"/>
+                    <item android:color="#FFE9D5FF" android:offset="0.45"/>
+                    <item android:color="#FFC084FC" android:offset="1.0"/>
+                </gradient>
+            </aapt:attr>
+        </path>
+    </group>
+</vector>

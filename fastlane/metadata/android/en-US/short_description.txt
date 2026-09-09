@@ -1,0 +1,1 @@
+Modern offline music player with synced lyrics, DSP equalizer, and car mode.

@@ -1,0 +1,51 @@
+package com.example.openfy.core.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+val AmoledPureBlack = Color(0xFF000000)
+val AmoledDarkSurface = Color(0xFF0B0C0F)
+val AmoledSurfaceVariant = Color(0xFF14161D)
+val AmoledSurfaceElevated = Color(0xFF1C1E26)
+val TitaniumSilver = Color(0xFFEDEDF2)
+val SteelGray = Color(0xFF9CA0AC)
+val DarkSteelBorder = Color(0xFF222530)
+
+val DarkBackground = Color(0xFF0C0D14)
+val DarkSurface = Color(0xFF161722)
+val DarkSurfaceVariant = Color(0xFF212232)
+val DarkSurfaceElevated = Color(0xFF2C2D40)
+val NeonCyan = Color(0xFF00E5FF)
+val ElectricPurple = Color(0xFFA855F7)
+val DeepViolet = Color(0xFF7C3AED)
+val NeonPink = Color(0xFFFF4081)
+val CoralOrange = Color(0xFFFF6E40)
+val AmberGlow = Color(0xFFFFB300)
+val MintGreen = Color(0xFF10B981)
+
+val CyberpunkDarkBg = Color(0xFF090406)
+val CyberpunkSurface = Color(0xFF16080E)
+val CyberpunkSurfaceVariant = Color(0xFF240E17)
+val CyberpunkRubyRed = Color(0xFFFF1E4B)
+val CyberpunkGold = Color(0xFFFFB700)
+val CyberpunkBorder = Color(0xFF4A1020)
+
+val RetroDarkBg = Color(0xFF050B08)
+val RetroSurface = Color(0xFF0D1711)
+val RetroSurfaceVariant = Color(0xFF132219)
+val RetroPhosphorGreen = Color(0xFF00FF66)
+val RetroAmber = Color(0xFFFFB300)
+val RetroBorder = Color(0xFF1A3826)
+
+val LightBackground = Color(0xFFF7F8FC)
+val LightSurface = Color(0xFFFFFFFF)
+val LightSurfaceVariant = Color(0xFFE9ECF5)
+
+val GlassWhite10 = Color(0x1AFFFFFF)
+val GlassWhite20 = Color(0x33FFFFFF)
+val GlassWhite05 = Color(0x0DFFFFFF)
+val GlassBorderStroke = Color(0x33FFFFFF)
+val GlassDarkSurface = Color(0xCC12131C)
+val GlassAmoledSurface = Color(0xF208090C)
+val GlassCyberSurface = Color(0xE614080E)
+val GlassRetroSurface = Color(0xF209120D)
+val GlassLightSurface = Color(0xD9FFFFFF)

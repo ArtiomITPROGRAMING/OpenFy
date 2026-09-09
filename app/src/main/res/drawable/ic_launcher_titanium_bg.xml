@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="0"
+                android:startY="0"
+                android:endX="108"
+                android:endY="108">
+                <item android:color="#FF1E1F24" android:offset="0.0"/>
+                <item android:color="#FF121316" android:offset="0.5"/>
+                <item android:color="#FF060608" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Subtle brushed metal ring -->
+    <path
+        android:pathData="M 54,20 A 34,34 0 1,1 53.9,20"
+        android:strokeWidth="1.2"
+        android:strokeColor="#33FFFFFF" />
+</vector>

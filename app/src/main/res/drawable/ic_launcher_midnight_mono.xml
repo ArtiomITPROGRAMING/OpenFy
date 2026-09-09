@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.82"
+        android:scaleY="0.82"
+        android:pivotX="54"
+        android:pivotY="54">
+
+        <!-- Monochrome Unclosed Ring -->
+        <path
+            android:pathData="M 68.5,31 A 27.5,27.5 0 1,1 39.5,31"
+            android:strokeWidth="5"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round" />
+
+        <!-- Monochrome Play Triangle -->
+        <path
+            android:pathData="M 46,39.5 C 44.2,38.4 42,39.7 42,41.8 L 42,66.2 C 42,68.3 44.2,69.6 46,68.5 L 67.5,56.3 C 69.2,55.3 69.2,52.7 67.5,51.7 Z"
+            android:fillColor="#FFFFFF" />
+    </group>
+</vector>

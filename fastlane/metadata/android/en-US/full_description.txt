@@ -1,0 +1,37 @@
+OpenFy is a modern, privacy-focused, 100% offline-first music player crafted with Jetpack Compose and AndroidX Media3 (ExoPlayer). It provides an exceptional local audio experience without telemetry, tracking, or cloud dependencies.
+
+✨ Key Features:
+
+🎵 Offline-First Audio Engine
+- Crystal-clear playback powered by ExoPlayer and Media3.
+- Full format support: MP3, FLAC, AAC, OGG, WAV, M4A, Opus.
+- Seamless gapless playback and smart audio focus handling.
+- Android Auto support for in-car dashboard navigation.
+
+🎤 Real-time Karaoke & Lyrics (.LRC)
+- Automatic discovery of .lrc files located next to your audio tracks.
+- Native tag extractor for embedded lyrics (ID3v2 USLT, FLAC VORBIS_COMMENT, MP4 ©lyr).
+- Smart charset detection supporting UTF-8, UTF-16, and Windows-1251.
+- Synchronized smooth karaoke scrolling with manual line seeking.
+
+🎚️ 5-Band DSP Hardware Equalizer
+- 5 frequency bands (60Hz, 230Hz, 910Hz, 3.6kHz, 14kHz).
+- Built-in sound enhancement: Bass Boost, 3D Virtualizer, and Reverb presets.
+- Persistent preset saving and instant audio effect restoration.
+
+🚗 Distraction-Free Car Mode
+- Clean, high-contrast user interface designed for driving.
+- Large interactive buttons with standard Material vector icons (no emojis).
+- Quick driving playlists: Favorites, Travel Mix, and Recent tracks.
+
+🎨 Dynamic Material Design & Customization
+- Dynamic colors extracted from album artwork with Material You palette.
+- Pure OLED Dark Theme for maximum battery efficiency.
+- Sleek Floating Dock Capsule navigation in the now-playing screen.
+- Gestures: swipe cover to skip tracks, double-tap to pause/resume.
+- Sleep timer with configurable countdown and fade-out.
+
+🔒 100% Free, Open Source & Private
+- No ads, no analytics, no trackers.
+- Works entirely offline without requiring internet access for playback.
+- Released under the GNU General Public License v3.0 (GPLv3).

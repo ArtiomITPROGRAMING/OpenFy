@@ -1,0 +1,36 @@
+Categories:
+  - Multimedia
+License: GPL-3.0-or-later
+SourceCode: https://github.com/ArtiomITPROGRAMING/OpenFy
+IssueTracker: https://github.com/ArtiomITPROGRAMING/OpenFy/issues
+
+AutoName: OpenFy
+Summary: Modern offline music player with synced lyrics, DSP equalizer, and car mode
+Description: |-
+  OpenFy is a modern, privacy-focused, 100% offline-first music player
+  crafted with Jetpack Compose and AndroidX Media3 (ExoPlayer).
+
+  Features:
+  * Pure offline-first architecture without accounts or tracking
+  * Synced lyrics (.lrc) with auto-discovery and embedded tag extraction
+  * 5-band hardware DSP Equalizer (Virtualizer, Bass Boost, Reverb)
+  * High-contrast driving car mode with vector icons
+  * Material You dynamic color extraction and pure OLED dark mode
+  * Sleep timer, floating dock capsule, and gesture controls
+  * Local offline P2P sharing via Wi-Fi and QR Code
+
+RepoType: git
+Repo: https://github.com/ArtiomITPROGRAMING/OpenFy.git
+
+Builds:
+  - versionName: 1.0.0-beta01
+    versionCode: 1
+    commit: v1.0.0-beta01
+    subdir: app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 1.0.0-beta01
+CurrentVersionCode: 1

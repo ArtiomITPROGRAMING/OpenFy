@@ -1,0 +1,41 @@
+name: 🐛 Сообщить об ошибке (Bug Report)
+description: Создать отчёт об ошибке или сбое в работе OpenFy
+title: "[BUG]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Спасибо за то, что помогаете улучшить OpenFy! Пожалуйста, заполните форму ниже.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Описание проблемы
+      description: Что произошло? Что пошло не так?
+      placeholder: При воспроизведении трека текст песни не синхронизируется...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Шаги для воспроизведения
+      description: Опишите пошагово, как вызвать проблему.
+      value: |
+        1. Открыть '...'
+        2. Нажать на '...'
+        3. Наблюдать ошибку
+    validations:
+      required: true
+  - type: input
+    id: device-info
+    attributes:
+      label: Устройство и версия Android
+      placeholder: Например, Google Pixel 10 Pro, Android 16
+    validations:
+      required: true
+  - type: input
+    id: app-version
+    attributes:
+      label: Версия приложения OpenFy
+      placeholder: Например, v1.0.0-beta01
+    validations:
+      required: true

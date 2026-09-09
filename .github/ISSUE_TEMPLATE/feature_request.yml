@@ -1,0 +1,29 @@
+name: 💡 Предложить улучшение (Feature Request)
+description: Предложить новую функцию, визуальное улучшение или идею для OpenFy
+title: "[FEATURE]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: Есть отличная идея для OpenFy? Опишите её подробнее ниже!
+  - type: textarea
+    id: problem
+    attributes:
+      label: С какой проблемой или ограничением вы столкнулись?
+      description: Опишите ситуацию, в которой вам не хватает этой функции.
+      placeholder: Было бы здорово иметь...
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Желаемое решение
+      description: Как именно должна работать эта функция?
+      placeholder: Добавить кнопку или жест...
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Рассматривали ли вы альтернативы?
+      description: Как вы решаете эту задачу сейчас?
