@@ -12,6 +12,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build, Lint & Test
@@ -45,8 +48,13 @@ jobs:
       - name: Compute SHA-256 Checksum
         run: |
           cd app/build/outputs/apk/release/
-          sha256sum app-release.apk > app-release.apk.sha256
-          echo "SHA-256 Hash:"
+          if [ -f "app-release.apk" ]; then
+            sha256sum app-release.apk > app-release.apk.sha256
+          elif [ -f "app-release-unsigned.apk" ]; then
+            cp app-release-unsigned.apk app-release.apk
+            sha256sum app-release.apk > app-release.apk.sha256
+          fi
+          echo "SHA-256 Checksum:"
           cat app-release.apk.sha256
 
       - name: Upload Release APK Artifact
@@ -68,20 +76,5 @@ jobs:
           draft: false
           prerelease: true
           generate_release_notes: true
-          body: |
-            ## OpenFy ${{ github.ref_name }} Beta Release
-            
-            ### SHA-256 Checksum
-            ```
-            $(cat app/build/outputs/apk/release/app-release.apk.sha256)
-            ```
-            
-            ### Key Highlights
-            - 100% FOSS & Offline-First music playback (no tracking, zero telemetry).
-            - Modern Jetpack Compose Material 3 UI with Material You dynamic themer.
-            - P2P Local Share & QR Code Scanner for offline playlist and track exchange.
-            - Real-time Synced Lyrics (.lrc) and embedded tag extractor.
-            - 5-band Hardware DSP Equalizer with Bass Boost, Virtualizer, and Reverb.
-            - Distraction-free Car Driving Mode and Sleep Timer.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
