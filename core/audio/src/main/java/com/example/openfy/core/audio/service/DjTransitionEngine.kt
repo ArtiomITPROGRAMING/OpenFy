@@ -68,24 +68,35 @@ class DjTransitionEngine(
     /**
      * Continuously calculates audio energy and dynamic beat pulses
      * to feed into Milkdrop 2.0 and other reactive visualizers.
+     * Generates a punchy kick drum envelope (124 BPM) synchronized with bass levels.
      */
     private fun startEnergyTelemetry() {
         energyJob?.cancel()
         energyJob = scope.launch(Dispatchers.Default) {
-            var phase = 0f
+            var lastTime = System.currentTimeMillis()
+            var beatPhase = 0f
             while (isActive) {
-                // Modulate energy with bass band level and harmonic oscillations
+                val now = System.currentTimeMillis()
+                val delta = (now - lastTime).coerceIn(1L, 100L)
+                lastTime = now
+
+                // Standard 124 BPM rhythm (~484ms per beat)
+                val beatPeriodMs = 484f
+                beatPhase = (beatPhase + delta / beatPeriodMs) % 1.0f
+
+                // Sharp attack on beat (exponential decay like a real kick drum envelope)
+                val kickEnvelope = kotlin.math.exp(-beatPhase * 4.0f)
+
+                // Modulate energy with bass band level from Equalizer
                 val bassLevel = equalizerController.bands.value.firstOrNull()?.currentLevelMb?.toInt()
                     ?: equalizerController.bassBoostStrength.value
-                val bassNormalized = (bassLevel / 1000f).coerceIn(-1f, 1f)
-                val base = 0.45f + (bassNormalized * 0.2f)
+                val bassBonus = ((bassLevel / 1000f).coerceIn(0f, 1.5f)) * 0.35f
 
-                phase += 0.12f
-                val pulse = (sin(phase.toDouble()).toFloat() * 0.25f)
-                val energy = (base + pulse).coerceIn(0.15f, 1.0f)
+                // Combined energy: base ambient + snappy beat pulse + bass boost
+                val energy = (0.25f + kickEnvelope * 0.70f + bassBonus).coerceIn(0.15f, 1.25f)
 
                 _audioEnergy.value = energy
-                delay(33) // ~30 fps telemetry updates
+                delay(20) // ~50 fps snappy beat updates!
             }
         }
     }
