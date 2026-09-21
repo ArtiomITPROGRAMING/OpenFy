@@ -346,7 +346,11 @@ fun MainScreenWithBottomNav(
                             albums = albums,
                             onRefreshAudio = { loadAudio() },
                             onNavigateToPlaylist = onNavigateToPlaylist,
-                            onDeleteSong = { songPendingDeletion = it }
+                            onDeleteSong = { songPendingDeletion = it },
+                            onNavigateToEqualizer = onNavigateToEqualizer,
+                            onNavigateToCarMode = onNavigateToCarMode,
+                            onNavigateToLibrary = { selectedTab = 2 },
+                            onNavigateToSearch = { selectedTab = 1 }
                         )
                         1 -> SearchScreen(
                             playbackManager = playbackManager,
@@ -414,7 +418,11 @@ fun MainScreenWithBottomNav(
                             albums = albums,
                             onRefreshAudio = { loadAudio() },
                             onNavigateToPlaylist = onNavigateToPlaylist,
-                            onDeleteSong = { songPendingDeletion = it }
+                            onDeleteSong = { songPendingDeletion = it },
+                            onNavigateToEqualizer = onNavigateToEqualizer,
+                            onNavigateToCarMode = onNavigateToCarMode,
+                            onNavigateToLibrary = { selectedTab = 2 },
+                            onNavigateToSearch = { selectedTab = 1 }
                         )
                         1 -> SearchScreen(
                             playbackManager = playbackManager,

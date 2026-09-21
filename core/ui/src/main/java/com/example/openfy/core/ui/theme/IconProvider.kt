@@ -46,12 +46,14 @@ import androidx.compose.material.icons.filled.Equalizer
 import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.Headphones
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LibraryMusic
+import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Lyrics
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.MusicNote
@@ -71,8 +73,10 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.BatteryAlert
@@ -622,4 +626,10 @@ object AppIcons {
     val stream = Icons.Default.GraphicEq
     val email = Icons.Default.Email
     val cloud = Icons.Default.Cloud
+    val flame = Icons.Filled.LocalFireDepartment
+    val spa = Icons.Filled.Spa
+    val equalizer = Icons.Filled.Tune
+    val search = Icons.Filled.Search
+    val library = Icons.Filled.LibraryMusic
+    val flash = Icons.Filled.FlashOn
 }
