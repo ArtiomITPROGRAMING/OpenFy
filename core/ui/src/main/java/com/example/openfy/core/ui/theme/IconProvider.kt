@@ -41,6 +41,7 @@ import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Equalizer
 import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.Favorite
@@ -311,6 +312,82 @@ object AppIcons {
         }.build()
     }
 
+    val buyMeACoffee: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "BuyMeACoffeeSvg",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(fill = SolidColor(Color.White)) {
+                moveTo(20f, 3f)
+                horizontalLineTo(4f)
+                verticalLineTo(15f)
+                curveTo(4f, 17.21f, 5.79f, 19f, 8f, 19f)
+                horizontalLineTo(14f)
+                curveTo(16.21f, 19f, 18f, 17.21f, 18f, 15f)
+                verticalLineTo(11f)
+                horizontalLineTo(20f)
+                curveTo(21.1f, 11f, 22f, 10.1f, 22f, 9f)
+                verticalLineTo(5f)
+                curveTo(22f, 3.9f, 21.1f, 3f, 20f, 3f)
+                close()
+                moveTo(20f, 9f)
+                horizontalLineTo(18f)
+                verticalLineTo(5f)
+                horizontalLineTo(20f)
+                verticalLineTo(9f)
+                close()
+                moveTo(2f, 21f)
+                horizontalLineTo(20f)
+                verticalLineTo(23f)
+                horizontalLineTo(2f)
+                close()
+            }
+        }.build()
+    }
+
+    val github: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "GitHubSvg",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(fill = SolidColor(Color.White)) {
+                moveTo(12f, 2f)
+                curveTo(6.477f, 2f, 2f, 6.484f, 2f, 12.017f)
+                curveTo(2f, 16.446f, 4.843f, 20.198f, 8.805f, 21.52f)
+                curveTo(9.305f, 21.61f, 9.487f, 21.303f, 9.487f, 21.037f)
+                curveTo(9.487f, 20.8f, 9.479f, 20.17f, 9.474f, 19.333f)
+                curveTo(6.692f, 19.937f, 6.105f, 17.991f, 6.105f, 17.991f)
+                curveTo(5.651f, 16.837f, 5.0f, 16.53f, 5.0f, 16.53f)
+                curveTo(4.092f, 15.91f, 5.07f, 15.922f, 5.07f, 15.922f)
+                curveTo(6.073f, 15.993f, 6.602f, 16.953f, 6.602f, 16.953f)
+                curveTo(7.495f, 18.483f, 8.945f, 18.041f, 9.516f, 17.785f)
+                curveTo(9.607f, 17.138f, 9.866f, 16.697f, 10.152f, 16.447f)
+                curveTo(7.931f, 16.195f, 5.596f, 15.337f, 5.596f, 11.507f)
+                curveTo(5.596f, 10.416f, 5.986f, 9.524f, 6.627f, 8.825f)
+                curveTo(6.524f, 8.573f, 6.181f, 7.558f, 6.725f, 6.18f)
+                curveTo(6.725f, 6.18f, 7.564f, 5.911f, 9.471f, 7.202f)
+                curveTo(10.269f, 6.98f, 11.115f, 6.869f, 11.96f, 6.865f)
+                curveTo(12.805f, 6.869f, 13.651f, 6.98f, 14.45f, 7.202f)
+                curveTo(16.355f, 5.911f, 17.192f, 6.18f, 17.192f, 6.18f)
+                curveTo(17.738f, 7.558f, 17.395f, 8.573f, 17.293f, 8.825f)
+                curveTo(17.936f, 9.524f, 18.322f, 10.416f, 18.322f, 11.507f)
+                curveTo(18.322f, 15.347f, 15.983f, 16.192f, 13.755f, 16.439f)
+                curveTo(14.113f, 16.748f, 14.432f, 17.359f, 14.432f, 18.293f)
+                curveTo(14.432f, 19.643f, 14.419f, 20.732f, 14.419f, 21.037f)
+                curveTo(14.419f, 21.306f, 14.598f, 21.616f, 15.107f, 21.518f)
+                curveTo(19.066f, 20.194f, 21.906f, 16.444f, 21.906f, 12.017f)
+                curveTo(21.906f, 6.484f, 17.427f, 2f, 12f, 2f)
+                close()
+            }
+        }.build()
+    }
+
     fun home(style: IconPackStyle): ImageVector = when (style) {
         IconPackStyle.MINIMAL_THIN -> Icons.Outlined.Home
         IconPackStyle.PIXEL_8BIT -> pixelHomeIcon
@@ -543,5 +620,6 @@ object AppIcons {
     val palette = Icons.Default.Palette
     val car = Icons.Filled.DirectionsCar
     val stream = Icons.Default.GraphicEq
+    val email = Icons.Default.Email
     val cloud = Icons.Default.Cloud
 }

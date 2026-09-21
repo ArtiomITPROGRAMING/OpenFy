@@ -133,8 +133,8 @@ enum class SettingsSection(
     ),
     ABOUT_AUTHOR(
         "Об авторе и поддержка",
-        "Разработчик: Артём (Artiom Crudu), Roadmap, поддержка через PayPal",
-        "PayPal и автор"
+        "Разработчик: Артём (Artiom Crudu), Roadmap, Buy Me a Coffee, PayPal и прямая связь",
+        "Автор и поддержка"
     )
 }
 
@@ -374,7 +374,7 @@ fun SettingsScreen(
                     SettingsSectionHubCard(
                         title = SettingsSection.ABOUT_AUTHOR.title,
                         subtitle = SettingsSection.ABOUT_AUTHOR.subtitle,
-                        badge = "Артём • paypal.me",
+                        badge = "Артём • Донаты & Связь",
                         icon = AppIcons.author,
                         gradientColors = authorGrad,
                         cardBg = cardBg,
@@ -1532,14 +1532,28 @@ fun SettingsScreen(
                                 }
                             }
 
-                            // 3. PayPal Hero Showcase Card
+                            // 3. Header: Поддержать проект
                             item {
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = "ПОДДЕРЖАТЬ ПРОЕКТ",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = primaryAccent,
+                                    letterSpacing = 1.2.sp
+                                )
+                            }
+
+                            // 4. Buy Me a Coffee Hero Showcase Card
+                            item {
+                                val bmcColor = Color(0xFFFF813F)
+                                val bmcYellow = Color(0xFFFFDD00)
                                 GlassCard(
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(22.dp),
                                     backgroundColor = cardBg,
                                     hasGlowBorder = currentTheme.hasNeonGlow,
-                                    glowColor = primaryAccent.copy(alpha = 0.6f)
+                                    glowColor = bmcColor.copy(alpha = 0.6f)
                                 ) {
                                     Column(
                                         modifier = Modifier.padding(18.dp),
@@ -1549,7 +1563,126 @@ fun SettingsScreen(
                                             modifier = Modifier
                                                 .size(56.dp)
                                                 .clip(CircleShape)
-                                                .background(Brush.linearGradient(authorGrad)),
+                                                .background(Brush.linearGradient(listOf(bmcColor, bmcYellow))),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = AppIcons.buyMeACoffee,
+                                                contentDescription = "Buy Me a Coffee",
+                                                tint = Color.Black,
+                                                modifier = Modifier.size(28.dp)
+                                            )
+                                        }
+
+                                        Spacer(modifier = Modifier.height(10.dp))
+
+                                        Text(
+                                            text = "Buy Me a Coffee",
+                                            style = MaterialTheme.typography.titleLarge,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
+
+                                        Text(
+                                            text = "buymeacoffee.com/ArtiomITPROGRAMING",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = if (currentTheme == AppThemeStyle.SERIOUS_DARK) Color(0xFFAAAAAF) else bmcYellow
+                                        )
+
+                                        Spacer(modifier = Modifier.height(6.dp))
+
+                                        Text(
+                                            text = "Угостите разработчика чашечкой кофе — лучшая поддержка независимого FOSS-плеера!",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color.White.copy(alpha = 0.75f),
+                                            lineHeight = 17.sp,
+                                            modifier = Modifier.padding(horizontal = 8.dp)
+                                        )
+
+                                        Spacer(modifier = Modifier.height(14.dp))
+
+                                        // Primary Action: Open Buy Me a Coffee
+                                        Button(
+                                            onClick = {
+                                                try {
+                                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://buymeacoffee.com/ArtiomITPROGRAMING"))
+                                                    context.startActivity(intent)
+                                                } catch (e: Exception) {
+                                                    copyToClipboard("Buy Me a Coffee", "https://buymeacoffee.com/ArtiomITPROGRAMING")
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(48.dp),
+                                            shape = RoundedCornerShape(14.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = if (currentTheme == AppThemeStyle.SERIOUS_DARK) Color.White else bmcColor,
+                                                contentColor = if (currentTheme == AppThemeStyle.SERIOUS_DARK) Color.Black else Color.White
+                                            )
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(
+                                                    imageVector = AppIcons.openInNew,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(
+                                                    text = "Угостить кофе (Buy Me a Coffee)",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+                                        }
+
+                                        Spacer(modifier = Modifier.height(8.dp))
+
+                                        // Secondary Action: Copy Link
+                                        OutlinedButton(
+                                            onClick = { copyToClipboard("Buy Me a Coffee", "https://buymeacoffee.com/ArtiomITPROGRAMING") },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(42.dp),
+                                            shape = RoundedCornerShape(14.dp)
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(
+                                                    imageVector = AppIcons.copy,
+                                                    contentDescription = null,
+                                                    tint = Color.White.copy(alpha = 0.9f),
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Text(
+                                                    text = "Скопировать ссылку buymeacoffee.com/ArtiomITPROGRAMING",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = Color.White.copy(alpha = 0.9f)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 5. PayPal Hero Showcase Card
+                            item {
+                                GlassCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(22.dp),
+                                    backgroundColor = cardBg,
+                                    hasGlowBorder = currentTheme.hasNeonGlow,
+                                    glowColor = Color(0xFF0079C1).copy(alpha = 0.6f)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(18.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(56.dp)
+                                                .clip(CircleShape)
+                                                .background(Brush.linearGradient(listOf(Color(0xFF0079C1), Color(0xFF00457C)))),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Icon(
@@ -1632,6 +1765,206 @@ fun SettingsScreen(
                                                 Spacer(modifier = Modifier.width(6.dp))
                                                 Text(
                                                     text = "Скопировать ссылку paypal.me/ArtiomCrudu2010",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = Color.White.copy(alpha = 0.9f)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 6. Header: Связаться напрямую со мной
+                            item {
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = "СВЯЗАТЬСЯ НАПРЯМУЮ СО МНОЙ",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = primaryAccent,
+                                    letterSpacing = 1.2.sp
+                                )
+                            }
+
+                            // 7. Direct Contact Card
+                            item {
+                                GlassCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(22.dp),
+                                    backgroundColor = cardBg,
+                                    hasGlowBorder = currentTheme.hasNeonGlow,
+                                    glowColor = primaryAccent.copy(alpha = 0.5f)
+                                ) {
+                                    Column(modifier = Modifier.padding(18.dp)) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(48.dp)
+                                                    .clip(CircleShape)
+                                                    .background(Brush.linearGradient(authorGrad)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = AppIcons.email,
+                                                    contentDescription = null,
+                                                    tint = Color.White,
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            }
+
+                                            Spacer(modifier = Modifier.width(14.dp))
+
+                                            Column {
+                                                Text(
+                                                    text = "Прямая связь с разработчиком",
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = Color.White
+                                                )
+                                                Text(
+                                                    text = "Вопросы, идеи, предложения и багрепорты",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = if (currentTheme == AppThemeStyle.SERIOUS_DARK) Color(0xFFAAAAAF) else Color(0xFF00E5FF)
+                                                )
+                                            }
+                                        }
+
+                                        Spacer(modifier = Modifier.height(14.dp))
+
+                                        Text(
+                                            text = "Я открыт к диалогу с каждым пользователем. Напишите мне на почту или откройте обсуждение на GitHub:",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color.White.copy(alpha = 0.8f),
+                                            lineHeight = 18.sp
+                                        )
+
+                                        Spacer(modifier = Modifier.height(14.dp))
+
+                                        // Email Action Button
+                                        Button(
+                                            onClick = {
+                                                try {
+                                                    val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                                        data = Uri.parse("mailto:artiomcrudu83@gmail.com?subject=${Uri.encode("OpenFy Feedback")}")
+                                                    }
+                                                    context.startActivity(intent)
+                                                } catch (e: Exception) {
+                                                    copyToClipboard("Email", "artiomcrudu83@gmail.com")
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(46.dp),
+                                            shape = RoundedCornerShape(14.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = primaryAccent,
+                                                contentColor = Color.Black
+                                            )
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(
+                                                    imageVector = AppIcons.email,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(
+                                                    text = "Написать на artiomcrudu83@gmail.com",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+                                        }
+
+                                        Spacer(modifier = Modifier.height(8.dp))
+
+                                        // Copy Email Button
+                                        OutlinedButton(
+                                            onClick = { copyToClipboard("Email", "artiomcrudu83@gmail.com") },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(42.dp),
+                                            shape = RoundedCornerShape(14.dp)
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(
+                                                    imageVector = AppIcons.copy,
+                                                    contentDescription = null,
+                                                    tint = Color.White.copy(alpha = 0.9f),
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Text(
+                                                    text = "Скопировать email (artiomcrudu83@gmail.com)",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = Color.White.copy(alpha = 0.9f)
+                                                )
+                                            }
+                                        }
+
+                                        Spacer(modifier = Modifier.height(10.dp))
+
+                                        // GitHub Profile Button
+                                        Button(
+                                            onClick = {
+                                                try {
+                                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/ArtiomITPROGRAMING"))
+                                                    context.startActivity(intent)
+                                                } catch (e: Exception) {
+                                                    copyToClipboard("GitHub", "https://github.com/ArtiomITPROGRAMING")
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(44.dp),
+                                            shape = RoundedCornerShape(14.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color(0xFF24292E),
+                                                contentColor = Color.White
+                                            )
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(
+                                                    imageVector = AppIcons.github,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(
+                                                    text = "Профиль разработчика на GitHub",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    fontWeight = FontWeight.SemiBold
+                                                )
+                                            }
+                                        }
+
+                                        Spacer(modifier = Modifier.height(8.dp))
+
+                                        // GitHub Issues Button
+                                        OutlinedButton(
+                                            onClick = {
+                                                try {
+                                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/ArtiomITPROGRAMING/OpenFy/issues"))
+                                                    context.startActivity(intent)
+                                                } catch (e: Exception) {
+                                                    copyToClipboard("Issues", "https://github.com/ArtiomITPROGRAMING/OpenFy/issues")
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(42.dp),
+                                            shape = RoundedCornerShape(14.dp)
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(
+                                                    imageVector = AppIcons.openInNew,
+                                                    contentDescription = null,
+                                                    tint = Color.White.copy(alpha = 0.9f),
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Text(
+                                                    text = "Сообщить об ошибке или предложить фичу",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = Color.White.copy(alpha = 0.9f)
                                                 )
