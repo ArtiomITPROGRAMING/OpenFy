@@ -30,7 +30,11 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.audio.AudioSink
+import androidx.media3.exoplayer.audio.DefaultAudioSink
+import android.net.Uri
 import com.example.openfy.core.audio.data.DuplicateScanner
 import com.example.openfy.core.audio.data.PlaylistRepository
 import com.example.openfy.core.audio.data.SettingsRepository
@@ -142,6 +146,7 @@ class PlaybackManager private constructor(private val context: Context) {
     }
 
     init {
+        OfflineDownloadManager.init(context)
         handler.post(positionUpdateRunnable)
         _isShuffle.value = settingsRepository.isShuffle.value
         _repeatMode.value = settingsRepository.repeatMode.value
@@ -191,7 +196,20 @@ class PlaybackManager private constructor(private val context: Context) {
             .build()
 
         val mediaSourceFactory = PlayerCacheProvider.getMediaSourceFactory(context)
-        val player = ExoPlayer.Builder(context)
+        val renderersFactory = object : DefaultRenderersFactory(context) {
+            override fun buildAudioSink(
+                context: Context,
+                enableFloatOutput: Boolean,
+                enableAudioTrackPlaybackParams: Boolean
+            ): AudioSink? {
+                return DefaultAudioSink.Builder(context)
+                    .setAudioProcessors(arrayOf(VocalRemoverAudioProcessor()))
+                    .setEnableFloatOutput(enableFloatOutput)
+                    .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
+                    .build()
+            }
+        }
+        val player = ExoPlayer.Builder(context, renderersFactory)
             .setMediaSourceFactory(mediaSourceFactory)
             .setAudioAttributes(audioAttributes, true)
             .setHandleAudioBecomingNoisy(true)
@@ -321,9 +339,11 @@ class PlaybackManager private constructor(private val context: Context) {
         }
 
         val meta = metaBuilder.build()
+        val downloadedFile = OfflineDownloadManager.getDownloadedFile(song.id.toString())
+        val playUri = if (downloadedFile != null) Uri.fromFile(downloadedFile) else song.contentUri
 
         return MediaItem.Builder()
-            .setUri(song.contentUri)
+            .setUri(playUri)
             .setMediaId(song.id.toString())
             .setMediaMetadata(meta)
             .build()

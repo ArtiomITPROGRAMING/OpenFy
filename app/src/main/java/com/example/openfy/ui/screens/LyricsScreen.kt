@@ -46,7 +46,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Lyrics
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.material.icons.filled.Refresh
+import com.example.openfy.core.audio.service.VocalRemoverController
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -190,7 +193,103 @@ fun LyricsScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            // Apple Music Sing - Karaoke Vocal Isolator / Suppressor
+            val isKaraokeEnabled by VocalRemoverController.isKaraokeEnabled.collectAsState()
+            val vocalLevel by VocalRemoverController.vocalLevel.collectAsState()
+
+            GlassCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 6.dp),
+                shape = RoundedCornerShape(18.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = if (isKaraokeEnabled) Icons.Default.Mic else Icons.Default.MicOff,
+                                contentDescription = "Караоке",
+                                tint = if (isKaraokeEnabled) NeonPink else Color.White.copy(alpha = 0.6f),
+                                modifier = Modifier.size(22.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = "Караоке (Apple Music Sing)",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = if (isKaraokeEnabled) {
+                                        if (vocalLevel <= 0.05f) "Вокал выключен (чистый минус)"
+                                        else "Уровень голоса: ${(vocalLevel * 100).toInt()}%"
+                                    } else "Подавление голоса в реальном времени",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontSize = 11.sp,
+                                    color = if (isKaraokeEnabled) NeonCyan else Color.White.copy(alpha = 0.5f)
+                                )
+                            }
+                        }
+
+                        Button(
+                            onClick = { VocalRemoverController.toggleKaraoke() },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isKaraokeEnabled) NeonPink else Color.White.copy(alpha = 0.12f),
+                                contentColor = Color.White
+                            ),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                        ) {
+                            Text(
+                                text = if (isKaraokeEnabled) "ВКЛ" else "ВЫКЛ",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+
+                    if (isKaraokeEnabled) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Минус",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.7f)
+                            )
+                            androidx.compose.material3.Slider(
+                                value = vocalLevel,
+                                onValueChange = { VocalRemoverController.setVocalLevel(it) },
+                                valueRange = 0f..1f,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 8.dp),
+                                colors = androidx.compose.material3.SliderDefaults.colors(
+                                    thumbColor = NeonPink,
+                                    activeTrackColor = NeonCyan,
+                                    inactiveTrackColor = Color.White.copy(alpha = 0.2f)
+                                )
+                            )
+                            Text(
+                                text = "Оригинал",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
 
             if (isLoading) {
                 Box(

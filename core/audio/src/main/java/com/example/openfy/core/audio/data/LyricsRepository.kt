@@ -30,6 +30,11 @@ import java.nio.charset.Charset
 import java.nio.charset.CodingErrorAction
 import java.util.regex.Pattern
 
+import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLEncoder
+import org.json.JSONObject
+
 class LyricsRepository(private val context: Context) {
 
     // Supports: [mm:ss], [m:ss], [mm:ss.xx], [mm:ss.xxx], [mm:ss:xx], [hh:mm:ss.xx]
@@ -53,7 +58,93 @@ class LyricsRepository(private val context: Context) {
             }
         }
 
+        // 3. Try checking local cached LRC file from previous online fetches
+        val cachedFile = getCachedLyricsFile(song)
+        if (cachedFile.exists() && cachedFile.length() > 0) {
+            try {
+                val cachedText = cachedFile.readText()
+                val parsed = parseLrc(cachedText)
+                if (parsed.isNotEmpty()) return@withContext parsed
+            } catch (e: Exception) {
+                // Ignore corrupt cache
+            }
+        }
+
+        // 4. Try fetching from free open-source LRCLIB database (no API key required)
+        val lrclibLyrics = fetchFromLrclib(song)
+        if (!lrclibLyrics.isNullOrBlank()) {
+            saveToCache(song, lrclibLyrics)
+            val parsed = parseLrc(lrclibLyrics)
+            if (parsed.isNotEmpty()) {
+                return@withContext parsed
+            } else {
+                return@withContext synthesizeTimestampsForPlainText(lrclibLyrics, song.durationMs)
+            }
+        }
+
         emptyList()
+    }
+
+    private fun getCachedLyricsFile(song: Song): File {
+        val dir = File(context.cacheDir, "lyrics")
+        if (!dir.exists()) dir.mkdirs()
+        val safeName = "${song.id}_${song.title.hashCode()}.lrc"
+        return File(dir, safeName)
+    }
+
+    private fun saveToCache(song: Song, lrcText: String) {
+        try {
+            val file = getCachedLyricsFile(song)
+            file.writeText(lrcText)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun fetchFromLrclib(song: Song): String? {
+        try {
+            val title = song.title.trim()
+            val artist = song.artist.trim()
+            if (title.isBlank() || title.equals("Unknown", ignoreCase = true)) return null
+
+            val encodedTitle = URLEncoder.encode(title, "UTF-8")
+            val encodedArtist = if (artist.isNotBlank() && !artist.equals("Unknown", ignoreCase = true)) {
+                URLEncoder.encode(artist, "UTF-8")
+            } else ""
+
+            val durationSec = (song.durationMs / 1000).toInt()
+            val urlStr = StringBuilder("https://lrclib.net/api/get?track_name=").append(encodedTitle)
+            if (encodedArtist.isNotEmpty()) {
+                urlStr.append("&artist_name=").append(encodedArtist)
+            }
+            if (durationSec > 0) {
+                urlStr.append("&duration=").append(durationSec)
+            }
+
+            val url = URL(urlStr.toString())
+            val conn = (url.openConnection() as HttpURLConnection).apply {
+                connectTimeout = 4000
+                readTimeout = 4000
+                requestMethod = "GET"
+                setRequestProperty("User-Agent", "OpenFy-MusicPlayer/1.0 (https://github.com/ArtiomITPROGRAMING/OpenFy)")
+            }
+
+            if (conn.responseCode == 200) {
+                val jsonStr = conn.inputStream.bufferedReader().use { it.readText() }
+                val jsonObject = JSONObject(jsonStr)
+                if (jsonObject.has("syncedLyrics") && !jsonObject.isNull("syncedLyrics")) {
+                    val synced = jsonObject.getString("syncedLyrics")
+                    if (synced.isNotBlank()) return synced
+                }
+                if (jsonObject.has("plainLyrics") && !jsonObject.isNull("plainLyrics")) {
+                    val plain = jsonObject.getString("plainLyrics")
+                    if (plain.isNotBlank()) return plain
+                }
+            }
+        } catch (e: Exception) {
+            // Network failure or timeout, fail gracefully
+        }
+        return null
     }
 
     /**

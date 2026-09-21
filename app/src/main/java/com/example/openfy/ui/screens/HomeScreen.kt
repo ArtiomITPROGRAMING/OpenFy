@@ -56,6 +56,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.CloudQueue
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.DownloadDone
+import androidx.compose.material3.CircularProgressIndicator
+import com.example.openfy.core.audio.service.OfflineDownloadManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -103,7 +110,8 @@ import kotlin.math.sin
 enum class HomeFilter(val title: String) {
     ALL("Все"),
     FAVORITES("Любимые"),
-    POPULAR("Часто слушаете")
+    POPULAR("Часто слушаете"),
+    DOWNLOADED("Скачанные")
 }
 
 private data class QuickBlockData(
@@ -154,16 +162,32 @@ fun HomeScreen(
     var songForAddToPlaylist by remember { mutableStateOf<Song?>(null) }
     var showMoodDialSheet by remember { mutableStateOf(false) }
 
-    val favoriteSongs = remember(allSongs, favorites) {
-        allSongs.filter { favorites.contains(it.id) }
+    val isOfflineOnlyMode by OfflineDownloadManager.isOfflineOnlyMode.collectAsState()
+    val downloadedSongIds by OfflineDownloadManager.downloadedSongIds.collectAsState()
+    val activeDownloads by OfflineDownloadManager.activeDownloads.collectAsState()
+
+    val effectiveSongs = remember(allSongs, isOfflineOnlyMode, downloadedSongIds) {
+        if (isOfflineOnlyMode) {
+            allSongs.filter { !it.isStream || downloadedSongIds.contains(it.id.toString()) }
+        } else {
+            allSongs
+        }
+    }
+
+    val favoriteSongs = remember(effectiveSongs, favorites) {
+        effectiveSongs.filter { favorites.contains(it.id) }
     }
 
     val customPlaylists = remember(playlists) {
         playlists.filter { !it.isSystemFavorites }
     }
 
-    val recommendedSongs = remember(allSongs, playCounts) {
-        allSongs.sortedByDescending { playCounts[it.id] ?: 0 }.take(12)
+    val recommendedSongs = remember(effectiveSongs, playCounts) {
+        effectiveSongs.sortedByDescending { playCounts[it.id] ?: 0 }.take(12)
+    }
+
+    val downloadedSongs = remember(allSongs, downloadedSongIds) {
+        allSongs.filter { downloadedSongIds.contains(it.id.toString()) }
     }
 
     // Dynamic Time-of-Day Greeting
@@ -306,6 +330,13 @@ fun HomeScreen(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { OfflineDownloadManager.toggleOfflineOnlyMode() }) {
+                        Icon(
+                            imageVector = if (isOfflineOnlyMode) Icons.Default.CloudOff else Icons.Default.CloudQueue,
+                            contentDescription = "Режим офлайн",
+                            tint = if (isOfflineOnlyMode) NeonCyan else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                     IconButton(onClick = { showMoodDialSheet = true }) {
                         Icon(
                             imageVector = AppIcons.compass,
@@ -340,6 +371,58 @@ fun HomeScreen(
                             contentDescription = "Обновить медиатеку",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    }
+                }
+            }
+        }
+
+        // Офлайн-баннер при включенном режиме «Только офлайн»
+        if (isOfflineOnlyMode) {
+            item {
+                GlassCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 6.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    backgroundColor = NeonCyan.copy(alpha = 0.12f)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.CloudOff,
+                                contentDescription = null,
+                                tint = NeonCyan,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = "Режим «Только офлайн»",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = "Скрыты онлайн-потоки, нет расхода трафика",
+                                    fontSize = 11.sp,
+                                    color = Color.White.copy(alpha = 0.7f)
+                                )
+                            }
+                        }
+                        OutlinedButton(
+                            onClick = { OfflineDownloadManager.setOfflineOnlyMode(false) },
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp),
+                            modifier = Modifier.height(28.dp)
+                        ) {
+                            Text("Выключить", fontSize = 11.sp, color = NeonCyan)
+                        }
                     }
                 }
             }
@@ -556,6 +639,9 @@ fun HomeScreen(
             }
 
             itemsIndexed(recommendedSongs, key = { _, song -> "rank_${song.id}" }) { index, song ->
+                val isDownloading = activeDownloads.containsKey(song.id.toString())
+                val isDownloaded = downloadedSongIds.contains(song.id.toString())
+
                 TopRankedTrackRow(
                     rank = index + 1,
                     song = song,
@@ -565,11 +651,95 @@ fun HomeScreen(
                     primaryAccent = primaryAccent,
                     themeStyle = themeStyle,
                     iconPackStyle = iconPackStyle,
+                    isDownloaded = isDownloaded,
+                    isDownloading = isDownloading,
+                    onDownloadClick = { OfflineDownloadManager.downloadSong(song) },
                     onClick = { playbackManager.playSongFromList(recommendedSongs, song) },
                     onFavoriteToggle = { playbackManager.playlistRepository.toggleFavorite(song.id) },
                     onAddToPlaylist = { songForAddToPlaylist = song },
                     onDeleteFromDevice = { onDeleteSong(song) }
                 )
+            }
+        }
+
+        // =====================================================================
+        // СЕКЦИЯ 3: СКАЧАННЫЕ ТРЕКИ (ОФЛАЙН)
+        // =====================================================================
+        if (selectedFilter == HomeFilter.DOWNLOADED) {
+            item {
+                val totalMb = (OfflineDownloadManager.getTotalOfflineStorageBytes() / (1024 * 1024)).toInt()
+                Spacer(modifier = Modifier.height(14.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "Скачанные треки",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Text(
+                            text = "${downloadedSongs.size} треков • $totalMb МБ занято",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = NeonCyan
+                        )
+                    }
+
+                    if (downloadedSongs.isNotEmpty()) {
+                        OutlinedButton(
+                            onClick = { OfflineDownloadManager.clearAllOfflineDownloads() },
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp),
+                            modifier = Modifier.height(28.dp)
+                        ) {
+                            Text("Очистить кэш", fontSize = 11.sp, color = NeonPink)
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            if (downloadedSongs.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(40.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Нет скачанных треков. Нажмите на иконку загрузки у любого онлайн-трека, чтобы слушать его без интернета.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                itemsIndexed(downloadedSongs, key = { _, s -> "down_${s.id}" }) { index, song ->
+                    TopRankedTrackRow(
+                        rank = index + 1,
+                        song = song,
+                        isPlaying = currentSong?.id == song.id && isPlaying,
+                        isFavorite = favorites.contains(song.id),
+                        playCount = playCounts[song.id] ?: 0,
+                        primaryAccent = primaryAccent,
+                        themeStyle = themeStyle,
+                        iconPackStyle = iconPackStyle,
+                        isDownloaded = true,
+                        isDownloading = false,
+                        onDownloadClick = {},
+                        onClick = { playbackManager.playSongFromList(downloadedSongs, song) },
+                        onFavoriteToggle = { playbackManager.playlistRepository.toggleFavorite(song.id) },
+                        onAddToPlaylist = { songForAddToPlaylist = song },
+                        onDeleteFromDevice = { OfflineDownloadManager.deleteDownloadedSong(song.id.toString()) }
+                    )
+                }
             }
         }
 
@@ -895,6 +1065,9 @@ fun TopRankedTrackRow(
     primaryAccent: Color,
     themeStyle: AppThemeStyle,
     iconPackStyle: IconPackStyle,
+    isDownloaded: Boolean = false,
+    isDownloading: Boolean = false,
+    onDownloadClick: () -> Unit = {},
     onClick: () -> Unit,
     onFavoriteToggle: () -> Unit,
     onAddToPlaylist: () -> Unit,
@@ -1088,21 +1261,56 @@ fun TopRankedTrackRow(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        // Действия: Лайк и Длительность
+        // Действия: Скачивание (если онлайн-трек), Лайк и Длительность
         Column(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.Center
         ) {
-            IconButton(
-                onClick = onFavoriteToggle,
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(
-                    imageVector = if (isFavorite) AppIcons.favoriteFilled(iconPackStyle) else AppIcons.favoriteOutline(iconPackStyle),
-                    contentDescription = "Избранное",
-                    tint = if (isFavorite) NeonPink else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                    modifier = Modifier.size(18.dp)
-                )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (song.isStream) {
+                    if (isDownloading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(18.dp)
+                                .padding(end = 4.dp),
+                            strokeWidth = 2.dp,
+                            color = NeonCyan
+                        )
+                    } else if (isDownloaded) {
+                        Icon(
+                            imageVector = Icons.Default.DownloadDone,
+                            contentDescription = "Скачано",
+                            tint = NeonCyan,
+                            modifier = Modifier
+                                .size(20.dp)
+                                .padding(end = 4.dp)
+                        )
+                    } else {
+                        IconButton(
+                            onClick = onDownloadClick,
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Download,
+                                contentDescription = "Скачать",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+                }
+
+                IconButton(
+                    onClick = onFavoriteToggle,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = if (isFavorite) AppIcons.favoriteFilled(iconPackStyle) else AppIcons.favoriteOutline(iconPackStyle),
+                        contentDescription = "Избранное",
+                        tint = if (isFavorite) NeonPink else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
 
             Text(

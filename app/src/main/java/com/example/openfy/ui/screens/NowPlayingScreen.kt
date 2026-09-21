@@ -64,12 +64,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.DownloadDone
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Tune
+import com.example.openfy.core.audio.service.OfflineDownloadManager
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilterChip
@@ -180,6 +183,8 @@ fun NowPlayingScreen(
     val playerCoverStyle by playbackManager.settingsRepository.playerCoverStyle.collectAsState()
     val djModeEnabled by playbackManager.settingsRepository.djModeEnabled.collectAsState()
     val audioEnergy by playbackManager.audioEnergy.collectAsState()
+    val downloadedSongIds by OfflineDownloadManager.downloadedSongIds.collectAsState()
+    val activeDownloads by OfflineDownloadManager.activeDownloads.collectAsState()
 
     var showQueueSheet by remember { mutableStateOf(false) }
     var showSleepTimerSheet by remember { mutableStateOf(false) }
@@ -885,6 +890,22 @@ fun NowPlayingScreen(
                         accentColor = primaryAccent,
                         onClick = onNavigateToLyrics
                     )
+
+                    if (song.isStream) {
+                        val isDownloaded = downloadedSongIds.contains(song.id.toString())
+                        val isDownloading = activeDownloads.containsKey(song.id.toString())
+                        PlayerDockItem(
+                            icon = if (isDownloaded) Icons.Default.DownloadDone else Icons.Default.Download,
+                            label = if (isDownloaded) "Офлайн" else if (isDownloading) "Загрузка..." else "Скачать",
+                            isActive = isDownloaded,
+                            accentColor = NeonCyan,
+                            onClick = {
+                                if (!isDownloaded && !isDownloading) {
+                                    OfflineDownloadManager.downloadSong(song)
+                                }
+                            }
+                        )
+                    }
 
                     PlayerDockItem(
                         icon = Icons.Default.GraphicEq,
