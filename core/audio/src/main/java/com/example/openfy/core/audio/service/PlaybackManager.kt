@@ -245,8 +245,6 @@ class PlaybackManager private constructor(private val context: Context) {
         _durationMs.value = currentSelected.durationMs
         _currentPositionMs.value = 0L
 
-        playlistRepository.recordSongPlayed(currentSelected.id)
-
         val player = exoPlayer
         if (player == null) {
             pendingPlayAction = {
@@ -494,8 +492,6 @@ class PlaybackManager private constructor(private val context: Context) {
         _currentSong.value = targetSong
         _durationMs.value = targetSong.durationMs
         _currentPositionMs.value = 0L
-
-        playlistRepository.recordSongPlayed(targetSong.id)
 
         val player = exoPlayer ?: return
         if (player.mediaItemCount == currentList.size) {
