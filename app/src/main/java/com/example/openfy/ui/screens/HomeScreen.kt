@@ -18,14 +18,11 @@
 package com.example.openfy.ui.screens
 
 import android.net.Uri
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -82,34 +79,32 @@ import coil.compose.AsyncImage
 import com.example.openfy.core.audio.data.AppThemeStyle
 import com.example.openfy.core.audio.data.IconPackStyle
 import com.example.openfy.core.audio.model.Album
+import com.example.openfy.core.audio.model.Playlist
 import com.example.openfy.core.audio.model.Song
 import com.example.openfy.core.audio.service.PlaybackManager
 import com.example.openfy.core.ui.components.AddToPlaylistBottomSheet
 import com.example.openfy.core.ui.components.GlassCard
-import com.example.openfy.core.ui.components.SongListItem
 import com.example.openfy.core.ui.theme.AmberGlow
 import com.example.openfy.core.ui.theme.AmoledDarkSurface
-import com.example.openfy.core.ui.theme.AmoledSurfaceElevated
 import com.example.openfy.core.ui.theme.AmoledSurfaceVariant
 import com.example.openfy.core.ui.theme.AppIcons
 import com.example.openfy.core.ui.theme.CoralOrange
 import com.example.openfy.core.ui.theme.CyberpunkDarkBg
-import com.example.openfy.core.ui.theme.CyberpunkRubyRed
 import com.example.openfy.core.ui.theme.DarkSurfaceElevated
 import com.example.openfy.core.ui.theme.ElectricPurple
 import com.example.openfy.core.ui.theme.GlassDarkSurface
 import com.example.openfy.core.ui.theme.NeonCyan
 import com.example.openfy.core.ui.theme.NeonPink
 import com.example.openfy.core.ui.theme.RetroDarkBg
-import com.example.openfy.core.ui.theme.RetroPhosphorGreen
 import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.sin
 
 enum class HomeFilter(val title: String) {
     ALL("Все"),
-    FLOW("Flow"),
-    SOUNDCLOUD("В фокусе • Wave"),
+    FAVORITES("Любимые"),
+    PLAYLISTS("Плейлисты"),
+    POPULAR("Часто слушаете"),
     RECENT("Недавние"),
     ALBUMS("Альбомы")
 }
@@ -129,6 +124,7 @@ fun HomeScreen(
     onNavigateToSearch: () -> Unit = {}
 ) {
     val favorites by playbackManager.playlistRepository.favorites.collectAsState()
+    val playlists by playbackManager.playlistRepository.playlists.collectAsState()
     val recentlyPlayedIds by playbackManager.playlistRepository.recentlyPlayed.collectAsState()
     val playCounts by playbackManager.playlistRepository.playCounts.collectAsState()
     val currentSong by playbackManager.currentSong.collectAsState()
@@ -143,6 +139,10 @@ fun HomeScreen(
         allSongs.filter { favorites.contains(it.id) }
     }
 
+    val customPlaylists = remember(playlists) {
+        playlists.filter { !it.isSystemFavorites }
+    }
+
     val recentSongs = remember(allSongs, recentlyPlayedIds) {
         recentlyPlayedIds.mapNotNull { id -> allSongs.find { it.id == id } }.take(15)
     }
@@ -151,11 +151,7 @@ fun HomeScreen(
         allSongs.sortedByDescending { playCounts[it.id] ?: 0 }.take(12)
     }
 
-    val streamSongs = remember(allSongs, recommendedSongs) {
-        (recommendedSongs.take(4) + allSongs.take(6)).distinctBy { it.id }
-    }
-
-    // Spotify-style Dynamic Time-of-Day Greeting
+    // Dynamic Time-of-Day Greeting
     val currentHour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
     val greetingText = remember(currentHour) {
         when (currentHour) {
@@ -168,7 +164,6 @@ fun HomeScreen(
 
     val primaryAccent = MaterialTheme.colorScheme.primary
 
-    // Theme-tailored Card Surface & Glows
     val cardSurfaceColor = when (themeStyle) {
         AppThemeStyle.SERIOUS_DARK -> AmoledDarkSurface
         AppThemeStyle.CYBERPUNK_BLOOD -> CyberpunkDarkBg
@@ -190,7 +185,7 @@ fun HomeScreen(
         contentPadding = PaddingValues(bottom = 120.dp)
     ) {
         // =====================================================================
-        // 1. HEADER (Spotify Smart Greeting + Quick Action Buttons)
+        // 1. HEADER (Smart Greeting + Quick Action Buttons)
         // =====================================================================
         item {
             Row(
@@ -248,7 +243,7 @@ fun HomeScreen(
         }
 
         // =====================================================================
-        // 2. FILTER CHIPS (Deezer / Modern Minimalist Filter Bar)
+        // 2. FILTER CHIPS
         // =====================================================================
         item {
             LazyRow(
@@ -286,9 +281,9 @@ fun HomeScreen(
         }
 
         // =====================================================================
-        // 3. SPOTIFY-STYLE 6-TILE QUICK ACCESS GRID (2x3 Compact Tiles)
+        // 3. 6-TILE QUICK ACCESS GRID (2x3 Compact Tiles with SVG Icons)
         // =====================================================================
-        if (selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.FLOW) {
+        if (selectedFilter == HomeFilter.ALL) {
             item {
                 Spacer(modifier = Modifier.height(10.dp))
                 Column(
@@ -302,7 +297,7 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        SpotifyQuickTile(
+                        QuickAccessTile(
                             modifier = Modifier.weight(1f),
                             title = "Любимые треки",
                             subtitle = "${favoriteSongs.size} треков",
@@ -319,7 +314,7 @@ fun HomeScreen(
                             }
                         )
 
-                        SpotifyQuickTile(
+                        QuickAccessTile(
                             modifier = Modifier.weight(1f),
                             title = "Слушали недавно",
                             subtitle = "${recentSongs.size} треков",
@@ -338,15 +333,15 @@ fun HomeScreen(
                         )
                     }
 
-                    // Row 2: Топ треков & Deezer Flow
+                    // Row 2: Часто слушаете & Плейлисты
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        SpotifyQuickTile(
+                        QuickAccessTile(
                             modifier = Modifier.weight(1f),
-                            title = "Топ треков",
-                            subtitle = "Heavy Rotation",
+                            title = "Часто слушаете",
+                            subtitle = "${recommendedSongs.size} треков",
                             icon = AppIcons.flame,
                             gradient = Brush.linearGradient(listOf(CoralOrange, AmberGlow)),
                             tileBackground = tileSurfaceColor,
@@ -360,38 +355,38 @@ fun HomeScreen(
                             }
                         )
 
-                        SpotifyQuickTile(
+                        QuickAccessTile(
                             modifier = Modifier.weight(1f),
-                            title = "Deezer Flow",
-                            subtitle = "Умный микс",
-                            icon = AppIcons.stream,
-                            gradient = Brush.linearGradient(listOf(ElectricPurple, NeonPink)),
+                            title = "Мои плейлисты",
+                            subtitle = "${customPlaylists.size} плейлистов",
+                            icon = AppIcons.playlist,
+                            gradient = Brush.linearGradient(listOf(ElectricPurple, Color(0xFF7C3AED))),
                             tileBackground = tileSurfaceColor,
                             primaryAccent = primaryAccent,
                             onClick = {
-                                val flowList = (favoriteSongs + recommendedSongs.shuffled() + allSongs.shuffled()).distinctBy { it.id }
-                                if (flowList.isNotEmpty()) {
-                                    playbackManager.playSongs(flowList, 0)
+                                if (customPlaylists.isNotEmpty()) {
+                                    onNavigateToPlaylist(customPlaylists.first().id)
+                                } else {
+                                    onNavigateToLibrary()
                                 }
                             }
                         )
                     }
 
-                    // Row 3: Zen & Природа & Перемешать всё
+                    // Row 3: Звуки природы & Перемешать всё
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        SpotifyQuickTile(
+                        QuickAccessTile(
                             modifier = Modifier.weight(1f),
-                            title = "Zen & Природа",
+                            title = "Звуки природы",
                             subtitle = "Сон & Релакс",
                             icon = AppIcons.spa,
                             gradient = Brush.linearGradient(listOf(Color(0xFF00B09B), Color(0xFF96C93D))),
                             tileBackground = tileSurfaceColor,
                             primaryAccent = primaryAccent,
                             onClick = {
-                                // Start procedural night rain ambient soundscape
                                 playbackManager.zenNatureAudioEngine.startNatureSound(
                                     com.example.openfy.core.audio.service.NatureSoundType.NIGHT_RAIN,
                                     0.4f
@@ -399,10 +394,10 @@ fun HomeScreen(
                             }
                         )
 
-                        SpotifyQuickTile(
+                        QuickAccessTile(
                             modifier = Modifier.weight(1f),
                             title = "Перемешать всё",
-                            subtitle = "Случайный микс",
+                            subtitle = "Случайный порядок",
                             icon = AppIcons.shuffle(iconPackStyle),
                             gradient = Brush.linearGradient(listOf(Color(0xFF4776E6), Color(0xFF8E54E9))),
                             tileBackground = tileSurfaceColor,
@@ -419,25 +414,239 @@ fun HomeScreen(
         }
 
         // =====================================================================
-        // 4. DEEZER "FLOW" HERO CARD (Interactive Smart Stream & Mood Pills)
+        // 4. БЛОК: ЛЮБИМЫЕ ТРЕКИ
         // =====================================================================
-        if (selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.FLOW) {
+        if ((selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.FAVORITES) && favoriteSongs.isNotEmpty()) {
             item {
-                Spacer(modifier = Modifier.height(18.dp))
-                DeezerFlowHeroCard(
-                    playbackManager = playbackManager,
-                    allSongs = allSongs,
-                    favoriteSongs = favoriteSongs,
-                    recommendedSongs = recommendedSongs,
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = AppIcons.favoriteFilled(iconPackStyle),
+                            contentDescription = null,
+                            tint = NeonPink,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Любимые треки",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "${favoriteSongs.size}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    OutlinedButton(
+                        onClick = { playbackManager.playSongs(favoriteSongs, 0) },
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                        modifier = Modifier.height(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = AppIcons.play,
+                            contentDescription = null,
+                            tint = primaryAccent,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Играть",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = primaryAccent
+                        )
+                    }
+                }
+            }
+
+            items(favoriteSongs.take(6), key = { "fav_${it.id}" }) { song ->
+                TrackWaveRow(
+                    song = song,
+                    isPlaying = currentSong?.id == song.id && isPlaying,
+                    isFavorite = true,
+                    playCount = playCounts[song.id] ?: 0,
+                    primaryAccent = primaryAccent,
                     themeStyle = themeStyle,
-                    cardBackground = cardSurfaceColor,
-                    primaryAccent = primaryAccent
+                    iconPackStyle = iconPackStyle,
+                    onClick = { playbackManager.playSongFromList(favoriteSongs, song) },
+                    onFavoriteToggle = { playbackManager.playlistRepository.toggleFavorite(song.id) },
+                    onAddToPlaylist = { songForAddToPlaylist = song },
+                    onDeleteFromDevice = { onDeleteSong(song) }
                 )
             }
         }
 
         // =====================================================================
-        // 5. "СЛУШАТЬ СНОВА" (Jump Back In - Spotify Horizontal Carousel)
+        // 5. БЛОК: СОЗДАННЫЕ ПЛЕЙЛИСТЫ
+        // =====================================================================
+        if (selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.PLAYLISTS) {
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = AppIcons.playlist,
+                            contentDescription = null,
+                            tint = primaryAccent,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Созданные плейлисты",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "${customPlaylists.size}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            if (customPlaylists.isNotEmpty()) {
+                item {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        items(customPlaylists, key = { it.id }) { playlist ->
+                            val playlistSongs = remember(allSongs, playlist.songIds) {
+                                playlist.songIds.mapNotNull { id -> allSongs.find { it.id == id } }
+                            }
+                            PlaylistQuickCard(
+                                playlist = playlist,
+                                songCount = playlistSongs.size,
+                                themeStyle = themeStyle,
+                                primaryAccent = primaryAccent,
+                                onClick = { onNavigateToPlaylist(playlist.id) },
+                                onPlay = {
+                                    if (playlistSongs.isNotEmpty()) {
+                                        playbackManager.playSongs(playlistSongs, 0)
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+            } else if (selectedFilter == HomeFilter.PLAYLISTS) {
+                item {
+                    GlassCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 12.dp),
+                        shape = RoundedCornerShape(18.dp),
+                        backgroundColor = cardSurfaceColor
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = AppIcons.playlist,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(40.dp)
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(
+                                text = "Нет созданных плейлистов",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Создавайте плейлисты в медиатеке для удобной группировки треков.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // =====================================================================
+        // 6. БЛОК: ЧАСТО ПРОСЛУШИВАЕМЫЕ ТРЕКИ (Most Played)
+        // =====================================================================
+        if ((selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.POPULAR) && recommendedSongs.isNotEmpty()) {
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = AppIcons.flame,
+                            contentDescription = null,
+                            tint = CoralOrange,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Часто слушаете",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Топ прослушиваний",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            items(recommendedSongs.take(8), key = { "pop_${it.id}" }) { song ->
+                TrackWaveRow(
+                    song = song,
+                    isPlaying = currentSong?.id == song.id && isPlaying,
+                    isFavorite = favorites.contains(song.id),
+                    playCount = playCounts[song.id] ?: 0,
+                    primaryAccent = primaryAccent,
+                    themeStyle = themeStyle,
+                    iconPackStyle = iconPackStyle,
+                    onClick = { playbackManager.playSongFromList(recommendedSongs, song) },
+                    onFavoriteToggle = { playbackManager.playlistRepository.toggleFavorite(song.id) },
+                    onAddToPlaylist = { songForAddToPlaylist = song },
+                    onDeleteFromDevice = { onDeleteSong(song) }
+                )
+            }
+        }
+
+        // =====================================================================
+        // 7. БЛОК: НЕДАВНО ПРОСЛУШАНО (Recently Played)
         // =====================================================================
         if ((selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.RECENT) && recentSongs.isNotEmpty()) {
             item {
@@ -449,17 +658,19 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = AppIcons.queue(iconPackStyle),
+                            contentDescription = null,
+                            tint = primaryAccent,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Слушать снова",
+                            text = "Недавно прослушано",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Text(
-                            text = "Недавно прослушанные треки",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -468,7 +679,7 @@ fun HomeScreen(
                     contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
                     horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    items(recentSongs, key = { it.id }) { song ->
+                    items(recentSongs, key = { "rec_${it.id}" }) { song ->
                         RecentSongCard(
                             song = song,
                             themeStyle = themeStyle,
@@ -483,79 +694,43 @@ fun HomeScreen(
         }
 
         // =====================================================================
-        // 6. SOUNDCLOUD "THE DROP / В ФОКУСЕ" WAVEFORM STREAM FEED
+        // 8. БЛОК: АЛЬБОМЫ
         // =====================================================================
-        if (selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.SOUNDCLOUD) {
+        if ((selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.ALBUMS) && albums.isNotEmpty()) {
             item {
                 Spacer(modifier = Modifier.height(20.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "В фокусе",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(Brush.horizontalGradient(listOf(CoralOrange, AmberGlow)))
-                                .padding(horizontal = 7.dp, vertical = 3.dp)
-                        ) {
-                            Text(
-                                text = "SOUNDCLOUD WAVE",
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = Color.White
-                            )
-                        }
-                    }
+                    Icon(
+                        imageVector = AppIcons.album(iconPackStyle),
+                        contentDescription = null,
+                        tint = primaryAccent,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Альбомы",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "${albums.size}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-            }
-
-            items(streamSongs, key = { it.id }) { song ->
-                SoundCloudWaveTrackRow(
-                    song = song,
-                    isPlaying = currentSong?.id == song.id && isPlaying,
-                    isFavorite = favorites.contains(song.id),
-                    playCount = playCounts[song.id] ?: 0,
-                    primaryAccent = primaryAccent,
-                    themeStyle = themeStyle,
-                    iconPackStyle = iconPackStyle,
-                    onClick = { playbackManager.playSongFromList(streamSongs, song) },
-                    onFavoriteToggle = { playbackManager.playlistRepository.toggleFavorite(song.id) },
-                    onAddToPlaylist = { songForAddToPlaylist = song },
-                    onDeleteFromDevice = { onDeleteSong(song) }
-                )
-            }
-        }
-
-        // =====================================================================
-        // 7. "АЛЬБОМЫ МЕДИАТЕКИ" (Deezer & Spotify Horizontal Carousel)
-        // =====================================================================
-        if ((selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.ALBUMS) && albums.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = "Альбомы",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
-                )
 
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
                     horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    items(albums.take(12), key = { it.id }) { album ->
+                    items(albums.take(12), key = { "alb_${it.id}" }) { album ->
                         AlbumQuickCard(
                             album = album,
                             themeStyle = themeStyle,
@@ -573,7 +748,7 @@ fun HomeScreen(
         }
 
         // =====================================================================
-        // 8. EMPTY STATE (When library is empty)
+        // 9. ПУСТАЯ МЕДИАТЕКА
         // =====================================================================
         if (allSongs.isEmpty()) {
             item {
@@ -639,14 +814,14 @@ fun HomeScreen(
 }
 
 // =============================================================================
-// SUB-COMPONENTS
+// ВСПОМОГАТЕЛЬНЫЕ КОМПОНЕНТЫ (БЕЗ ЭМОДЗИ, СО СТРОГИМИ SVG ИКОНКАМИ)
 // =============================================================================
 
 /**
- * Spotify-Style 2x3 Compact Quick Tile with artwork, title, and integrated 1-tap play action.
+ * Компактная плашка быстрого доступа 2x3 с векторной SVG иконкой и кнопкой Play.
  */
 @Composable
-fun SpotifyQuickTile(
+fun QuickAccessTile(
     modifier: Modifier = Modifier,
     title: String,
     subtitle: String? = null,
@@ -730,7 +905,7 @@ fun SpotifyQuickTile(
         ) {
             Icon(
                 imageVector = AppIcons.play,
-                contentDescription = "Play",
+                contentDescription = "Воспроизвести",
                 tint = Color.Black,
                 modifier = Modifier.size(16.dp)
             )
@@ -739,188 +914,104 @@ fun SpotifyQuickTile(
 }
 
 /**
- * Deezer "Flow" Hero Card: Dynamic intelligent mix generator with Mood Pills.
+ * Карточка созданного плейлиста для горизонтальной ленты.
  */
 @Composable
-fun DeezerFlowHeroCard(
-    playbackManager: PlaybackManager,
-    allSongs: List<Song>,
-    favoriteSongs: List<Song>,
-    recommendedSongs: List<Song>,
+fun PlaylistQuickCard(
+    playlist: Playlist,
+    songCount: Int,
     themeStyle: AppThemeStyle,
-    cardBackground: Color,
-    primaryAccent: Color
+    primaryAccent: Color,
+    onClick: () -> Unit,
+    onPlay: () -> Unit
 ) {
-    val flowGradient = when (themeStyle) {
-        AppThemeStyle.SERIOUS_DARK -> Brush.linearGradient(
-            listOf(Color(0xFF2B2D38), Color(0xFF14151B))
-        )
-        AppThemeStyle.CYBERPUNK_BLOOD -> Brush.linearGradient(
-            listOf(CyberpunkRubyRed.copy(alpha = 0.6f), Color(0xFF380712))
-        )
-        AppThemeStyle.RETRO_PIXEL -> Brush.linearGradient(
-            listOf(Color(0xFF0E301A), Color(0xFF041209))
-        )
-        else -> Brush.linearGradient(
-            listOf(ElectricPurple.copy(alpha = 0.45f), NeonCyan.copy(alpha = 0.35f))
-        )
+    val cardBg = when (themeStyle) {
+        AppThemeStyle.SERIOUS_DARK -> AmoledDarkSurface
+        AppThemeStyle.CYBERPUNK_BLOOD -> CyberpunkDarkBg
+        AppThemeStyle.RETRO_PIXEL -> RetroDarkBg
+        else -> GlassDarkSurface
     }
 
     GlassCard(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp),
-        shape = RoundedCornerShape(22.dp),
-        backgroundColor = cardBackground,
-        hasGlowBorder = themeStyle.hasNeonGlow,
-        glowColor = primaryAccent.copy(alpha = 0.35f)
+            .width(140.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(18.dp),
+        backgroundColor = cardBg
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(flowGradient)
-                .padding(18.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        Column(modifier = Modifier.padding(10.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(
+                        Brush.linearGradient(
+                            listOf(primaryAccent.copy(alpha = 0.8f), ElectricPurple.copy(alpha = 0.6f))
+                        )
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(38.dp)
-                            .clip(CircleShape)
-                            .background(Brush.linearGradient(listOf(NeonCyan, ElectricPurple))),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = AppIcons.stream,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Column {
-                        Text(
-                            text = "DEEZER FLOW",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = primaryAccent,
-                            letterSpacing = 1.sp
-                        )
-                        Text(
-                            text = "Твой персональный поток",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
+                if (playlist.customCoverUri != null) {
+                    AsyncImage(
+                        model = playlist.customCoverUri,
+                        contentDescription = playlist.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        imageVector = AppIcons.playlist,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(42.dp)
+                    )
                 }
 
-                // Big Flow Play Button
-                Button(
-                    onClick = {
-                        val flowMix = (favoriteSongs.shuffled() + recommendedSongs.shuffled() + allSongs.shuffled()).distinctBy { it.id }
-                        if (flowMix.isNotEmpty()) {
-                            playbackManager.playSongs(flowMix, 0)
-                        }
-                    },
-                    shape = CircleShape,
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier.size(46.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryAccent)
+                // Floating Play Button
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(6.dp)
+                        .size(28.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .clickable(onClick = onPlay),
+                    contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = AppIcons.play,
-                        contentDescription = "Запустить Flow",
-                        tint = if (themeStyle == AppThemeStyle.SERIOUS_DARK) Color.Black else Color.White,
-                        modifier = Modifier.size(24.dp)
+                        contentDescription = "Играть плейлист",
+                        tint = Color.Black,
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Умный алгоритм комбинирует любимые треки с редкими жемчужинами вашей медиатеки.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = playlist.name,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // Deezer Mood Selector Pills
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                FlowMoodPill(
-                    text = "⚡ Энергия",
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        val mix = recommendedSongs.ifEmpty { allSongs }
-                        if (mix.isNotEmpty()) playbackManager.playSongs(mix, 0)
-                    }
-                )
-                FlowMoodPill(
-                    text = "☕ Чилл & Zen",
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        playbackManager.zenNatureAudioEngine.startNatureSound(
-                            com.example.openfy.core.audio.service.NatureSoundType.FOREST_WIND,
-                            0.35f
-                        )
-                    }
-                )
-                FlowMoodPill(
-                    text = "❤️ Любимое",
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        if (favoriteSongs.isNotEmpty()) playbackManager.playSongs(favoriteSongs.shuffled(), 0)
-                    }
-                )
-                FlowMoodPill(
-                    text = "🎲 Микс",
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        if (allSongs.isNotEmpty()) playbackManager.playSongs(allSongs.shuffled(), 0)
-                    }
-                )
-            }
+            Text(
+                text = "$songCount треков",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1
+            )
         }
     }
 }
 
-@Composable
-fun FlowMoodPill(
-    text: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(14.dp))
-            .background(Color.White.copy(alpha = 0.08f))
-            .border(0.8.dp, Color.White.copy(alpha = 0.12f), RoundedCornerShape(14.dp))
-            .clickable(onClick = onClick)
-            .padding(vertical = 7.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-    }
-}
-
 /**
- * SoundCloud-Style Track Row with animated Waveform Visualizer bars and 1-tap quick actions.
+ * Строка трека с мини-визуализатором звуковой волны (Waveform) и SVG-иконками (без эмодзи).
  */
 @Composable
-fun SoundCloudWaveTrackRow(
+fun TrackWaveRow(
     song: Song,
     isPlaying: Boolean,
     isFavorite: Boolean,
@@ -935,8 +1026,7 @@ fun SoundCloudWaveTrackRow(
 ) {
     val rowShape = RoundedCornerShape(16.dp)
 
-    // Animated pulse for waveform when song is actively playing
-    val infiniteTransition = rememberInfiniteTransition(label = "sc_wave")
+    val infiniteTransition = rememberInfiniteTransition(label = "wave_anim")
     val waveAnimPhase by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 6.28f,
@@ -962,7 +1052,7 @@ fun SoundCloudWaveTrackRow(
             .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Album Artwork with Play Overlay
+        // Album Artwork with Play/Pause Overlay
         Box(
             modifier = Modifier
                 .size(48.dp)
@@ -1012,7 +1102,7 @@ fun SoundCloudWaveTrackRow(
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Center Content: Title, Artist, and SoundCloud Mini Waveform
+        // Title, Artist and Mini Waveform
         Column(modifier = Modifier.weight(1f)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1029,13 +1119,24 @@ fun SoundCloudWaveTrackRow(
                     modifier = Modifier.weight(1f)
                 )
                 if (playCount > 0) {
-                    Text(
-                        text = "🔥 $playCount",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = AmberGlow,
-                        fontWeight = FontWeight.Bold,
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(start = 6.dp)
-                    )
+                    ) {
+                        Icon(
+                            imageVector = AppIcons.flame,
+                            contentDescription = null,
+                            tint = CoralOrange,
+                            modifier = Modifier.size(12.dp)
+                        )
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Text(
+                            text = "$playCount",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = CoralOrange,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
 
@@ -1051,7 +1152,7 @@ fun SoundCloudWaveTrackRow(
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // SoundCloud Mini Waveform Visualizer Canvas
+            // Mini Waveform Visualizer Canvas
             val songHash = remember(song.id) { abs(song.id.hashCode()) }
             Canvas(
                 modifier = Modifier
@@ -1079,7 +1180,7 @@ fun SoundCloudWaveTrackRow(
                     val barColor = if (isPlaying) {
                         CoralOrange
                     } else {
-                        primaryAccent.copy(alpha = 0.45f)
+                        primaryAccent.copy(alpha = 0.40f)
                     }
 
                     drawRoundRect(
@@ -1094,7 +1195,7 @@ fun SoundCloudWaveTrackRow(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        // Right Actions: Favorite Heart & Duration
+        // Actions: Favorite Heart & Duration
         Column(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.Center
@@ -1122,7 +1223,7 @@ fun SoundCloudWaveTrackRow(
 }
 
 /**
- * Recent Song Card for Spotify/Deezer style horizontal carousel.
+ * Недавно прослушанный трек для горизонтальной карусели.
  */
 @Composable
 fun RecentSongCard(
@@ -1218,7 +1319,7 @@ fun RecentSongCard(
 }
 
 /**
- * Album Quick Card for horizontal carousel.
+ * Карточка альбома для горизонтальной карусели.
  */
 @Composable
 fun AlbumQuickCard(
