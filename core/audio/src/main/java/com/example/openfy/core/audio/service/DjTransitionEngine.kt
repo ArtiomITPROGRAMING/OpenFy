@@ -57,6 +57,10 @@ class DjTransitionEngine(
     private var transitionJob: Job? = null
     private var energyJob: Job? = null
 
+    // Flag indicating that the engine itself is invoking onPerformNext
+    var isExecutingNext: Boolean = false
+        private set
+
     init {
         startEnergyTelemetry()
     }
@@ -103,39 +107,47 @@ class DjTransitionEngine(
 
         transitionJob?.cancel()
         transitionJob = scope.launch(Dispatchers.Main) {
-            val totalSteps = 60
-            val stepDelayMs = (durationSec * 1000L) / totalSteps
-            var trackSwitched = false
+            try {
+                val totalSteps = 40
+                val stepDelayMs = (durationSec * 1000L) / totalSteps
+                var trackSwitched = false
 
-            for (step in 0..totalSteps) {
-                val progress = step.toFloat() / totalSteps
-                _transitionProgress.value = progress
+                for (step in 0..totalSteps) {
+                    if (!isActive) break
+                    val progress = step.toFloat() / totalSteps
+                    _transitionProgress.value = progress
 
-                if (progress < 0.5f) {
-                    // Phase 1: Outgoing track - Equal-Power cosine fade + Low-Pass Filter sweep
-                    val phaseProgress = progress * 2f // 0f..1f
-                    val volume = cos(phaseProgress * (PI.toFloat() / 2f)).coerceIn(0.05f, 1f)
-                    player.volume = volume
-                } else {
-                    // Apex: Switch track at halfway point if not already switched
-                    if (!trackSwitched) {
-                        trackSwitched = true
-                        onPerformNext()
+                    if (progress < 0.5f) {
+                        // Phase 1: Outgoing track - Equal-Power cosine fade down to 0.2f
+                        val phaseProgress = progress * 2f // 0f..1f
+                        val volume = cos(phaseProgress * (PI.toFloat() / 2f)).coerceIn(0.2f, 1f)
+                        player.volume = volume
+                    } else {
+                        // Apex: Switch track at halfway point if not already switched
+                        if (!trackSwitched) {
+                            trackSwitched = true
+                            isExecutingNext = true
+                            try {
+                                onPerformNext()
+                            } finally {
+                                isExecutingNext = false
+                            }
+                        }
+
+                        // Phase 2: Incoming track - Equal-Power sine fade-in up to 1.0f
+                        val phaseProgress = (progress - 0.5f) * 2f // 0f..1f
+                        val volume = sin(phaseProgress * (PI.toFloat() / 2f)).coerceIn(0.2f, 1f)
+                        player.volume = volume
                     }
 
-                    // Phase 2: Incoming track - Equal-Power sine fade-in
-                    val phaseProgress = (progress - 0.5f) * 2f // 0f..1f
-                    val volume = sin(phaseProgress * (PI.toFloat() / 2f)).coerceIn(0.05f, 1f)
-                    player.volume = volume
+                    delay(stepDelayMs)
                 }
-
-                delay(stepDelayMs)
+            } finally {
+                // ALWAYS guarantee full volume restoration on finish or cancellation
+                player.volume = 1.0f
+                _isTransitioning.value = false
+                _transitionProgress.value = 0f
             }
-
-            // Restore full volume at completion
-            player.volume = 1.0f
-            _isTransitioning.value = false
-            _transitionProgress.value = 0f
         }
     }
 

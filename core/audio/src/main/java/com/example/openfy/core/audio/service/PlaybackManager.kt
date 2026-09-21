@@ -374,6 +374,9 @@ class PlaybackManager private constructor(private val context: Context) {
         if (sid != C.AUDIO_SESSION_ID_UNSET && sid > 0) {
             equalizerController.bindAudioSession(sid, player)
         }
+        if (!djTransitionEngine.isTransitioning.value) {
+            player.volume = 1.0f
+        }
         player.play()
     }
 
@@ -388,14 +391,17 @@ class PlaybackManager private constructor(private val context: Context) {
         player.volume = 0f
         player.play()
         fadeJob = scope.launch {
-            val steps = 15
-            val stepDelay = (durationMs / steps).coerceAtLeast(10L)
-            for (i in 1..steps) {
-                if (!isActive) break
-                delay(stepDelay)
-                player.volume = (i.toFloat() / steps).coerceIn(0f, 1f)
+            try {
+                val steps = 15
+                val stepDelay = (durationMs / steps).coerceAtLeast(10L)
+                for (i in 1..steps) {
+                    if (!isActive) break
+                    delay(stepDelay)
+                    player.volume = (i.toFloat() / steps).coerceIn(0f, 1f)
+                }
+            } finally {
+                player.volume = 1f
             }
-            player.volume = 1f
         }
     }
 
@@ -404,16 +410,19 @@ class PlaybackManager private constructor(private val context: Context) {
         fadeJob?.cancel()
         val startVol = player.volume
         fadeJob = scope.launch {
-            val steps = 15
-            val stepDelay = (durationMs / steps).coerceAtLeast(10L)
-            for (i in (steps - 1) downTo 0) {
-                if (!isActive) break
-                delay(stepDelay)
-                player.volume = (startVol * (i.toFloat() / steps)).coerceIn(0f, 1f)
+            try {
+                val steps = 15
+                val stepDelay = (durationMs / steps).coerceAtLeast(10L)
+                for (i in (steps - 1) downTo 0) {
+                    if (!isActive) break
+                    delay(stepDelay)
+                    player.volume = (startVol * (i.toFloat() / steps)).coerceIn(0f, 1f)
+                }
+            } finally {
+                player.pause()
+                player.volume = 1f
+                onFinished?.invoke()
             }
-            player.pause()
-            player.volume = 1f
-            onFinished?.invoke()
         }
     }
 
@@ -507,8 +516,11 @@ class PlaybackManager private constructor(private val context: Context) {
         _currentPositionMs.value = 0L
 
         val player = exoPlayer ?: return
-        if (djTransitionEngine.isTransitioning.value) {
+        if (djTransitionEngine.isTransitioning.value && !djTransitionEngine.isExecutingNext) {
             djTransitionEngine.cancelTransition(player)
+        }
+        if (!djTransitionEngine.isTransitioning.value) {
+            player.volume = 1.0f
         }
         if (player.mediaItemCount == currentList.size) {
             player.seekToDefaultPosition(index)
@@ -707,6 +719,8 @@ class PlaybackManager private constructor(private val context: Context) {
                     return
                 }
 
+                exoPlayer?.volume = 1f
+
                 when (_repeatMode.value) {
                     RepeatMode.ONE -> {
                         exoPlayer?.seekTo(0L)
@@ -735,6 +749,9 @@ class PlaybackManager private constructor(private val context: Context) {
                 _currentSong.value = rawSong
                 _durationMs.value = rawSong.durationMs
                 playlistRepository.recordSongPlayed(rawSong.id)
+            }
+            if (!djTransitionEngine.isTransitioning.value) {
+                player.volume = 1.0f
             }
         }
 
