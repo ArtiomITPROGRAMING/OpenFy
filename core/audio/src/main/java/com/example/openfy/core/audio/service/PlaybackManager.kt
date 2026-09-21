@@ -146,7 +146,6 @@ class PlaybackManager private constructor(private val context: Context) {
     }
 
     init {
-        OfflineDownloadManager.init(context)
         handler.post(positionUpdateRunnable)
         _isShuffle.value = settingsRepository.isShuffle.value
         _repeatMode.value = settingsRepository.repeatMode.value
@@ -339,11 +338,9 @@ class PlaybackManager private constructor(private val context: Context) {
         }
 
         val meta = metaBuilder.build()
-        val downloadedFile = OfflineDownloadManager.getDownloadedFile(song.id.toString())
-        val playUri = if (downloadedFile != null) Uri.fromFile(downloadedFile) else song.contentUri
 
         return MediaItem.Builder()
-            .setUri(playUri)
+            .setUri(song.contentUri)
             .setMediaId(song.id.toString())
             .setMediaMetadata(meta)
             .build()
