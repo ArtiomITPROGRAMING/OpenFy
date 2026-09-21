@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -43,6 +44,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -82,6 +84,7 @@ import com.example.openfy.core.audio.model.Song
 import com.example.openfy.core.audio.service.PlaybackManager
 import com.example.openfy.core.ui.components.AddToPlaylistBottomSheet
 import com.example.openfy.core.ui.components.GlassCard
+import com.example.openfy.core.ui.theme.AmberGlow
 import com.example.openfy.core.ui.theme.AmoledDarkSurface
 import com.example.openfy.core.ui.theme.AmoledSurfaceVariant
 import com.example.openfy.core.ui.theme.AppIcons
@@ -90,6 +93,7 @@ import com.example.openfy.core.ui.theme.CyberpunkDarkBg
 import com.example.openfy.core.ui.theme.DarkSurfaceElevated
 import com.example.openfy.core.ui.theme.ElectricPurple
 import com.example.openfy.core.ui.theme.GlassDarkSurface
+import com.example.openfy.core.ui.theme.NeonCyan
 import com.example.openfy.core.ui.theme.NeonPink
 import com.example.openfy.core.ui.theme.RetroDarkBg
 import java.util.Calendar
@@ -111,6 +115,17 @@ private data class QuickBlockData(
     val gradient: Brush,
     val onClick: () -> Unit,
     val onPlay: () -> Unit
+)
+
+private val playlistGradients = listOf(
+    listOf(Color(0xFF6A11CB), Color(0xFF2575FC)), // Royal Blue
+    listOf(Color(0xFF0BA360), Color(0xFF3CBA92)), // Emerald
+    listOf(Color(0xFFFF0844), Color(0xFFFFB199)), // Warm Sunset
+    listOf(Color(0xFFB224EF), Color(0xFF7579FF)), // Purple Iris
+    listOf(Color(0xFFF857A6), Color(0xFFFF5858)), // Flamingo
+    listOf(Color(0xFF13547A), Color(0xFF80D0C7)), // Ocean Teal
+    listOf(Color(0xFFCC2B5E), Color(0xFF753A88)), // Magenta Mist
+    listOf(Color(0xFF2C3E50), Color(0xFF3498DB))  // Midnight Steel
 )
 
 @Composable
@@ -177,11 +192,11 @@ fun HomeScreen(
         else -> DarkSurfaceElevated.copy(alpha = 0.75f)
     }
 
-    // Prepare Quick Access Blocks: Favorites, Most Played, and Custom Playlists
+    // Prepare Quick Access Blocks with diverse, rich color palettes
     val quickBlocks = remember(favoriteSongs.size, recommendedSongs.size, customPlaylists, allSongs, iconPackStyle) {
         val list = mutableListOf<QuickBlockData>()
 
-        // 1. Блок Любимые треки
+        // 1. Блок Любимые треки (сочный неон-розовый)
         list.add(
             QuickBlockData(
                 id = "favorites",
@@ -205,7 +220,7 @@ fun HomeScreen(
             )
         )
 
-        // 2. Блок Часто слушаете
+        // 2. Блок Часто слушаете (огненный градиент)
         list.add(
             QuickBlockData(
                 id = "popular",
@@ -213,7 +228,7 @@ fun HomeScreen(
                 subtitle = "${recommendedSongs.size} треков",
                 icon = AppIcons.flame,
                 imageUri = null,
-                gradient = Brush.linearGradient(listOf(CoralOrange, Color(0xFFFFB300))),
+                gradient = Brush.linearGradient(listOf(CoralOrange, AmberGlow)),
                 onClick = {
                     if (recommendedSongs.isNotEmpty()) {
                         playbackManager.playSongs(recommendedSongs, 0)
@@ -231,9 +246,10 @@ fun HomeScreen(
             )
         )
 
-        // 3. Созданные плейлисты в виде блоков
-        customPlaylists.forEach { playlist ->
+        // 3. Созданные плейлисты — каждый с уникальным богатым градиентом
+        customPlaylists.forEachIndexed { index, playlist ->
             val plSongs = playlist.songIds.mapNotNull { id -> allSongs.find { it.id == id } }
+            val paletteColors = playlistGradients[abs(playlist.name.hashCode() + index) % playlistGradients.size]
             list.add(
                 QuickBlockData(
                     id = "pl_${playlist.id}",
@@ -241,7 +257,7 @@ fun HomeScreen(
                     subtitle = "${plSongs.size} треков",
                     icon = AppIcons.playlist,
                     imageUri = playlist.customCoverUri?.let { Uri.parse(it) },
-                    gradient = Brush.linearGradient(listOf(ElectricPurple, Color(0xFF7C3AED))),
+                    gradient = Brush.linearGradient(paletteColors),
                     onClick = { onNavigateToPlaylist(playlist.id) },
                     onPlay = {
                         if (plSongs.isNotEmpty()) {
@@ -360,7 +376,7 @@ fun HomeScreen(
         }
 
         // =====================================================================
-        // 3. БЛОКИ БЫСТРОГО ДОСТУПА (Любимые, Часто слушаете и Плейлисты)
+        // 3. БЛОКИ БЫСТРОГО ДОСТУПА (Разноцветные плитки)
         // =====================================================================
         if (selectedFilter == HomeFilter.ALL) {
             item {
@@ -400,11 +416,11 @@ fun HomeScreen(
         }
 
         // =====================================================================
-        // 4. СЕКТОР: ЛЮБИМЫЕ ТРЕКИ
+        // 4. СЕКЦИЯ 1: ЛЮБИМЫЕ ТРЕКИ (Горизонтальная карусель карточек)
         // =====================================================================
         if ((selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.FAVORITES) && favoriteSongs.isNotEmpty()) {
             item {
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(22.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -413,25 +429,34 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = AppIcons.favoriteFilled(iconPackStyle),
-                            contentDescription = null,
-                            tint = NeonPink,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Любимые треки",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "${favoriteSongs.size}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Brush.linearGradient(listOf(NeonPink, ElectricPurple))),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = AppIcons.favoriteFilled(iconPackStyle),
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "Любимые треки",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Text(
+                                text = "${favoriteSongs.size} треков в коллекции",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
 
                     OutlinedButton(
@@ -448,7 +473,7 @@ fun HomeScreen(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "Играть",
+                            text = "Слушать всё",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = primaryAccent
@@ -457,29 +482,31 @@ fun HomeScreen(
                 }
             }
 
-            items(favoriteSongs, key = { "fav_${it.id}" }) { song ->
-                TrackWaveRow(
-                    song = song,
-                    isPlaying = currentSong?.id == song.id && isPlaying,
-                    isFavorite = true,
-                    playCount = playCounts[song.id] ?: 0,
-                    primaryAccent = primaryAccent,
-                    themeStyle = themeStyle,
-                    iconPackStyle = iconPackStyle,
-                    onClick = { playbackManager.playSongFromList(favoriteSongs, song) },
-                    onFavoriteToggle = { playbackManager.playlistRepository.toggleFavorite(song.id) },
-                    onAddToPlaylist = { songForAddToPlaylist = song },
-                    onDeleteFromDevice = { onDeleteSong(song) }
-                )
+            item {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    items(favoriteSongs, key = { "fav_card_${it.id}" }) { song ->
+                        FavoriteTrackCard(
+                            song = song,
+                            isPlaying = currentSong?.id == song.id && isPlaying,
+                            themeStyle = themeStyle,
+                            iconPackStyle = iconPackStyle,
+                            primaryAccent = primaryAccent,
+                            onClick = { playbackManager.playSongFromList(favoriteSongs, song) }
+                        )
+                    }
+                }
             }
         }
 
         // =====================================================================
-        // 5. СЕКТОР: ЧАСТО ПРОСЛУШИВАЕМЫЕ ТРЕКИ
+        // 5. СЕКЦИЯ 2: ЧАСТО СЛУШАЕТЕ (Топ-чарт с нумерацией 01, 02, 03...)
         // =====================================================================
         if ((selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.POPULAR) && recommendedSongs.isNotEmpty()) {
             item {
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(22.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -488,31 +515,41 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = AppIcons.flame,
-                            contentDescription = null,
-                            tint = CoralOrange,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Часто слушаете",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Топ прослушиваний",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Brush.linearGradient(listOf(CoralOrange, AmberGlow))),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = AppIcons.flame,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "Часто слушаете",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Text(
+                                text = "Топ прослушиваний медиатеки",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
             }
 
-            items(recommendedSongs, key = { "pop_${it.id}" }) { song ->
-                TrackWaveRow(
+            itemsIndexed(recommendedSongs, key = { _, song -> "rank_${song.id}" }) { index, song ->
+                TopRankedTrackRow(
+                    rank = index + 1,
                     song = song,
                     isPlaying = currentSong?.id == song.id && isPlaying,
                     isFavorite = favorites.contains(song.id),
@@ -614,21 +651,21 @@ fun QuickAccessTile(
     onClick: () -> Unit,
     onPlay: () -> Unit
 ) {
-    val shape = RoundedCornerShape(12.dp)
+    val shape = RoundedCornerShape(14.dp)
 
     Row(
         modifier = modifier
-            .height(56.dp)
+            .height(58.dp)
             .clip(shape)
             .background(tileBackground)
-            .border(0.8.dp, Color.White.copy(alpha = 0.07f), shape)
+            .border(0.8.dp, Color.White.copy(alpha = 0.08f), shape)
             .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Left Artwork / Icon Box
+        // Левая плашка с градиентом / обложкой
         Box(
             modifier = Modifier
-                .size(56.dp)
+                .size(58.dp)
                 .background(gradient),
             contentAlignment = Alignment.Center
         ) {
@@ -651,7 +688,7 @@ fun QuickAccessTile(
 
         Spacer(modifier = Modifier.width(10.dp))
 
-        // Title and Subtitle
+        // Название и подзаголовок
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -676,7 +713,7 @@ fun QuickAccessTile(
             }
         }
 
-        // Circular Play Button on the right
+        // Круглая кнопка Play справа
         Box(
             modifier = Modifier
                 .padding(end = 8.dp)
@@ -697,10 +734,144 @@ fun QuickAccessTile(
 }
 
 /**
- * Строка трека с мини-визуализатором звуковой волны (Waveform) и SVG-иконками (без эмодзи).
+ * Карточка трека для горизонтальной карусели «Любимые треки».
  */
 @Composable
-fun TrackWaveRow(
+fun FavoriteTrackCard(
+    song: Song,
+    isPlaying: Boolean,
+    themeStyle: AppThemeStyle,
+    iconPackStyle: IconPackStyle,
+    primaryAccent: Color,
+    onClick: () -> Unit
+) {
+    val cardBg = when (themeStyle) {
+        AppThemeStyle.SERIOUS_DARK -> AmoledDarkSurface
+        AppThemeStyle.CYBERPUNK_BLOOD -> CyberpunkDarkBg
+        AppThemeStyle.RETRO_PIXEL -> RetroDarkBg
+        else -> GlassDarkSurface
+    }
+
+    val cardShape = RoundedCornerShape(18.dp)
+
+    GlassCard(
+        modifier = Modifier
+            .width(148.dp)
+            .clip(cardShape)
+            .clickable(onClick = onClick)
+            .then(
+                if (isPlaying) Modifier.border(1.5.dp, primaryAccent, cardShape) else Modifier
+            ),
+        shape = cardShape,
+        backgroundColor = cardBg
+    ) {
+        Column(modifier = Modifier.padding(10.dp)) {
+            // Квадратная обложка с плавающими элементами
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primaryContainer,
+                                MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (song.albumArtUriString != null) {
+                    AsyncImage(
+                        model = song.albumArtUri,
+                        contentDescription = song.album,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        imageVector = AppIcons.music(iconPackStyle),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
+
+                // Неоновое сердечко в правом верхнем углу обложки
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(6.dp)
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.55f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = AppIcons.favoriteFilled(iconPackStyle),
+                        contentDescription = null,
+                        tint = NeonPink,
+                        modifier = Modifier.size(13.dp)
+                    )
+                }
+
+                // Плавающая кнопка Play / Pause в правом нижнем углу
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(6.dp)
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(if (isPlaying) CoralOrange else primaryAccent),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = if (isPlaying) AppIcons.pause else AppIcons.play,
+                        contentDescription = null,
+                        tint = Color.Black,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = song.title,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                color = if (isPlaying) primaryAccent else MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Text(
+                text = song.artist,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = song.formattedDuration,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                fontSize = 11.sp
+            )
+        }
+    }
+}
+
+/**
+ * Строка трека в ТОП-чарте «Часто слушаете» с нумерацией ранга (01, 02, 03...).
+ */
+@Composable
+fun TopRankedTrackRow(
+    rank: Int,
     song: Song,
     isPlaying: Boolean,
     isFavorite: Boolean,
@@ -726,6 +897,14 @@ fun TrackWaveRow(
         label = "phase"
     )
 
+    // Цвет номера ранга: Золото для 1, Серебро для 2, Бронза для 3, далее нейтральный
+    val rankColor = when (rank) {
+        1 -> AmberGlow
+        2 -> Color(0xFFC0C0C0)
+        3 -> Color(0xFFCD7F32)
+        else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -741,10 +920,19 @@ fun TrackWaveRow(
             .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Album Artwork with Play/Pause Overlay
+        // Номер места в ТОП-чарте (01, 02, 03...)
+        Text(
+            text = String.format("%02d", rank),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.ExtraBold,
+            color = rankColor,
+            modifier = Modifier.width(32.dp)
+        )
+
+        // Обложка трека
         Box(
             modifier = Modifier
-                .size(48.dp)
+                .size(46.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(
                     Brush.linearGradient(
@@ -791,7 +979,7 @@ fun TrackWaveRow(
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Title, Artist and Mini Waveform
+        // Название, Артист и Волновая анимация
         Column(modifier = Modifier.weight(1f)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -841,7 +1029,7 @@ fun TrackWaveRow(
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // Mini Waveform Visualizer Canvas
+            // Мини-визуализатор формы волны
             val songHash = remember(song.id) { abs(song.id.hashCode()) }
             Canvas(
                 modifier = Modifier
@@ -884,7 +1072,7 @@ fun TrackWaveRow(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        // Actions: Favorite Heart & Duration
+        // Действия: Лайк и Длительность
         Column(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.Center
