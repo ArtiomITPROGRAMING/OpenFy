@@ -39,6 +39,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Tune
@@ -54,6 +55,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -94,6 +97,9 @@ fun PlayerCustomizationBottomSheet(
     val currentProgressBar by settingsRepo.progressBarStyle.collectAsState()
     val currentCoverStyle by settingsRepo.playerCoverStyle.collectAsState()
     val currentSkipMode by settingsRepo.screenOffSkipMode.collectAsState()
+
+    val djModeEnabled by settingsRepo.djModeEnabled.collectAsState()
+    val djTransitionDuration by settingsRepo.djTransitionDurationSec.collectAsState()
 
     val smartSleepEnabled by settingsRepo.smartSleepGuardEnabled.collectAsState()
     val smartSleepSound by settingsRepo.smartSleepNatureSound.collectAsState()
@@ -349,6 +355,101 @@ fun PlayerCustomizationBottomSheet(
                                         )
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    Text(
+                        text = "БЕСШОВНЫЙ DJ-РЕЖИМ (HARMONIC FLOW)",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = primaryAccent,
+                        letterSpacing = 1.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    GlassCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        backgroundColor = cardBg,
+                        hasGlowBorder = djModeEnabled && currentTheme.hasNeonGlow,
+                        glowColor = primaryAccent
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(
+                                    modifier = Modifier.weight(1f),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.FlashOn,
+                                        contentDescription = null,
+                                        tint = primaryAccent,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(
+                                            text = "DJ Harmonic Crossfade",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
+                                        Text(
+                                            text = "Бесшовное сведение треков с S-кривой громкости и фильтром частот",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color.White.copy(alpha = 0.65f)
+                                        )
+                                    }
+                                }
+
+                                Switch(
+                                    checked = djModeEnabled,
+                                    onCheckedChange = { settingsRepo.setDjModeEnabled(it) },
+                                    colors = SwitchDefaults.colors(
+                                        checkedThumbColor = Color.White,
+                                        checkedTrackColor = primaryAccent
+                                    )
+                                )
+                            }
+
+                            if (djModeEnabled) {
+                                Spacer(modifier = Modifier.height(14.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Длительность перехода",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.White.copy(alpha = 0.8f)
+                                    )
+                                    Text(
+                                        text = "$djTransitionDuration сек",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = primaryAccent
+                                    )
+                                }
+
+                                Slider(
+                                    value = djTransitionDuration.toFloat(),
+                                    onValueChange = { settingsRepo.setDjTransitionDurationSec(it.toInt()) },
+                                    valueRange = 3f..8f,
+                                    steps = 4,
+                                    colors = SliderDefaults.colors(
+                                        thumbColor = primaryAccent,
+                                        activeTrackColor = primaryAccent,
+                                        inactiveTrackColor = Color.White.copy(alpha = 0.15f)
+                                    )
+                                )
                             }
                         }
                     }

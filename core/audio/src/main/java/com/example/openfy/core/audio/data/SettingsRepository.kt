@@ -130,6 +130,10 @@ enum class PlayerCoverStyle(
     CYBER_CASSETTE(
         "Кассетный плеер (Retro Cassette)",
         "Аудиокассета с вращающимися катушками и магнитным окошком"
+    ),
+    REACTIVE_VISUALIZER(
+        "Шейдерный визуал (Milkdrop 2.0)",
+        "Живой реактивный фрактальный шейдер в такт играющей музыке"
     )
 }
 
@@ -222,6 +226,12 @@ class SettingsRepository(context: Context) {
     private val _carModeKeepScreenOn = MutableStateFlow(true)
     val carModeKeepScreenOn: StateFlow<Boolean> = _carModeKeepScreenOn.asStateFlow()
 
+    private val _djModeEnabled = MutableStateFlow(false)
+    val djModeEnabled: StateFlow<Boolean> = _djModeEnabled.asStateFlow()
+
+    private val _djTransitionDurationSec = MutableStateFlow(5)
+    val djTransitionDurationSec: StateFlow<Int> = _djTransitionDurationSec.asStateFlow()
+
     private val _isOnboardingCompleted = MutableStateFlow(false)
     val isOnboardingCompleted: StateFlow<Boolean> = _isOnboardingCompleted.asStateFlow()
 
@@ -266,7 +276,20 @@ class SettingsRepository(context: Context) {
         _seekIntervalSeconds.value = prefs.getInt(KEY_SEEK_INTERVAL_SECONDS, 10)
         _carModeAutoLaunch.value = prefs.getBoolean(KEY_CAR_MODE_AUTO_LAUNCH, false)
         _carModeKeepScreenOn.value = prefs.getBoolean(KEY_CAR_MODE_KEEP_SCREEN_ON, true)
+        _djModeEnabled.value = prefs.getBoolean(KEY_DJ_MODE_ENABLED, false)
+        _djTransitionDurationSec.value = prefs.getInt(KEY_DJ_TRANSITION_DURATION, 5)
         _isOnboardingCompleted.value = prefs.getBoolean(KEY_ONBOARDING_COMPLETED, false)
+    }
+
+    fun setDjModeEnabled(enabled: Boolean) {
+        _djModeEnabled.value = enabled
+        prefs.edit().putBoolean(KEY_DJ_MODE_ENABLED, enabled).apply()
+    }
+
+    fun setDjTransitionDurationSec(seconds: Int) {
+        val clamped = seconds.coerceIn(3, 10)
+        _djTransitionDurationSec.value = clamped
+        prefs.edit().putInt(KEY_DJ_TRANSITION_DURATION, clamped).apply()
     }
 
     fun setOnboardingCompleted(completed: Boolean = true) {
@@ -406,6 +429,8 @@ class SettingsRepository(context: Context) {
         private const val KEY_SEEK_INTERVAL_SECONDS = "seek_interval_seconds"
         private const val KEY_CAR_MODE_AUTO_LAUNCH = "car_mode_auto_launch"
         private const val KEY_CAR_MODE_KEEP_SCREEN_ON = "car_mode_keep_screen_on"
+        private const val KEY_DJ_MODE_ENABLED = "dj_mode_enabled"
+        private const val KEY_DJ_TRANSITION_DURATION = "dj_transition_duration"
         private const val KEY_ONBOARDING_COMPLETED = "is_onboarding_completed"
     }
 }

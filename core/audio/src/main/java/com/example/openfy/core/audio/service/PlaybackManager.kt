@@ -59,6 +59,7 @@ class PlaybackManager private constructor(private val context: Context) {
     private val duplicateScanner = DuplicateScanner(context)
     val zenNatureAudioEngine = ZenNatureAudioEngine()
     val smartSleepGuard = SmartSleepGuard(context, this, zenNatureAudioEngine)
+    val djTransitionEngine = DjTransitionEngine(scope, equalizerController)
 
     private var exoPlayer: ExoPlayer? = null
     val player: ExoPlayer?
@@ -102,6 +103,8 @@ class PlaybackManager private constructor(private val context: Context) {
     private var sleepTimerJob: Job? = null
     private var stopAfterCurrentTrack: Boolean = false
 
+    val audioEnergy: StateFlow<Float> = djTransitionEngine.audioEnergy
+
     private var pendingPlayAction: (() -> Unit)? = null
 
     private val positionUpdateRunnable = object : Runnable {
@@ -120,6 +123,16 @@ class PlaybackManager private constructor(private val context: Context) {
                         val remainingMs = dur - pos
                         if (remainingMs in 1..4000L) {
                             player.volume = (remainingMs.toFloat() / 4000f).coerceIn(0f, 1f)
+                        }
+                    } else if (settingsRepository.djModeEnabled.value && !djTransitionEngine.isTransitioning.value && dur > 15000L) {
+                        val djDurMs = settingsRepository.djTransitionDurationSec.value * 1000L
+                        val remainingMs = dur - pos
+                        if (remainingMs in 1..djDurMs) {
+                            djTransitionEngine.startTransition(
+                                player = player,
+                                durationSec = settingsRepository.djTransitionDurationSec.value,
+                                onPerformNext = { skipNext() }
+                            )
                         }
                     }
                 }
@@ -494,6 +507,9 @@ class PlaybackManager private constructor(private val context: Context) {
         _currentPositionMs.value = 0L
 
         val player = exoPlayer ?: return
+        if (djTransitionEngine.isTransitioning.value) {
+            djTransitionEngine.cancelTransition(player)
+        }
         if (player.mediaItemCount == currentList.size) {
             player.seekToDefaultPosition(index)
             player.play()

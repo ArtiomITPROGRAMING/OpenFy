@@ -152,6 +152,7 @@ fun HomeScreen(
 
     var selectedFilter by remember { mutableStateOf(HomeFilter.ALL) }
     var songForAddToPlaylist by remember { mutableStateOf<Song?>(null) }
+    var showMoodDialSheet by remember { mutableStateOf(false) }
 
     val favoriteSongs = remember(allSongs, favorites) {
         allSongs.filter { favorites.contains(it.id) }
@@ -305,6 +306,13 @@ fun HomeScreen(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { showMoodDialSheet = true }) {
+                        Icon(
+                            imageVector = AppIcons.compass,
+                            contentDescription = "Звуковой компас",
+                            tint = primaryAccent
+                        )
+                    }
                     IconButton(onClick = onNavigateToSearch) {
                         Icon(
                             imageVector = AppIcons.search,
@@ -627,6 +635,14 @@ fun HomeScreen(
             song = song,
             playbackManager = playbackManager,
             onDismiss = { songForAddToPlaylist = null }
+        )
+    }
+
+    if (showMoodDialSheet) {
+        com.example.openfy.ui.mood.MoodDialSheet(
+            allSongs = allSongs,
+            playbackManager = playbackManager,
+            onDismiss = { showMoodDialSheet = false }
         )
     }
 }

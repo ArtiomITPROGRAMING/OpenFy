@@ -35,9 +35,11 @@ import androidx.compose.material.icons.automirrored.sharp.PlaylistPlay
 import androidx.compose.material.icons.automirrored.sharp.QueueMusic
 import androidx.compose.material.icons.automirrored.sharp.Sort
 import androidx.compose.material.icons.filled.Album
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.ContentCopy
@@ -632,4 +634,6 @@ object AppIcons {
     val search = Icons.Filled.Search
     val library = Icons.Filled.LibraryMusic
     val flash = Icons.Filled.FlashOn
+    val compass = Icons.Filled.Explore
+    val visualizer = Icons.Filled.AutoAwesome
 }

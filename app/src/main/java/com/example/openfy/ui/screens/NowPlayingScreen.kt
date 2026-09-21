@@ -126,6 +126,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.palette.graphics.Palette
 import com.example.openfy.core.ui.components.VisualizerCanvas
+import com.example.openfy.core.ui.components.visualizer.MilkdropVisualizer
+import com.example.openfy.core.ui.components.visualizer.VisualizerPreset
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import coil.compose.AsyncImage
@@ -176,11 +178,14 @@ fun NowPlayingScreen(
 
     val progressBarStyle by playbackManager.settingsRepository.progressBarStyle.collectAsState()
     val playerCoverStyle by playbackManager.settingsRepository.playerCoverStyle.collectAsState()
+    val djModeEnabled by playbackManager.settingsRepository.djModeEnabled.collectAsState()
+    val audioEnergy by playbackManager.audioEnergy.collectAsState()
 
     var showQueueSheet by remember { mutableStateOf(false) }
     var showSleepTimerSheet by remember { mutableStateOf(false) }
     var showCustomizationSheet by remember { mutableStateOf(false) }
     var showShareSheet by remember { mutableStateOf(false) }
+    var showFullScreenVisualizer by remember { mutableStateOf(false) }
     var songForAddToPlaylist by remember { mutableStateOf<Song?>(null) }
 
     val queueSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -314,14 +319,26 @@ fun NowPlayingScreen(
                     )
                 }
 
-                // Top Right: Player Customization Button (Replaced EQ here)
-                IconButton(onClick = { showCustomizationSheet = true }) {
-                    Icon(
-                        imageVector = Icons.Default.Tune,
-                        contentDescription = "Персонализация плеера",
-                        tint = primaryAccent,
-                        modifier = Modifier.size(24.dp)
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Top Right: Milkdrop Visualizer Button
+                    IconButton(onClick = { showFullScreenVisualizer = true }) {
+                        Icon(
+                            imageVector = AppIcons.visualizer,
+                            contentDescription = "Визуализатор Milkdrop 2.0",
+                            tint = primaryAccent,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    // Top Right: Player Customization Button
+                    IconButton(onClick = { showCustomizationSheet = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Tune,
+                            contentDescription = "Персонализация плеера",
+                            tint = primaryAccent,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             }
 
@@ -495,6 +512,22 @@ fun NowPlayingScreen(
                                     maxLines = 1
                                 )
                             }
+                        }
+                    }
+
+                    PlayerCoverStyle.REACTIVE_VISUALIZER -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(24.dp))
+                                .border(1.5.dp, primaryAccent.copy(alpha = 0.5f), RoundedCornerShape(24.dp))
+                        ) {
+                            MilkdropVisualizer(
+                                preset = VisualizerPreset.CYBER_TUNNEL,
+                                modifier = Modifier.fillMaxSize(),
+                                isPlaying = isPlaying,
+                                audioEnergy = audioEnergy
+                            )
                         }
                     }
 
@@ -862,6 +895,17 @@ fun NowPlayingScreen(
                     )
 
                     PlayerDockItem(
+                        icon = AppIcons.flash,
+                        label = "DJ Flow",
+                        isActive = djModeEnabled,
+                        accentColor = Color(0xFFFF0055),
+                        onClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            playbackManager.settingsRepository.setDjModeEnabled(!djModeEnabled)
+                        }
+                    )
+
+                    PlayerDockItem(
                         icon = AppIcons.queue(iconPackStyle),
                         label = "${queue.size}",
                         isActive = false,
@@ -900,6 +944,16 @@ fun NowPlayingScreen(
                 playbackManager = playbackManager,
                 sheetState = customizationSheetState,
                 onDismiss = { showCustomizationSheet = false }
+            )
+        }
+
+        // ==========================================
+        // FULL-SCREEN MILKDROP VISUALIZER
+        // ==========================================
+        if (showFullScreenVisualizer) {
+            FullScreenVisualizerScreen(
+                playbackManager = playbackManager,
+                onDismiss = { showFullScreenVisualizer = false }
             )
         }
 
