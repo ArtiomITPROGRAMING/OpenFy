@@ -132,8 +132,8 @@ fun MainScreenWithBottomNav(
     var songPendingDeletion by remember { mutableStateOf<Song?>(null) }
     var scrollToSongTrigger by remember { mutableIntStateOf(0) }
 
-    // Offline-First Default: Media library (tab 2) is active on cold start
-    var selectedTab by rememberSaveable { mutableIntStateOf(2) }
+    // Default start tab: HomeScreen (tab 0)
+    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
 
     val currentSong by playbackManager.currentSong.collectAsState()
     val isPlaying by playbackManager.isPlaying.collectAsState()

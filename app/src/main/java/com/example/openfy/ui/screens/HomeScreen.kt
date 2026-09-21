@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -79,12 +78,10 @@ import coil.compose.AsyncImage
 import com.example.openfy.core.audio.data.AppThemeStyle
 import com.example.openfy.core.audio.data.IconPackStyle
 import com.example.openfy.core.audio.model.Album
-import com.example.openfy.core.audio.model.Playlist
 import com.example.openfy.core.audio.model.Song
 import com.example.openfy.core.audio.service.PlaybackManager
 import com.example.openfy.core.ui.components.AddToPlaylistBottomSheet
 import com.example.openfy.core.ui.components.GlassCard
-import com.example.openfy.core.ui.theme.AmberGlow
 import com.example.openfy.core.ui.theme.AmoledDarkSurface
 import com.example.openfy.core.ui.theme.AmoledSurfaceVariant
 import com.example.openfy.core.ui.theme.AppIcons
@@ -93,7 +90,6 @@ import com.example.openfy.core.ui.theme.CyberpunkDarkBg
 import com.example.openfy.core.ui.theme.DarkSurfaceElevated
 import com.example.openfy.core.ui.theme.ElectricPurple
 import com.example.openfy.core.ui.theme.GlassDarkSurface
-import com.example.openfy.core.ui.theme.NeonCyan
 import com.example.openfy.core.ui.theme.NeonPink
 import com.example.openfy.core.ui.theme.RetroDarkBg
 import java.util.Calendar
@@ -103,17 +99,25 @@ import kotlin.math.sin
 enum class HomeFilter(val title: String) {
     ALL("Все"),
     FAVORITES("Любимые"),
-    PLAYLISTS("Плейлисты"),
-    POPULAR("Часто слушаете"),
-    RECENT("Недавние"),
-    ALBUMS("Альбомы")
+    POPULAR("Часто слушаете")
 }
+
+private data class QuickBlockData(
+    val id: String,
+    val title: String,
+    val subtitle: String,
+    val icon: ImageVector?,
+    val imageUri: Uri?,
+    val gradient: Brush,
+    val onClick: () -> Unit,
+    val onPlay: () -> Unit
+)
 
 @Composable
 fun HomeScreen(
     playbackManager: PlaybackManager,
     allSongs: List<Song>,
-    albums: List<Album>,
+    albums: List<Album> = emptyList(),
     onRefreshAudio: () -> Unit,
     onNavigateToPlaylist: (String) -> Unit = {},
     onOpenStreamDialog: (String) -> Unit = {},
@@ -125,7 +129,6 @@ fun HomeScreen(
 ) {
     val favorites by playbackManager.playlistRepository.favorites.collectAsState()
     val playlists by playbackManager.playlistRepository.playlists.collectAsState()
-    val recentlyPlayedIds by playbackManager.playlistRepository.recentlyPlayed.collectAsState()
     val playCounts by playbackManager.playlistRepository.playCounts.collectAsState()
     val currentSong by playbackManager.currentSong.collectAsState()
     val isPlaying by playbackManager.isPlaying.collectAsState()
@@ -141,10 +144,6 @@ fun HomeScreen(
 
     val customPlaylists = remember(playlists) {
         playlists.filter { !it.isSystemFavorites }
-    }
-
-    val recentSongs = remember(allSongs, recentlyPlayedIds) {
-        recentlyPlayedIds.mapNotNull { id -> allSongs.find { it.id == id } }.take(15)
     }
 
     val recommendedSongs = remember(allSongs, playCounts) {
@@ -178,6 +177,86 @@ fun HomeScreen(
         else -> DarkSurfaceElevated.copy(alpha = 0.75f)
     }
 
+    // Prepare Quick Access Blocks: Favorites, Most Played, and Custom Playlists
+    val quickBlocks = remember(favoriteSongs.size, recommendedSongs.size, customPlaylists, allSongs, iconPackStyle) {
+        val list = mutableListOf<QuickBlockData>()
+
+        // 1. Блок Любимые треки
+        list.add(
+            QuickBlockData(
+                id = "favorites",
+                title = "Любимые треки",
+                subtitle = "${favoriteSongs.size} треков",
+                icon = AppIcons.favoriteFilled(iconPackStyle),
+                imageUri = null,
+                gradient = Brush.linearGradient(listOf(NeonPink, ElectricPurple)),
+                onClick = {
+                    if (favoriteSongs.isNotEmpty()) {
+                        playbackManager.playSongs(favoriteSongs, 0)
+                    } else {
+                        onNavigateToLibrary()
+                    }
+                },
+                onPlay = {
+                    if (favoriteSongs.isNotEmpty()) {
+                        playbackManager.playSongs(favoriteSongs, 0)
+                    }
+                }
+            )
+        )
+
+        // 2. Блок Часто слушаете
+        list.add(
+            QuickBlockData(
+                id = "popular",
+                title = "Часто слушаете",
+                subtitle = "${recommendedSongs.size} треков",
+                icon = AppIcons.flame,
+                imageUri = null,
+                gradient = Brush.linearGradient(listOf(CoralOrange, Color(0xFFFFB300))),
+                onClick = {
+                    if (recommendedSongs.isNotEmpty()) {
+                        playbackManager.playSongs(recommendedSongs, 0)
+                    } else if (allSongs.isNotEmpty()) {
+                        playbackManager.playSongs(allSongs, 0)
+                    }
+                },
+                onPlay = {
+                    if (recommendedSongs.isNotEmpty()) {
+                        playbackManager.playSongs(recommendedSongs, 0)
+                    } else if (allSongs.isNotEmpty()) {
+                        playbackManager.playSongs(allSongs, 0)
+                    }
+                }
+            )
+        )
+
+        // 3. Созданные плейлисты в виде блоков
+        customPlaylists.forEach { playlist ->
+            val plSongs = playlist.songIds.mapNotNull { id -> allSongs.find { it.id == id } }
+            list.add(
+                QuickBlockData(
+                    id = "pl_${playlist.id}",
+                    title = playlist.name,
+                    subtitle = "${plSongs.size} треков",
+                    icon = AppIcons.playlist,
+                    imageUri = playlist.customCoverUri?.let { Uri.parse(it) },
+                    gradient = Brush.linearGradient(listOf(ElectricPurple, Color(0xFF7C3AED))),
+                    onClick = { onNavigateToPlaylist(playlist.id) },
+                    onPlay = {
+                        if (plSongs.isNotEmpty()) {
+                            playbackManager.playSongs(plSongs, 0)
+                        }
+                    }
+                )
+            )
+        }
+
+        list
+    }
+
+    val chunkedBlocks = remember(quickBlocks) { quickBlocks.chunked(2) }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -185,7 +264,7 @@ fun HomeScreen(
         contentPadding = PaddingValues(bottom = 120.dp)
     ) {
         // =====================================================================
-        // 1. HEADER (Smart Greeting + Quick Action Buttons)
+        // 1. HEADER (Контекстное приветствие + Быстрые кнопки)
         // =====================================================================
         item {
             Row(
@@ -281,7 +360,7 @@ fun HomeScreen(
         }
 
         // =====================================================================
-        // 3. 6-TILE QUICK ACCESS GRID (2x3 Compact Tiles with SVG Icons)
+        // 3. БЛОКИ БЫСТРОГО ДОСТУПА (Любимые, Часто слушаете и Плейлисты)
         // =====================================================================
         if (selectedFilter == HomeFilter.ALL) {
             item {
@@ -292,129 +371,36 @@ fun HomeScreen(
                         .padding(horizontal = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Row 1: Избранное & Недавние
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        QuickAccessTile(
-                            modifier = Modifier.weight(1f),
-                            title = "Любимые треки",
-                            subtitle = "${favoriteSongs.size} треков",
-                            icon = AppIcons.favoriteFilled(iconPackStyle),
-                            gradient = Brush.linearGradient(listOf(NeonPink, ElectricPurple)),
-                            tileBackground = tileSurfaceColor,
-                            primaryAccent = primaryAccent,
-                            onClick = {
-                                if (favoriteSongs.isNotEmpty()) {
-                                    playbackManager.playSongs(favoriteSongs, 0)
-                                } else {
-                                    onNavigateToLibrary()
-                                }
-                            }
-                        )
-
-                        QuickAccessTile(
-                            modifier = Modifier.weight(1f),
-                            title = "Слушали недавно",
-                            subtitle = "${recentSongs.size} треков",
-                            icon = AppIcons.queue(iconPackStyle),
-                            imageUri = recentSongs.firstOrNull()?.albumArtUri,
-                            gradient = Brush.linearGradient(listOf(NeonCyan, Color(0xFF0077FF))),
-                            tileBackground = tileSurfaceColor,
-                            primaryAccent = primaryAccent,
-                            onClick = {
-                                if (recentSongs.isNotEmpty()) {
-                                    playbackManager.playSongs(recentSongs, 0)
-                                } else if (allSongs.isNotEmpty()) {
-                                    playbackManager.playSongs(allSongs, 0)
-                                }
-                            }
-                        )
-                    }
-
-                    // Row 2: Часто слушаете & Плейлисты
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        QuickAccessTile(
-                            modifier = Modifier.weight(1f),
-                            title = "Часто слушаете",
-                            subtitle = "${recommendedSongs.size} треков",
-                            icon = AppIcons.flame,
-                            gradient = Brush.linearGradient(listOf(CoralOrange, AmberGlow)),
-                            tileBackground = tileSurfaceColor,
-                            primaryAccent = primaryAccent,
-                            onClick = {
-                                if (recommendedSongs.isNotEmpty()) {
-                                    playbackManager.playSongs(recommendedSongs, 0)
-                                } else if (allSongs.isNotEmpty()) {
-                                    playbackManager.playSongs(allSongs, 0)
-                                }
-                            }
-                        )
-
-                        QuickAccessTile(
-                            modifier = Modifier.weight(1f),
-                            title = "Мои плейлисты",
-                            subtitle = "${customPlaylists.size} плейлистов",
-                            icon = AppIcons.playlist,
-                            gradient = Brush.linearGradient(listOf(ElectricPurple, Color(0xFF7C3AED))),
-                            tileBackground = tileSurfaceColor,
-                            primaryAccent = primaryAccent,
-                            onClick = {
-                                if (customPlaylists.isNotEmpty()) {
-                                    onNavigateToPlaylist(customPlaylists.first().id)
-                                } else {
-                                    onNavigateToLibrary()
-                                }
-                            }
-                        )
-                    }
-
-                    // Row 3: Звуки природы & Перемешать всё
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        QuickAccessTile(
-                            modifier = Modifier.weight(1f),
-                            title = "Звуки природы",
-                            subtitle = "Сон & Релакс",
-                            icon = AppIcons.spa,
-                            gradient = Brush.linearGradient(listOf(Color(0xFF00B09B), Color(0xFF96C93D))),
-                            tileBackground = tileSurfaceColor,
-                            primaryAccent = primaryAccent,
-                            onClick = {
-                                playbackManager.zenNatureAudioEngine.startNatureSound(
-                                    com.example.openfy.core.audio.service.NatureSoundType.NIGHT_RAIN,
-                                    0.4f
+                    chunkedBlocks.forEach { rowBlocks ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            rowBlocks.forEach { block ->
+                                QuickAccessTile(
+                                    modifier = Modifier.weight(1f),
+                                    title = block.title,
+                                    subtitle = block.subtitle,
+                                    icon = block.icon,
+                                    imageUri = block.imageUri,
+                                    gradient = block.gradient,
+                                    tileBackground = tileSurfaceColor,
+                                    primaryAccent = primaryAccent,
+                                    onClick = block.onClick,
+                                    onPlay = block.onPlay
                                 )
                             }
-                        )
-
-                        QuickAccessTile(
-                            modifier = Modifier.weight(1f),
-                            title = "Перемешать всё",
-                            subtitle = "Случайный порядок",
-                            icon = AppIcons.shuffle(iconPackStyle),
-                            gradient = Brush.linearGradient(listOf(Color(0xFF4776E6), Color(0xFF8E54E9))),
-                            tileBackground = tileSurfaceColor,
-                            primaryAccent = primaryAccent,
-                            onClick = {
-                                if (allSongs.isNotEmpty()) {
-                                    playbackManager.playSongs(allSongs.shuffled(), 0)
-                                }
+                            if (rowBlocks.size == 1) {
+                                Spacer(modifier = Modifier.weight(1f))
                             }
-                        )
+                        }
                     }
                 }
             }
         }
 
         // =====================================================================
-        // 4. БЛОК: ЛЮБИМЫЕ ТРЕКИ
+        // 4. СЕКТОР: ЛЮБИМЫЕ ТРЕКИ
         // =====================================================================
         if ((selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.FAVORITES) && favoriteSongs.isNotEmpty()) {
             item {
@@ -471,7 +457,7 @@ fun HomeScreen(
                 }
             }
 
-            items(favoriteSongs.take(6), key = { "fav_${it.id}" }) { song ->
+            items(favoriteSongs, key = { "fav_${it.id}" }) { song ->
                 TrackWaveRow(
                     song = song,
                     isPlaying = currentSong?.id == song.id && isPlaying,
@@ -489,110 +475,7 @@ fun HomeScreen(
         }
 
         // =====================================================================
-        // 5. БЛОК: СОЗДАННЫЕ ПЛЕЙЛИСТЫ
-        // =====================================================================
-        if (selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.PLAYLISTS) {
-            item {
-                Spacer(modifier = Modifier.height(20.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = AppIcons.playlist,
-                            contentDescription = null,
-                            tint = primaryAccent,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Созданные плейлисты",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "${customPlaylists.size}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-
-            if (customPlaylists.isNotEmpty()) {
-                item {
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(14.dp)
-                    ) {
-                        items(customPlaylists, key = { it.id }) { playlist ->
-                            val playlistSongs = remember(allSongs, playlist.songIds) {
-                                playlist.songIds.mapNotNull { id -> allSongs.find { it.id == id } }
-                            }
-                            PlaylistQuickCard(
-                                playlist = playlist,
-                                songCount = playlistSongs.size,
-                                themeStyle = themeStyle,
-                                primaryAccent = primaryAccent,
-                                onClick = { onNavigateToPlaylist(playlist.id) },
-                                onPlay = {
-                                    if (playlistSongs.isNotEmpty()) {
-                                        playbackManager.playSongs(playlistSongs, 0)
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-            } else if (selectedFilter == HomeFilter.PLAYLISTS) {
-                item {
-                    GlassCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp, vertical = 12.dp),
-                        shape = RoundedCornerShape(18.dp),
-                        backgroundColor = cardSurfaceColor
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(20.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                imageVector = AppIcons.playlist,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(40.dp)
-                            )
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Text(
-                                text = "Нет созданных плейлистов",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Создавайте плейлисты в медиатеке для удобной группировки треков.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        // =====================================================================
-        // 6. БЛОК: ЧАСТО ПРОСЛУШИВАЕМЫЕ ТРЕКИ (Most Played)
+        // 5. СЕКТОР: ЧАСТО ПРОСЛУШИВАЕМЫЕ ТРЕКИ
         // =====================================================================
         if ((selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.POPULAR) && recommendedSongs.isNotEmpty()) {
             item {
@@ -628,7 +511,7 @@ fun HomeScreen(
                 }
             }
 
-            items(recommendedSongs.take(8), key = { "pop_${it.id}" }) { song ->
+            items(recommendedSongs, key = { "pop_${it.id}" }) { song ->
                 TrackWaveRow(
                     song = song,
                     isPlaying = currentSong?.id == song.id && isPlaying,
@@ -646,109 +529,7 @@ fun HomeScreen(
         }
 
         // =====================================================================
-        // 7. БЛОК: НЕДАВНО ПРОСЛУШАНО (Recently Played)
-        // =====================================================================
-        if ((selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.RECENT) && recentSongs.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(20.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = AppIcons.queue(iconPackStyle),
-                            contentDescription = null,
-                            tint = primaryAccent,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Недавно прослушано",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                }
-
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    items(recentSongs, key = { "rec_${it.id}" }) { song ->
-                        RecentSongCard(
-                            song = song,
-                            themeStyle = themeStyle,
-                            iconPackStyle = iconPackStyle,
-                            primaryAccent = primaryAccent,
-                            isPlaying = currentSong?.id == song.id && isPlaying,
-                            onClick = { playbackManager.playSongFromList(recentSongs, song) }
-                        )
-                    }
-                }
-            }
-        }
-
-        // =====================================================================
-        // 8. БЛОК: АЛЬБОМЫ
-        // =====================================================================
-        if ((selectedFilter == HomeFilter.ALL || selectedFilter == HomeFilter.ALBUMS) && albums.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(20.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = AppIcons.album(iconPackStyle),
-                        contentDescription = null,
-                        tint = primaryAccent,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Альбомы",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "${albums.size}",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    items(albums.take(12), key = { "alb_${it.id}" }) { album ->
-                        AlbumQuickCard(
-                            album = album,
-                            themeStyle = themeStyle,
-                            iconPackStyle = iconPackStyle,
-                            onClick = {
-                                val albumSongs = allSongs.filter { it.albumId == album.id }
-                                if (albumSongs.isNotEmpty()) {
-                                    playbackManager.playSongs(albumSongs, 0)
-                                }
-                            }
-                        )
-                    }
-                }
-            }
-        }
-
-        // =====================================================================
-        // 9. ПУСТАЯ МЕДИАТЕКА
+        // 6. ПУСТАЯ МЕДИАТЕКА
         // =====================================================================
         if (allSongs.isEmpty()) {
             item {
@@ -814,11 +595,11 @@ fun HomeScreen(
 }
 
 // =============================================================================
-// ВСПОМОГАТЕЛЬНЫЕ КОМПОНЕНТЫ (БЕЗ ЭМОДЗИ, СО СТРОГИМИ SVG ИКОНКАМИ)
+// ВСПОМОГАТЕЛЬНЫЕ КОМПОНЕНТЫ
 // =============================================================================
 
 /**
- * Компактная плашка быстрого доступа 2x3 с векторной SVG иконкой и кнопкой Play.
+ * Компактный блок 2x3 с векторной SVG иконкой и отдельной кнопкой Play.
  */
 @Composable
 fun QuickAccessTile(
@@ -830,7 +611,8 @@ fun QuickAccessTile(
     gradient: Brush,
     tileBackground: Color,
     primaryAccent: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onPlay: () -> Unit
 ) {
     val shape = RoundedCornerShape(12.dp)
 
@@ -900,7 +682,8 @@ fun QuickAccessTile(
                 .padding(end = 8.dp)
                 .size(30.dp)
                 .clip(CircleShape)
-                .background(primaryAccent.copy(alpha = 0.9f)),
+                .background(primaryAccent.copy(alpha = 0.9f))
+                .clickable(onClick = onPlay),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -908,100 +691,6 @@ fun QuickAccessTile(
                 contentDescription = "Воспроизвести",
                 tint = Color.Black,
                 modifier = Modifier.size(16.dp)
-            )
-        }
-    }
-}
-
-/**
- * Карточка созданного плейлиста для горизонтальной ленты.
- */
-@Composable
-fun PlaylistQuickCard(
-    playlist: Playlist,
-    songCount: Int,
-    themeStyle: AppThemeStyle,
-    primaryAccent: Color,
-    onClick: () -> Unit,
-    onPlay: () -> Unit
-) {
-    val cardBg = when (themeStyle) {
-        AppThemeStyle.SERIOUS_DARK -> AmoledDarkSurface
-        AppThemeStyle.CYBERPUNK_BLOOD -> CyberpunkDarkBg
-        AppThemeStyle.RETRO_PIXEL -> RetroDarkBg
-        else -> GlassDarkSurface
-    }
-
-    GlassCard(
-        modifier = Modifier
-            .width(140.dp)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(18.dp),
-        backgroundColor = cardBg
-    ) {
-        Column(modifier = Modifier.padding(10.dp)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(
-                        Brush.linearGradient(
-                            listOf(primaryAccent.copy(alpha = 0.8f), ElectricPurple.copy(alpha = 0.6f))
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                if (playlist.customCoverUri != null) {
-                    AsyncImage(
-                        model = playlist.customCoverUri,
-                        contentDescription = playlist.name,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Icon(
-                        imageVector = AppIcons.playlist,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(42.dp)
-                    )
-                }
-
-                // Floating Play Button
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(6.dp)
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(Color.White)
-                        .clickable(onClick = onPlay),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = AppIcons.play,
-                        contentDescription = "Играть плейлист",
-                        tint = Color.Black,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = playlist.name,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = "$songCount треков",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1
             )
         }
     }
@@ -1217,176 +906,6 @@ fun TrackWaveRow(
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                 fontSize = 10.sp
-            )
-        }
-    }
-}
-
-/**
- * Недавно прослушанный трек для горизонтальной карусели.
- */
-@Composable
-fun RecentSongCard(
-    song: Song,
-    themeStyle: AppThemeStyle,
-    iconPackStyle: IconPackStyle,
-    primaryAccent: Color,
-    isPlaying: Boolean = false,
-    onClick: () -> Unit
-) {
-    val cardBg = when (themeStyle) {
-        AppThemeStyle.SERIOUS_DARK -> AmoledDarkSurface
-        AppThemeStyle.CYBERPUNK_BLOOD -> CyberpunkDarkBg
-        AppThemeStyle.RETRO_PIXEL -> RetroDarkBg
-        else -> GlassDarkSurface
-    }
-
-    GlassCard(
-        modifier = Modifier
-            .width(135.dp)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(18.dp),
-        backgroundColor = cardBg
-    ) {
-        Column(modifier = Modifier.padding(10.dp)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(
-                        Brush.linearGradient(
-                            listOf(
-                                MaterialTheme.colorScheme.primaryContainer,
-                                MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                if (song.albumArtUriString != null) {
-                    AsyncImage(
-                        model = song.albumArtUri,
-                        contentDescription = song.album,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Icon(
-                        imageVector = AppIcons.music(iconPackStyle),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-
-                // Overlay Floating Play / Pause Indicator
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(6.dp)
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(if (isPlaying) CoralOrange else primaryAccent),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = if (isPlaying) AppIcons.pause else AppIcons.play,
-                        contentDescription = null,
-                        tint = Color.Black,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = song.title,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = if (isPlaying) primaryAccent else MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = song.artist,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-    }
-}
-
-/**
- * Карточка альбома для горизонтальной карусели.
- */
-@Composable
-fun AlbumQuickCard(
-    album: Album,
-    themeStyle: AppThemeStyle,
-    iconPackStyle: IconPackStyle,
-    onClick: () -> Unit
-) {
-    val cardBg = when (themeStyle) {
-        AppThemeStyle.SERIOUS_DARK -> AmoledDarkSurface
-        AppThemeStyle.CYBERPUNK_BLOOD -> CyberpunkDarkBg
-        AppThemeStyle.RETRO_PIXEL -> RetroDarkBg
-        else -> GlassDarkSurface
-    }
-
-    GlassCard(
-        modifier = Modifier
-            .width(135.dp)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(18.dp),
-        backgroundColor = cardBg
-    ) {
-        Column(modifier = Modifier.padding(10.dp)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(
-                        Brush.linearGradient(
-                            listOf(
-                                MaterialTheme.colorScheme.primaryContainer,
-                                MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                if (album.albumArtUriString != null) {
-                    AsyncImage(
-                        model = album.albumArtUri,
-                        contentDescription = album.title,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Icon(
-                        imageVector = AppIcons.album(iconPackStyle),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = album.title,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = "${album.songCount} треков",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary,
-                maxLines = 1
             )
         }
     }
