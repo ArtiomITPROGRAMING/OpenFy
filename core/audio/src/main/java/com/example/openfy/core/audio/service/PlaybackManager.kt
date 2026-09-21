@@ -150,7 +150,7 @@ class PlaybackManager private constructor(private val context: Context) {
 
         val audioSessionId = player.audioSessionId
         if (audioSessionId != C.AUDIO_SESSION_ID_UNSET && audioSessionId > 0) {
-            equalizerController.bindAudioSession(audioSessionId)
+            equalizerController.bindAudioSession(audioSessionId, player)
         }
 
         pendingPlayAction?.invoke()
@@ -159,10 +159,10 @@ class PlaybackManager private constructor(private val context: Context) {
 
     @OptIn(UnstableApi::class)
     fun rebindEqualizer() {
-        val player = exoPlayer ?: return
+        val player = getOrCreatePlayer()
         val sessionId = player.audioSessionId
         if (sessionId != C.AUDIO_SESSION_ID_UNSET && sessionId > 0) {
-            equalizerController.bindAudioSession(sessionId)
+            equalizerController.bindAudioSession(sessionId, player)
         }
     }
 
@@ -359,7 +359,7 @@ class PlaybackManager private constructor(private val context: Context) {
         player.prepare()
         val sid = player.audioSessionId
         if (sid != C.AUDIO_SESSION_ID_UNSET && sid > 0) {
-            equalizerController.bindAudioSession(sid)
+            equalizerController.bindAudioSession(sid, player)
         }
         player.play()
     }
@@ -729,8 +729,8 @@ class PlaybackManager private constructor(private val context: Context) {
 
         @OptIn(UnstableApi::class)
         override fun onAudioSessionIdChanged(audioSessionId: Int) {
-            if (audioSessionId != C.AUDIO_SESSION_ID_UNSET) {
-                equalizerController.bindAudioSession(audioSessionId)
+            if (audioSessionId != C.AUDIO_SESSION_ID_UNSET && audioSessionId > 0) {
+                equalizerController.bindAudioSession(audioSessionId, exoPlayer)
             }
         }
     }

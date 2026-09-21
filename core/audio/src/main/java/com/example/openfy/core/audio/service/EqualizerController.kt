@@ -23,13 +23,17 @@ import android.content.SharedPreferences
 import android.media.audiofx.AudioEffect
 import android.media.audiofx.BassBoost
 import android.media.audiofx.Equalizer
+import android.media.audiofx.LoudnessEnhancer
 import android.media.audiofx.PresetReverb
 import android.media.audiofx.Virtualizer
+import androidx.media3.common.AuxEffectInfo
+import androidx.media3.exoplayer.ExoPlayer
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.math.roundToInt
 
 data class BandInfo(
     val index: Short,
@@ -49,8 +53,10 @@ class EqualizerController(context: Context) {
     private var virtualizer: Virtualizer? = null
     private var bassBoost: BassBoost? = null
     private var presetReverb: PresetReverb? = null
+    private var loudnessEnhancer: LoudnessEnhancer? = null
 
     private var currentAudioSessionId: Int = 0
+    private var attachedPlayer: ExoPlayer? = null
 
     private val _isEnabled = MutableStateFlow(true)
     val isEnabled: StateFlow<Boolean> = _isEnabled.asStateFlow()
@@ -73,18 +79,53 @@ class EqualizerController(context: Context) {
     private val _reverbPreset = MutableStateFlow<Short>(PresetReverb.PRESET_NONE)
     val reverbPreset: StateFlow<Short> = _reverbPreset.asStateFlow()
 
+    private val _loudnessGainMb = MutableStateFlow(0)
+    val loudnessGainMb: StateFlow<Int> = _loudnessGainMb.asStateFlow()
+
+    // Calibrated 5-band gain curves (in mB: 100 mB = 1 dB)
+    private val tunedPresets = mapOf(
+        "Flat" to listOf(0, 0, 0, 0, 0),
+        "Бас" to listOf(600, 400, 100, 0, 0),
+        "Клуб" to listOf(700, 500, 0, 200, 300),
+        "Рок" to listOf(450, 200, -100, 250, 400),
+        "Поп" to listOf(-150, 200, 400, 200, -100),
+        "Электроника" to listOf(500, 350, 0, 300, 450),
+        "Вокал" to listOf(-200, 100, 500, 400, 200),
+        "Классика" to listOf(400, 250, -150, 250, 350),
+        "Джаз" to listOf(350, 150, -100, 150, 300),
+        "Акустика" to listOf(350, 250, 100, 250, 300),
+        "Хип-хоп" to listOf(600, 350, 0, 150, 300),
+        "Усиление ВЧ" to listOf(-200, 0, 150, 450, 700)
+    )
+
     init {
         _isEnabled.value = prefs.getBoolean(KEY_EQ_ENABLED, true)
+        _currentPreset.value = prefs.getString(KEY_CURRENT_PRESET, "Flat") ?: "Flat"
         _virtualizerStrength.value = prefs.getInt(KEY_VIRTUALIZER_STRENGTH, 0)
         _bassBoostStrength.value = prefs.getInt(KEY_BASS_BOOST_STRENGTH, 0)
         _reverbPreset.value = prefs.getInt(KEY_REVERB_PRESET, PresetReverb.PRESET_NONE.toInt()).toShort()
+        _loudnessGainMb.value = prefs.getInt(KEY_LOUDNESS_GAIN, 0)
+
+        // Initialize presets list
+        val presetList = mutableListOf<String>()
+        presetList.addAll(tunedPresets.keys)
+        presetList.add("Пользовательский")
+        _presets.value = presetList
+
         loadPresetsAndBands()
         restoreSavedBandLevels()
     }
 
-    fun bindAudioSession(audioSessionId: Int) {
+    fun bindAudioSession(audioSessionId: Int, player: ExoPlayer? = null) {
+        if (player != null) {
+            attachedPlayer = player
+        }
+
         if (audioSessionId <= 0) return
-        if (currentAudioSessionId == audioSessionId && equalizer != null) return
+        if (currentAudioSessionId == audioSessionId && equalizer != null) {
+            updatePlayerAuxEffect()
+            return
+        }
 
         release()
         currentAudioSessionId = audioSessionId
@@ -100,76 +141,75 @@ class EqualizerController(context: Context) {
             e.printStackTrace()
         }
 
+        // 1. Equalizer
         try {
-            equalizer = try {
-                Equalizer(1000, audioSessionId)
-            } catch (e: Exception) {
-                Equalizer(0, audioSessionId)
-            }.apply {
+            equalizer = Equalizer(0, audioSessionId).apply {
                 enabled = _isEnabled.value
             }
-
-            virtualizer = try {
-                Virtualizer(1000, audioSessionId).apply {
-                    if (strengthSupported) {
-                        setStrength(_virtualizerStrength.value.toShort())
-                    }
-                    enabled = _isEnabled.value
-                }
-            } catch (e: Exception) {
-                try {
-                    Virtualizer(0, audioSessionId).apply {
-                        if (strengthSupported) {
-                            setStrength(_virtualizerStrength.value.toShort())
-                        }
-                        enabled = _isEnabled.value
-                    }
-                } catch (e2: Exception) {
-                    null
-                }
-            }
-
-            bassBoost = try {
-                BassBoost(1000, audioSessionId).apply {
-                    if (strengthSupported) {
-                        setStrength(_bassBoostStrength.value.toShort())
-                    }
-                    enabled = _isEnabled.value
-                }
-            } catch (e: Exception) {
-                try {
-                    BassBoost(0, audioSessionId).apply {
-                        if (strengthSupported) {
-                            setStrength(_bassBoostStrength.value.toShort())
-                        }
-                        enabled = _isEnabled.value
-                    }
-                } catch (e2: Exception) {
-                    null
-                }
-            }
-
-            presetReverb = try {
-                PresetReverb(0, audioSessionId).apply {
-                    preset = _reverbPreset.value
-                    enabled = _isEnabled.value
-                }
-            } catch (e: Exception) {
-                null
-            }
-
-            loadPresetsAndBands()
-            restoreSavedBandLevels()
-
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+        // 2. Virtualizer (Spatial Audio)
+        try {
+            virtualizer = Virtualizer(0, audioSessionId).apply {
+                if (strengthSupported) {
+                    setStrength(_virtualizerStrength.value.toShort())
+                }
+                enabled = _isEnabled.value && _virtualizerStrength.value > 0
+            }
+        } catch (e: Exception) {
+            virtualizer = null
+        }
+
+        // 3. Bass Boost
+        try {
+            bassBoost = BassBoost(0, audioSessionId).apply {
+                if (strengthSupported) {
+                    setStrength(_bassBoostStrength.value.toShort())
+                }
+                enabled = _isEnabled.value && _bassBoostStrength.value > 0
+            }
+        } catch (e: Exception) {
+            bassBoost = null
+        }
+
+        // 4. Loudness Enhancer (Pre-Amp Volume Booster)
+        try {
+            loudnessEnhancer = LoudnessEnhancer(audioSessionId).apply {
+                setTargetGain(_loudnessGainMb.value)
+                enabled = _isEnabled.value && _loudnessGainMb.value > 0
+            }
+        } catch (e: Exception) {
+            loudnessEnhancer = null
+        }
+
+        // 5. Preset Reverb (Auxiliary Audio Effect)
+        try {
+            presetReverb = PresetReverb(0, 0).apply {
+                preset = _reverbPreset.value
+                enabled = _isEnabled.value && _reverbPreset.value != PresetReverb.PRESET_NONE
+            }
+        } catch (e: Exception) {
+            try {
+                presetReverb = PresetReverb(0, audioSessionId).apply {
+                    preset = _reverbPreset.value
+                    enabled = _isEnabled.value && _reverbPreset.value != PresetReverb.PRESET_NONE
+                }
+            } catch (e2: Exception) {
+                presetReverb = null
+            }
+        }
+
+        loadPresetsAndBands()
+        restoreSavedBandLevels()
+        updatePlayerAuxEffect()
     }
 
     private fun loadPresetsAndBands() {
         val eq = equalizer
         if (eq == null) {
-            // Default 5-band fallback for preview if audio session not yet started
+            // 5-band default fallback for preview when audio session is not yet active
             if (_bands.value.isEmpty()) {
                 val fallbackBands = listOf(
                     BandInfo(0, 60, -1500, 1500, 0),
@@ -180,48 +220,47 @@ class EqualizerController(context: Context) {
                 )
                 _bands.value = fallbackBands
             }
-            if (_presets.value.isEmpty()) {
-                _presets.value = listOf("Flat", "Bass Boost", "Vocal Crystal", "Rock", "Electronic", "Acoustic", "Custom")
-            }
             return
         }
 
-        val numBands = eq.numberOfBands
-        val minLevel = eq.bandLevelRange[0]
-        val maxLevel = eq.bandLevelRange[1]
+        try {
+            val numBands = eq.numberOfBands
+            val minLevel = eq.bandLevelRange[0]
+            val maxLevel = eq.bandLevelRange[1]
 
-        val bandList = mutableListOf<BandInfo>()
-        for (i in 0 until numBands) {
-            val bandIdx = i.toShort()
-            val centerFreq = eq.getCenterFreq(bandIdx) / 1000
-            val level = eq.getBandLevel(bandIdx)
-            bandList.add(
-                BandInfo(
-                    index = bandIdx,
-                    centerFreqHz = centerFreq,
-                    minLevelMb = minLevel,
-                    maxLevelMb = maxLevel,
-                    currentLevelMb = level
+            val bandList = mutableListOf<BandInfo>()
+            for (i in 0 until numBands) {
+                val bandIdx = i.toShort()
+                val centerFreq = eq.getCenterFreq(bandIdx) / 1000
+                val level = try { eq.getBandLevel(bandIdx) } catch (_: Exception) { 0.toShort() }
+                bandList.add(
+                    BandInfo(
+                        index = bandIdx,
+                        centerFreqHz = centerFreq,
+                        minLevelMb = minLevel,
+                        maxLevelMb = maxLevel,
+                        currentLevelMb = level
+                    )
                 )
-            )
-        }
-        _bands.value = bandList
-
-        // Presets
-        val presetNames = mutableListOf<String>()
-        presetNames.add("Flat")
-        for (p in 0 until eq.numberOfPresets) {
-            val pName = eq.getPresetName(p.toShort())
-            if (!presetNames.contains(pName)) {
-                presetNames.add(pName)
             }
+            _bands.value = bandList
+
+            // Combine built-in tuned presets with any hardware device presets
+            val presetNames = mutableListOf<String>()
+            presetNames.addAll(tunedPresets.keys)
+            for (p in 0 until eq.numberOfPresets) {
+                val pName = try { eq.getPresetName(p.toShort()) } catch (_: Exception) { null }
+                if (pName != null && !presetNames.contains(pName)) {
+                    presetNames.add(pName)
+                }
+            }
+            if (!presetNames.contains("Пользовательский")) {
+                presetNames.add("Пользовательский")
+            }
+            _presets.value = presetNames
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        val customPresets = listOf("Club Bass", "Vocal Crystal", "Electro Cyber", "Acoustic Warmth")
-        customPresets.forEach {
-            if (!presetNames.contains(it)) presetNames.add(it)
-        }
-        presetNames.add("Custom")
-        _presets.value = presetNames
     }
 
     private fun restoreSavedBandLevels() {
@@ -246,13 +285,17 @@ class EqualizerController(context: Context) {
         }
     }
 
-    fun setBandLevel(bandIndex: Short, levelMb: Short) {
+    fun setBandLevel(bandIndex: Short, levelMb: Short, fromUserSlider: Boolean = true) {
         try {
             equalizer?.setBandLevel(bandIndex, levelMb)
             _bands.value = _bands.value.map {
                 if (it.index == bandIndex) it.copy(currentLevelMb = levelMb) else it
             }
-            _currentPreset.value = "Custom"
+
+            if (fromUserSlider) {
+                _currentPreset.value = "Пользовательский"
+                prefs.edit().putString(KEY_CURRENT_PRESET, "Пользовательский").apply()
+            }
 
             val map = _bands.value.associate { it.index to it.currentLevelMb }
             prefs.edit().putString(KEY_BAND_LEVELS, gson.toJson(map)).apply()
@@ -262,53 +305,56 @@ class EqualizerController(context: Context) {
     }
 
     fun resetToFlat() {
-        _bands.value.forEach { band ->
-            setBandLevel(band.index, 0)
+        val current = _bands.value
+        current.forEach { band ->
+            setBandLevel(band.index, 0, fromUserSlider = false)
         }
+        setBassBoostStrength(0)
+        setVirtualizerStrength(0)
         _currentPreset.value = "Flat"
+        prefs.edit().putString(KEY_CURRENT_PRESET, "Flat").apply()
     }
 
     fun usePreset(presetName: String) {
         _currentPreset.value = presetName
+        prefs.edit().putString(KEY_CURRENT_PRESET, presetName).apply()
 
         if (presetName.equals("Flat", ignoreCase = true)) {
             resetToFlat()
             return
         }
 
-        // Custom built-in tuned presets
-        when (presetName) {
-            "Club Bass" -> {
-                applyCustomGainMap(listOf(500, 350, 0, 100, 200))
-                setBassBoostStrength(650)
-                return
+        // 1. Check calibrated tuned presets
+        val customCurve = tunedPresets[presetName]
+        if (customCurve != null) {
+            applyCustomGainMap(customCurve)
+            if (presetName == "Бас") {
+                setBassBoostStrength(600)
+            } else if (presetName == "Клуб") {
+                setBassBoostStrength(750)
+            } else if (presetName == "Вокал") {
+                setVirtualizerStrength(350)
+            } else if (presetName == "Электроника") {
+                setVirtualizerStrength(450)
             }
-            "Vocal Crystal" -> {
-                applyCustomGainMap(listOf(-200, 100, 450, 350, 200))
-                setVirtualizerStrength(300)
-                return
-            }
-            "Electro Cyber" -> {
-                applyCustomGainMap(listOf(450, 200, -100, 300, 500))
-                setVirtualizerStrength(500)
-                return
-            }
-            "Acoustic Warmth" -> {
-                applyCustomGainMap(listOf(200, 300, 200, 100, -100))
-                return
-            }
+            return
         }
 
+        // 2. Check hardware device presets
         val eq = equalizer ?: return
-        for (p in 0 until eq.numberOfPresets) {
-            val name = eq.getPresetName(p.toShort())
-            if (name.equals(presetName, ignoreCase = true)) {
-                eq.usePreset(p.toShort())
-                loadPresetsAndBands()
-                val map = _bands.value.associate { it.index to it.currentLevelMb }
-                prefs.edit().putString(KEY_BAND_LEVELS, gson.toJson(map)).apply()
-                break
+        try {
+            for (p in 0 until eq.numberOfPresets) {
+                val name = eq.getPresetName(p.toShort())
+                if (name.equals(presetName, ignoreCase = true)) {
+                    eq.usePreset(p.toShort())
+                    loadPresetsAndBands()
+                    val map = _bands.value.associate { it.index to it.currentLevelMb }
+                    prefs.edit().putString(KEY_BAND_LEVELS, gson.toJson(map)).apply()
+                    break
+                }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -317,7 +363,7 @@ class EqualizerController(context: Context) {
         for (i in current.indices) {
             val gain = if (i < gainsMb.size) gainsMb[i].toShort() else (0).toShort()
             val clamped = gain.coerceIn(current[i].minLevelMb, current[i].maxLevelMb)
-            setBandLevel(current[i].index, clamped)
+            setBandLevel(current[i].index, clamped, fromUserSlider = false)
         }
     }
 
@@ -325,21 +371,24 @@ class EqualizerController(context: Context) {
         _isEnabled.value = enabled
         prefs.edit().putBoolean(KEY_EQ_ENABLED, enabled).apply()
         equalizer?.enabled = enabled
-        virtualizer?.enabled = enabled
-        bassBoost?.enabled = enabled
-        presetReverb?.enabled = enabled
+        virtualizer?.enabled = enabled && _virtualizerStrength.value > 0
+        bassBoost?.enabled = enabled && _bassBoostStrength.value > 0
+        loudnessEnhancer?.enabled = enabled && _loudnessGainMb.value > 0
+        presetReverb?.enabled = enabled && _reverbPreset.value != PresetReverb.PRESET_NONE
+        updatePlayerAuxEffect()
     }
 
     fun setVirtualizerStrength(strength: Int) {
         _virtualizerStrength.value = strength
         prefs.edit().putInt(KEY_VIRTUALIZER_STRENGTH, strength).apply()
         virtualizer?.let {
-            if (it.strengthSupported) {
-                try {
+            try {
+                it.enabled = _isEnabled.value && strength > 0
+                if (it.strengthSupported) {
                     it.setStrength(strength.toShort())
-                } catch (e: Exception) {
-                    // Ignore
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -348,12 +397,26 @@ class EqualizerController(context: Context) {
         _bassBoostStrength.value = strength
         prefs.edit().putInt(KEY_BASS_BOOST_STRENGTH, strength).apply()
         bassBoost?.let {
-            if (it.strengthSupported) {
-                try {
+            try {
+                it.enabled = _isEnabled.value && strength > 0
+                if (it.strengthSupported) {
                     it.setStrength(strength.toShort())
-                } catch (e: Exception) {
-                    // Ignore
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun setLoudnessGain(gainMb: Int) {
+        _loudnessGainMb.value = gainMb
+        prefs.edit().putInt(KEY_LOUDNESS_GAIN, gainMb).apply()
+        loudnessEnhancer?.let {
+            try {
+                it.setTargetGain(gainMb)
+                it.enabled = _isEnabled.value && gainMb > 0
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -364,9 +427,25 @@ class EqualizerController(context: Context) {
         presetReverb?.let {
             try {
                 it.preset = preset
+                it.enabled = _isEnabled.value && preset != PresetReverb.PRESET_NONE
             } catch (e: Exception) {
-                // Ignore
+                e.printStackTrace()
             }
+        }
+        updatePlayerAuxEffect()
+    }
+
+    private fun updatePlayerAuxEffect() {
+        val player = attachedPlayer ?: return
+        val reverb = presetReverb
+        try {
+            if (_isEnabled.value && reverb != null && _reverbPreset.value != PresetReverb.PRESET_NONE) {
+                player.setAuxEffectInfo(AuxEffectInfo(reverb.id, 1.0f))
+            } else {
+                player.setAuxEffectInfo(AuxEffectInfo(AuxEffectInfo.NO_AUX_EFFECT_ID, 0f))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -391,6 +470,8 @@ class EqualizerController(context: Context) {
             bassBoost = null
             presetReverb?.release()
             presetReverb = null
+            loudnessEnhancer?.release()
+            loudnessEnhancer = null
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -398,9 +479,11 @@ class EqualizerController(context: Context) {
 
     companion object {
         private const val KEY_EQ_ENABLED = "eq_enabled"
+        private const val KEY_CURRENT_PRESET = "eq_current_preset"
         private const val KEY_BAND_LEVELS = "eq_band_levels"
         private const val KEY_VIRTUALIZER_STRENGTH = "eq_virtualizer"
         private const val KEY_BASS_BOOST_STRENGTH = "eq_bass_boost"
         private const val KEY_REVERB_PRESET = "eq_reverb"
+        private const val KEY_LOUDNESS_GAIN = "eq_loudness_gain"
     }
 }

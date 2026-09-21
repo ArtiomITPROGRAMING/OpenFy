@@ -47,6 +47,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.SpeakerGroup
@@ -113,6 +114,7 @@ fun EqualizerScreen(
     val currentPreset by eqController.currentPreset.collectAsState()
     val virtualizerStrength by eqController.virtualizerStrength.collectAsState()
     val bassBoostStrength by eqController.bassBoostStrength.collectAsState()
+    val loudnessGainMb by eqController.loudnessGainMb.collectAsState()
     val reverbPreset by eqController.reverbPreset.collectAsState()
     val isPlaying by playbackManager.isPlaying.collectAsState()
     val themeStyle by playbackManager.settingsRepository.themeStyle.collectAsState()
@@ -524,6 +526,65 @@ fun EqualizerScreen(
                         colors = SliderDefaults.colors(
                             thumbColor = if (themeStyle == AppThemeStyle.SERIOUS_DARK) Color.White else accentColor,
                             activeTrackColor = if (themeStyle == AppThemeStyle.SERIOUS_DARK) Color.White else accentColor,
+                            inactiveTrackColor = sliderTrackInactive
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // ==========================================
+            // 6. LOUDNESS ENHANCER (Volume Booster)
+            // ==========================================
+            GlassCard(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                backgroundColor = cardBgColor,
+                hasGlowBorder = themeStyle.hasNeonGlow,
+                glowColor = primaryColor.copy(alpha = 0.25f)
+            ) {
+                Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                                contentDescription = null,
+                                tint = primaryColor,
+                                modifier = Modifier.size(22.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "Усилитель громкости (Loudness)",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+
+                        val gainDb = loudnessGainMb / 100f
+                        Text(
+                            text = if (gainDb > 0f) "+${"%.1f".format(gainDb)} dB" else "Выкл",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = primaryColor
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Slider(
+                        value = loudnessGainMb.toFloat(),
+                        onValueChange = { eqController.setLoudnessGain(it.toInt()) },
+                        valueRange = 0f..1200f,
+                        enabled = isEnabled,
+                        colors = SliderDefaults.colors(
+                            thumbColor = primaryColor,
+                            activeTrackColor = primaryColor,
                             inactiveTrackColor = sliderTrackInactive
                         )
                     )
