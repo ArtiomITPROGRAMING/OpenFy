@@ -160,7 +160,7 @@ fun NowPlayingScreen(
     playbackManager: PlaybackManager,
     onDismiss: () -> Unit,
     onNavigateToEqualizer: () -> Unit,
-    onNavigateToLyrics: () -> Unit,
+    onNavigateToStudio: () -> Unit,
     onNavigateToCarMode: () -> Unit = {}
 ) {
     val currentSong by playbackManager.currentSong.collectAsState()
@@ -879,11 +879,11 @@ fun NowPlayingScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     PlayerDockItem(
-                        icon = AppIcons.lyrics(iconPackStyle),
-                        label = "Текст",
+                        icon = Icons.Default.Tune,
+                        label = "Студия",
                         isActive = false,
                         accentColor = primaryAccent,
-                        onClick = onNavigateToLyrics
+                        onClick = onNavigateToStudio
                     )
 
                     PlayerDockItem(

@@ -89,52 +89,87 @@ object MoodClassifier {
         val pathLower = song.path.lowercase(Locale.ROOT)
         val combined = "$titleLower $artistLower $albumLower $pathLower"
 
-        var valence = 0f
-        var energy = 0f
+        // Default base is warm and pleasant
+        var valence = 0.20f
+        var energy = 0.05f
+        var matchedAggressive = false
 
-        // 1. High Energy & Dark Keywords
-        if (combined.contains("metal") || combined.contains("rock") || combined.contains("phonk") ||
-            combined.contains("drill") || combined.contains("trap") || combined.contains("dark") ||
-            combined.contains("rage") || combined.contains("fight") || combined.contains("blood")
-        ) {
-            energy += 0.55f
-            valence -= 0.45f
+        // 1. High Energy & Aggressive / Brutal / Heavy Metal / Phonk / Drill
+        // Strictly requires explicit markers of heavy, aggressive or dark sound
+        val aggressiveKeywords = listOf(
+            "metal", "deathcore", "death metal", "black metal", "thrash", "hardcore",
+            "phonk", "drill", "dark trap", "rage", "blood", "death", "kill", "scream",
+            "brutal", "war", "battle", "fight", "hate", "fury", "demon", "hell",
+            "doom", "destruction", "aggro", "industrial", "hard rock", "heavy rock",
+            "ярость", "метал", "фонк", "битва", "кровь", "смерть", "бунт"
+        )
+        if (aggressiveKeywords.any { combined.contains(it) }) {
+            energy += 0.60f
+            valence -= 0.65f
+            matchedAggressive = true
         }
 
-        // 2. High Energy & Bright Keywords
-        if (combined.contains("pop") || combined.contains("dance") || combined.contains("edm") ||
-            combined.contains("party") || combined.contains("summer") || combined.contains("disco") ||
-            combined.contains("happy") || combined.contains("sun") || combined.contains("joy")
-        ) {
-            energy += 0.50f
-            valence += 0.55f
-        }
-
-        // 3. Low Energy & Dark / Melancholic Keywords
-        if (combined.contains("sad") || combined.contains("tears") || combined.contains("cry") ||
-            combined.contains("rain") || combined.contains("lonely") || combined.contains("night") ||
-            combined.contains("slow") || combined.contains("ballad") || combined.contains("acoustic")
-        ) {
-            energy -= 0.45f
-            valence -= 0.40f
-        }
-
-        // 4. Low Energy & Warm / Chill Keywords
-        if (combined.contains("chill") || combined.contains("relax") || combined.contains("jazz") ||
-            combined.contains("soul") || combined.contains("lofi") || combined.contains("ambient") ||
-            combined.contains("lounge") || combined.contains("calm") || combined.contains("breeze")
-        ) {
-            energy -= 0.50f
+        // 2. Romantic, Melodic, Vocal, Love & Soul (e.g. "Did I Tell You")
+        val melodicLoveKeywords = listOf(
+            "tell", "you", "did", "love", "heart", "baby", "girl", "boy", "feel",
+            "kiss", "dream", "sweet", "smile", "forever", "together", "mine", "care",
+            "hold", "eyes", "life", "touch", "angel", "darling", "honey", "dear",
+            "miss", "remember", "wish", "true", "passion", "romance", "acoustic",
+            "piano", "guitar", "ballad", "vocal", "soul", "r&b",
+            "любовь", "сердце", "нежность", "милая", "вместе", "душа", "тебя", "меня"
+        )
+        if (melodicLoveKeywords.any { combined.contains(it) }) {
             valence += 0.40f
+            energy -= 0.15f
         }
 
-        // 5. Deterministic subtle dispersion based on song ID and title hash
+        // 3. High Energy & Bright / Pop / Dance / EDM
+        val brightKeywords = listOf(
+            "pop", "dance", "edm", "party", "summer", "disco", "happy", "sun", "joy",
+            "shine", "fun", "celebrate", "holiday", "club", "upbeat", "good vibes",
+            "electronic", "house", "electro", "лето", "танцы", "праздник", "радость", "солнце"
+        )
+        if (brightKeywords.any { combined.contains(it) }) {
+            energy += 0.50f
+            valence += 0.45f
+        }
+
+        // 4. Low Energy & Sad / Melancholic / Ballad
+        val melancholicKeywords = listOf(
+            "sad", "tears", "cry", "crying", "rain", "lonely", "alone", "night",
+            "slow", "ballad", "sorrow", "grief", "pain", "hurt", "broken", "empty",
+            "lost", "goodbye", "melancholy", "depress",
+            "грусть", "слёзы", "печаль", "дождь", "один", "ночь", "прощай"
+        )
+        if (melancholicKeywords.any { combined.contains(it) }) {
+            energy -= 0.45f
+            valence -= 0.50f
+        }
+
+        // 5. Low Energy & Warm / Chill / Jazz / Ambient
+        val chillKeywords = listOf(
+            "chill", "relax", "jazz", "lofi", "lo-fi", "ambient", "lounge", "calm",
+            "breeze", "peace", "sleep", "smooth", "coffee", "cozy", "reggae", "chillout",
+            "джаз", "чилл", "спокойствие", "уют", "релакс"
+        )
+        if (chillKeywords.any { combined.contains(it) }) {
+            energy -= 0.50f
+            valence += 0.35f
+        }
+
+        // 6. Subtle deterministic dispersion based on song ID and title hash (only +/- 0.05f)
         val hash = (song.id.hashCode() xor song.title.hashCode())
-        val hashValenceOffset = ((hash % 100).toFloat() / 250f) // -0.4f..+0.4f
-        val hashEnergyOffset = (((hash / 100) % 100).toFloat() / 250f)
+        val hashValenceOffset = ((hash % 100).toFloat() / 2000f) // -0.05f .. +0.05f
+        val hashEnergyOffset = (((hash / 100) % 100).toFloat() / 2000f)
 
         valence = (valence + hashValenceOffset).coerceIn(-1.0f, 1.0f)
         energy = (energy + hashEnergyOffset).coerceIn(-1.0f, 1.0f)
+
+        // Safety guarantee: Never classify into REBEL_AGGRESSION unless explicitly matched
+        if (!matchedAggressive && valence < 0f && energy >= 0f) {
+            // Shift towards Warmth/Chill or Euphoria
+            valence = 0.15f
+        }
 
         return MoodPoint(valence, energy)
     }

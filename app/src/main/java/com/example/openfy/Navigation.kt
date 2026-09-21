@@ -38,7 +38,7 @@ import com.example.openfy.core.audio.service.PlaybackManager
 import com.example.openfy.core.ui.components.CarModePlayerScreen
 import com.example.openfy.ui.screens.DuplicateCleanerScreen
 import com.example.openfy.ui.screens.EqualizerScreen
-import com.example.openfy.ui.screens.LyricsScreen
+import com.example.openfy.ui.screens.StudioFxScreen
 import com.example.openfy.ui.screens.MainScreenWithBottomNav
 import com.example.openfy.ui.screens.NowPlayingScreen
 import com.example.openfy.ui.screens.PlaylistDetailScreen
@@ -149,7 +149,7 @@ fun MainNavigation(
                     playbackManager = playbackManager,
                     onDismiss = { backStack.removeLastOrNull() },
                     onNavigateToEqualizer = { backStack.add(EqualizerKey) },
-                    onNavigateToLyrics = { backStack.add(LyricsKey) },
+                    onNavigateToStudio = { backStack.add(StudioFxKey) },
                     onNavigateToCarMode = { backStack.add(CarModeKey) }
                 )
             }
@@ -168,8 +168,8 @@ fun MainNavigation(
                     onBack = { backStack.removeLastOrNull() }
                 )
             }
-            entry<LyricsKey> {
-                LyricsScreen(
+            entry<StudioFxKey> {
+                StudioFxScreen(
                     playbackManager = playbackManager,
                     onBack = { backStack.removeLastOrNull() }
                 )

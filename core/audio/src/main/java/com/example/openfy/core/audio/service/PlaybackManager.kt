@@ -102,6 +102,12 @@ class PlaybackManager private constructor(private val context: Context) {
     private val _pitch = MutableStateFlow(1.0f)
     val pitch: StateFlow<Float> = _pitch.asStateFlow()
 
+    private val _abLoopStartMs = MutableStateFlow<Long?>(null)
+    val abLoopStartMs: StateFlow<Long?> = _abLoopStartMs.asStateFlow()
+
+    private val _abLoopEndMs = MutableStateFlow<Long?>(null)
+    val abLoopEndMs: StateFlow<Long?> = _abLoopEndMs.asStateFlow()
+
     private val _sleepTimerSecondsLeft = MutableStateFlow<Int?>(null)
     val sleepTimerSecondsLeft: StateFlow<Int?> = _sleepTimerSecondsLeft.asStateFlow()
     private var sleepTimerJob: Job? = null
@@ -120,6 +126,13 @@ class PlaybackManager private constructor(private val context: Context) {
                     _currentPositionMs.value = pos
                     if (dur > 0 && _durationMs.value != dur) {
                         _durationMs.value = dur
+                    }
+
+                    // A-B loop check
+                    val loopStart = _abLoopStartMs.value
+                    val loopEnd = _abLoopEndMs.value
+                    if (loopStart != null && loopEnd != null && loopEnd > loopStart && pos >= loopEnd) {
+                        player.seekTo(loopStart)
                     }
 
                     // Smooth fade out in the last 4 seconds if stopping after current track
@@ -143,6 +156,43 @@ class PlaybackManager private constructor(private val context: Context) {
             }
             handler.postDelayed(this, 200)
         }
+    }
+
+    fun setPlaybackParameters(speed: Float = _speed.value, pitch: Float = _pitch.value) {
+        val safeSpeed = speed.coerceIn(0.25f, 2.5f)
+        val safePitch = pitch.coerceIn(0.5f, 2.0f)
+        _speed.value = safeSpeed
+        _pitch.value = safePitch
+        exoPlayer?.playbackParameters = PlaybackParameters(safeSpeed, safePitch)
+    }
+
+    fun setSpeed(speed: Float) {
+        setPlaybackParameters(speed = speed, pitch = _pitch.value)
+    }
+
+    fun setPitch(pitch: Float) {
+        setPlaybackParameters(speed = _speed.value, pitch = pitch)
+    }
+
+    fun resetPlaybackParameters() {
+        setPlaybackParameters(1.0f, 1.0f)
+    }
+
+    fun setPointA() {
+        _abLoopStartMs.value = _currentPositionMs.value
+    }
+
+    fun setPointB() {
+        val start = _abLoopStartMs.value ?: 0L
+        val current = _currentPositionMs.value
+        if (current > start) {
+            _abLoopEndMs.value = current
+        }
+    }
+
+    fun clearABLoop() {
+        _abLoopStartMs.value = null
+        _abLoopEndMs.value = null
     }
 
     init {
