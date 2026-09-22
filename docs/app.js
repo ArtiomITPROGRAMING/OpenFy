@@ -1035,8 +1035,9 @@ function setupThemeStudio() {
     const themeJson = generateThemeJsonContent();
     const id = themeJson.id;
     const author = themeJson.author;
-    const deepLink = `openfy://theme/install?id=${encodeURIComponent(id)}&creator=${encodeURIComponent(author)}&apply=true`;
-    openQrModal(`Тема «${themeJson.name}»`, id, deepLink);
+    const jsonStr = JSON.stringify(themeJson);
+    const deepLink = `openfy://theme/install?id=${encodeURIComponent(id)}&creator=${encodeURIComponent(author)}&data=${encodeURIComponent(jsonStr)}&apply=true`;
+    openQrModal(`Тема «${themeJson.name}» (100% Офлайн)`, id, deepLink);
   };
 
   // Install in OpenFy directly from Studio

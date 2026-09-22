@@ -170,6 +170,7 @@ class MainActivity : ComponentActivity() {
             val themeId = uri.getQueryParameter("id") ?: ""
             val downloadUrl = uri.getQueryParameter("url") ?: ""
             val creator = uri.getQueryParameter("creator") ?: ""
+            val dataParam = uri.getQueryParameter("data") ?: ""
             val applyTheme = uri.getBooleanQueryParameter("apply", true)
 
             val playbackManager = (application as OpenFyApp).playbackManager
@@ -186,7 +187,18 @@ class MainActivity : ComponentActivity() {
             }
 
             lifecycleScope.launch {
-                val result = if (downloadUrl.isNotBlank()) {
+                val result = if (dataParam.isNotBlank()) {
+                    try {
+                        val jsonStr = if (dataParam.startsWith("{")) dataParam else java.net.URLDecoder.decode(dataParam, "UTF-8")
+                        val meta = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }.decodeFromString<com.example.openfy.features.themes.model.ThemeMetadata>(jsonStr)
+                        val targetDir = com.example.openfy.features.themes.engine.ThemeEngine.getThemesDirectory(this@MainActivity)
+                        val themeFolder = java.io.File(targetDir, meta.id).apply { mkdirs() }
+                        java.io.File(themeFolder, com.example.openfy.features.themes.engine.ThemeParser.THEME_CONFIG_FILE).writeText(jsonStr)
+                        Result.success(meta)
+                    } catch (e: Exception) {
+                        Result.failure(e)
+                    }
+                } else if (downloadUrl.isNotBlank()) {
                     com.example.openfy.features.themes.engine.ThemeCatalogRepository.downloadAndInstallThemeFromUrl(
                         context = this@MainActivity,
                         settingsRepository = settingsRepo,

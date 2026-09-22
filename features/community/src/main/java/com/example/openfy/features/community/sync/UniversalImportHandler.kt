@@ -91,12 +91,29 @@ object UniversalImportHandler {
                 return@withContext processPayloadString(context, fileContent, playlistRepository, themeManager)
             }
 
-            // 2. Try OpenFy theme install deep link: openfy://theme/install?id=...&url=...&creator=...&apply=true
+            // 2. Try OpenFy theme install deep link: openfy://theme/install?id=...&url=...&creator=...&data=...&apply=true
             if (cleanInput.startsWith("openfy://theme/install")) {
                 val uri = Uri.parse(cleanInput)
                 val themeId = uri.getQueryParameter("id") ?: ""
                 val downloadUrl = uri.getQueryParameter("url") ?: ""
+                val dataParam = uri.getQueryParameter("data") ?: ""
                 val applyTheme = uri.getBooleanQueryParameter("apply", true)
+
+                // If theme configuration is embedded directly into QR link, install 100% OFFLINE without network
+                if (dataParam.isNotBlank()) {
+                    try {
+                        val decodedJson = if (dataParam.startsWith("{")) dataParam else java.net.URLDecoder.decode(dataParam, "UTF-8")
+                        val metadata = json.decodeFromString<ThemeMetadata>(decodedJson)
+                        val targetDir = ThemeEngine.getThemesDirectory(context)
+                        val themeFolder = java.io.File(targetDir, metadata.id).apply { mkdirs() }
+                        java.io.File(themeFolder, ThemeParser.THEME_CONFIG_FILE).writeText(decodedJson)
+                        themeManager?.refreshInstalledThemes()
+                        if (applyTheme) {
+                            themeManager?.applyTheme(metadata.id)
+                        }
+                        return@withContext Result.success(ImportResult.ThemeImported(metadata.name, metadata.id))
+                    } catch (_: Exception) {}
+                }
 
                 if (effectiveSettings != null) {
                     val installResult = if (downloadUrl.isNotBlank()) {
