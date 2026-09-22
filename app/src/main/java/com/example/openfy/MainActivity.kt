@@ -44,6 +44,8 @@ import com.example.openfy.features.community.ui.ProfileViewModel
 import com.example.openfy.features.themes.engine.ThemeEngine
 import kotlinx.coroutines.launch
 
+import com.example.openfy.ui.components.NetworkConsentBottomSheet
+
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 
@@ -76,6 +78,7 @@ class MainActivity : ComponentActivity() {
             val windowSizeClass = calculateWindowSizeClass(this)
             val themeStyle by playbackManager.settingsRepository.themeStyle.collectAsState()
             val customThemeId by playbackManager.settingsRepository.customThemeId.collectAsState()
+            val networkConsentPromptShown by playbackManager.settingsRepository.networkConsentPromptShown.collectAsState()
             val context = LocalContext.current
 
             val customColorScheme = remember(customThemeId) {
@@ -97,6 +100,20 @@ class MainActivity : ComponentActivity() {
                         profileViewModel = profileViewModel,
                         windowWidthSizeClass = windowSizeClass.widthSizeClass
                     )
+
+                    if (!networkConsentPromptShown) {
+                        NetworkConsentBottomSheet(
+                            onAccept = {
+                                playbackManager.settingsRepository.setNetworkConsent(true)
+                            },
+                            onDecline = {
+                                playbackManager.settingsRepository.setNetworkConsent(false)
+                            },
+                            onDismissRequest = {
+                                playbackManager.settingsRepository.setNetworkConsent(false)
+                            }
+                        )
+                    }
                 }
             }
         }

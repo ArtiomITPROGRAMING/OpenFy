@@ -59,6 +59,7 @@ import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.VerifiedUser
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilterChip
@@ -1397,6 +1398,108 @@ fun SettingsScreen(
                                             }
                                         }
                                     }
+                                }
+                            }
+
+                            // 5. Network & Wi-Fi Permissions Info Card
+                            item {
+                                val networkConsentGranted by settingsRepo.networkConsentGranted.collectAsState()
+                                var showConsentSheet by remember { mutableStateOf(false) }
+
+                                GlassCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(18.dp),
+                                    backgroundColor = cardBg
+                                ) {
+                                    Column(modifier = Modifier.padding(16.dp)) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.weight(1f),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(40.dp)
+                                                        .clip(CircleShape)
+                                                        .background(primaryAccent.copy(alpha = 0.15f)),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Wifi,
+                                                        contentDescription = null,
+                                                        tint = primaryAccent,
+                                                        modifier = Modifier.size(22.dp)
+                                                    )
+                                                }
+                                                Spacer(modifier = Modifier.width(12.dp))
+                                                Column {
+                                                    Text(
+                                                        text = "Сетевые функции и Wi-Fi P2P",
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        color = MaterialTheme.colorScheme.onSurface
+                                                    )
+                                                    Text(
+                                                        text = if (networkConsentGranted) "Разрешено: P2P, каталог тем, радио" else "Ограничено: 100% строгий офлайн",
+                                                        style = MaterialTheme.typography.bodySmall,
+                                                        color = if (networkConsentGranted) primaryAccent else MaterialTheme.colorScheme.onSurfaceVariant
+                                                    )
+                                                }
+                                            }
+
+                                            Switch(
+                                                checked = networkConsentGranted,
+                                                onCheckedChange = { settingsRepo.setNetworkConsent(it) },
+                                                colors = SwitchDefaults.colors(
+                                                    checkedThumbColor = if (currentTheme == AppThemeStyle.SERIOUS_DARK) Color.Black else Color.White,
+                                                    checkedTrackColor = primaryAccent
+                                                )
+                                            )
+                                        }
+
+                                        Spacer(modifier = Modifier.height(10.dp))
+
+                                        OutlinedButton(
+                                            onClick = { showConsentSheet = true },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(12.dp),
+                                            border = androidx.compose.foundation.BorderStroke(1.dp, primaryAccent.copy(alpha = 0.3f))
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Info,
+                                                contentDescription = null,
+                                                tint = primaryAccent,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(
+                                                text = "Зачем офлайн-плееру сеть и Wi-Fi?",
+                                                color = primaryAccent,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                fontWeight = FontWeight.Medium
+                                            )
+                                        }
+                                    }
+                                }
+
+                                if (showConsentSheet) {
+                                    com.example.openfy.ui.components.NetworkConsentBottomSheet(
+                                        onAccept = {
+                                            settingsRepo.setNetworkConsent(true)
+                                            showConsentSheet = false
+                                        },
+                                        onDecline = {
+                                            settingsRepo.setNetworkConsent(false)
+                                            showConsentSheet = false
+                                        },
+                                        onDismissRequest = {
+                                            showConsentSheet = false
+                                        }
+                                    )
                                 }
                             }
                         }

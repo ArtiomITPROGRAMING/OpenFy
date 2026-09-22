@@ -235,6 +235,12 @@ class SettingsRepository(context: Context) {
     private val _isOnboardingCompleted = MutableStateFlow(false)
     val isOnboardingCompleted: StateFlow<Boolean> = _isOnboardingCompleted.asStateFlow()
 
+    private val _networkConsentGranted = MutableStateFlow(false)
+    val networkConsentGranted: StateFlow<Boolean> = _networkConsentGranted.asStateFlow()
+
+    private val _networkConsentPromptShown = MutableStateFlow(false)
+    val networkConsentPromptShown: StateFlow<Boolean> = _networkConsentPromptShown.asStateFlow()
+
     init {
         loadSettings()
     }
@@ -279,6 +285,22 @@ class SettingsRepository(context: Context) {
         _djModeEnabled.value = prefs.getBoolean(KEY_DJ_MODE_ENABLED, false)
         _djTransitionDurationSec.value = prefs.getInt(KEY_DJ_TRANSITION_DURATION, 5)
         _isOnboardingCompleted.value = prefs.getBoolean(KEY_ONBOARDING_COMPLETED, false)
+        _networkConsentGranted.value = prefs.getBoolean(KEY_NETWORK_CONSENT_GRANTED, false)
+        _networkConsentPromptShown.value = prefs.getBoolean(KEY_NETWORK_CONSENT_PROMPT_SHOWN, false)
+    }
+
+    fun setNetworkConsent(granted: Boolean) {
+        _networkConsentGranted.value = granted
+        _networkConsentPromptShown.value = true
+        prefs.edit()
+            .putBoolean(KEY_NETWORK_CONSENT_GRANTED, granted)
+            .putBoolean(KEY_NETWORK_CONSENT_PROMPT_SHOWN, true)
+            .apply()
+    }
+
+    fun resetNetworkConsentPrompt() {
+        _networkConsentPromptShown.value = false
+        prefs.edit().putBoolean(KEY_NETWORK_CONSENT_PROMPT_SHOWN, false).apply()
     }
 
     fun setDjModeEnabled(enabled: Boolean) {
@@ -432,5 +454,7 @@ class SettingsRepository(context: Context) {
         private const val KEY_DJ_MODE_ENABLED = "dj_mode_enabled"
         private const val KEY_DJ_TRANSITION_DURATION = "dj_transition_duration"
         private const val KEY_ONBOARDING_COMPLETED = "is_onboarding_completed"
+        private const val KEY_NETWORK_CONSENT_GRANTED = "network_consent_granted"
+        private const val KEY_NETWORK_CONSENT_PROMPT_SHOWN = "network_consent_prompt_shown"
     }
 }
