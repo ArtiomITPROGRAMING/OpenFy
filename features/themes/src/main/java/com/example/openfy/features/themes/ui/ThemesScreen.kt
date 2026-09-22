@@ -310,11 +310,12 @@ fun ThemesScreen(
 
                         TextButton(
                             onClick = {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(ThemeCatalogRepository.GITHUB_PAGES_SHOWCASE_URL))
+                                val syncUrl = ThemeCatalogRepository.getWebShowcaseSyncUrl(context)
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(syncUrl))
                                 try {
                                     context.startActivity(intent)
                                 } catch (_: Exception) {
-                                    Toast.makeText(context, "Ссылка: ${ThemeCatalogRepository.GITHUB_PAGES_SHOWCASE_URL}", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(context, "Ссылка: $syncUrl", Toast.LENGTH_LONG).show()
                                 }
                             },
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)

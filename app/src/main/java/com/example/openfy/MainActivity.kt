@@ -169,10 +169,21 @@ class MainActivity : ComponentActivity() {
             // 3. Handle theme installation deep link: openfy://theme/install?id=...&url=...
             val themeId = uri.getQueryParameter("id") ?: ""
             val downloadUrl = uri.getQueryParameter("url") ?: ""
+            val creator = uri.getQueryParameter("creator") ?: ""
             val applyTheme = uri.getBooleanQueryParameter("apply", true)
 
             val playbackManager = (application as OpenFyApp).playbackManager
             val settingsRepo = playbackManager.settingsRepository
+
+            val currentProfile = authStorage.getProfile()
+            val currentUsername = currentProfile?.displayName ?: ""
+            if (creator.isNotBlank() && currentUsername.isNotBlank() && !creator.equals(currentUsername, ignoreCase = true)) {
+                android.widget.Toast.makeText(
+                    this@MainActivity,
+                    "Установка темы от @$creator (ваш профиль: @$currentUsername)",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
+            }
 
             lifecycleScope.launch {
                 val result = if (downloadUrl.isNotBlank()) {

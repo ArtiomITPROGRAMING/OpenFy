@@ -28,5 +28,10 @@ data class ThemeMetadata(
     val minAppVersion: Int = 1,
     val isDark: Boolean = true,
     val description: String = "",
-    val previewAccentHex: String? = null
+    val previewAccentHex: String? = null,
+    val backgroundStyle: String = "SOLID",
+    val fontFamily: String = "OUTFIT",
+    val iconStyle: String = "ROUNDED",
+    val playerLayout: String = "VINYL_DISC",
+    val creatorProfile: String? = null
 )

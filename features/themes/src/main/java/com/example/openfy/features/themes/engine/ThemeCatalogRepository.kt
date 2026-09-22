@@ -57,6 +57,47 @@ object ThemeCatalogRepository {
     }
 
     /**
+     * Builds a URL with profile synchronization parameters to automatically authenticate
+     * the user on the GitHub Pages showcase with their in-app OpenFy account.
+     */
+    fun getWebShowcaseSyncUrl(context: Context): String {
+        try {
+            // Check fallback or standard prefs
+            val prefs = context.getSharedPreferences("openfy_community_auth_secure_fallback", Context.MODE_PRIVATE)
+            val profileJson = prefs.getString("community_saved_profile", null)
+            val provider = prefs.getString("community_auth_provider", "") ?: ""
+
+            var username = ""
+            var avatarUrl = ""
+            var userId = ""
+
+            if (profileJson != null) {
+                val nameMatch = Regex("\"login\"\\s*:\\s*\"([^\"]+)\"").find(profileJson)
+                    ?: Regex("\"username\"\\s*:\\s*\"([^\"]+)\"").find(profileJson)
+                    ?: Regex("\"nickname\"\\s*:\\s*\"([^\"]+)\"").find(profileJson)
+                username = nameMatch?.groupValues?.get(1) ?: ""
+
+                val avatarMatch = Regex("\"avatarUrl\"\\s*:\\s*\"([^\"]+)\"").find(profileJson)
+                    ?: Regex("\"avatar\"\\s*:\\s*\"([^\"]+)\"").find(profileJson)
+                avatarUrl = avatarMatch?.groupValues?.get(1) ?: ""
+
+                val idMatch = Regex("\"id\"\\s*:\\s*\"?([^\",}]+)\"?").find(profileJson)
+                userId = idMatch?.groupValues?.get(1) ?: ""
+            }
+
+            if (username.isNotBlank()) {
+                val encodedUser = java.net.URLEncoder.encode(username, "UTF-8")
+                val encodedAvatar = java.net.URLEncoder.encode(avatarUrl, "UTF-8")
+                val encodedId = java.net.URLEncoder.encode(userId, "UTF-8")
+                return "$GITHUB_PAGES_SHOWCASE_URL?auth_sync=1&provider=$provider&user=$encodedUser&avatar=$encodedAvatar&id=$encodedId"
+            }
+        } catch (_: Exception) {
+            // Fall back to clean URL if prefs are encrypted or error occurs
+        }
+        return GITHUB_PAGES_SHOWCASE_URL
+    }
+
+    /**
      * Built-in themes from the GitHub catalog.
      * Guarantees 100% offline availability and instant 1-click installation without waiting for internet.
      */

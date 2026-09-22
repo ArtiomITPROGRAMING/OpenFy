@@ -3,7 +3,7 @@
  * Copyright (C) 2026 ArtiomITPROGRAMING - GNU GPL v3
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;600;800;900&family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap');
 
 :root {
   /* Default theme preview colors (Emerald Matrix) */
@@ -1408,4 +1408,345 @@ body {
     width: 300px;
     height: 600px;
   }
+}
+
+/* ==========================================================================
+   Auth Widget & Account Sync Alert Styles
+   ========================================================================== */
+
+.account-mismatch-banner {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.2), rgba(245, 158, 11, 0.2));
+  border-bottom: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 10px 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #FEF3C7;
+  position: relative;
+  z-index: 90;
+}
+
+.account-mismatch-banner strong {
+  color: #FBBF24;
+}
+
+.mismatch-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-mismatch-sync {
+  background: #F59E0B;
+  color: #000;
+  border: none;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-mismatch-sync:hover {
+  background: #D97706;
+}
+
+.btn-mismatch-dismiss {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: none;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+/* Header User Profile Widget */
+.user-auth-widget {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.user-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-full);
+  color: var(--text-main);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.user-profile-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--theme-primary);
+}
+
+.user-avatar-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  overflow: hidden;
+}
+
+.user-avatar-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background: #0f141f;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  box-shadow: var(--shadow-lg);
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 200;
+}
+
+.user-dropdown-menu.show {
+  display: flex;
+}
+
+.user-dropdown-header {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--card-border);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.user-dropdown-item {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  transition: var(--transition);
+}
+
+.user-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--theme-primary);
+}
+
+/* ==========================================================================
+   Next-Gen Theme Studio Tabs & Controls
+   ========================================================================== */
+
+.studio-tabs-bar {
+  display: flex;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+.studio-tab-nav {
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.studio-tab-nav.active {
+  background: var(--theme-primary);
+  color: #000;
+  font-weight: 700;
+}
+
+.studio-tab-panel {
+  display: none;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.studio-tab-panel.active {
+  display: flex;
+}
+
+/* Option Grid Pills */
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.option-card-pill {
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  cursor: pointer;
+  text-align: center;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.option-card-pill:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.option-card-pill.active {
+  border-color: var(--theme-primary);
+  background: rgba(0, 255, 102, 0.1);
+  box-shadow: 0 0 14px var(--theme-glow);
+}
+
+.option-preview-box {
+  width: 100%;
+  height: 38px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.option-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Live Smartphone Dynamic Styling Engine (Backgrounds, Fonts, Layouts)
+   ========================================================================== */
+
+/* Background styles */
+.phone-screen.bg-solid {
+  background: var(--theme-background) !important;
+  background-image: none !important;
+}
+
+.phone-screen.bg-gradient {
+  background: linear-gradient(145deg, var(--theme-background) 0%, var(--theme-surface) 60%, var(--theme-primary) 200%) !important;
+}
+
+.phone-screen.bg-radial {
+  background: radial-gradient(circle at 50% 25%, var(--theme-glow) 0%, var(--theme-background) 75%) !important;
+}
+
+.phone-screen.bg-grid {
+  background-color: var(--theme-background) !important;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px) !important;
+  background-size: 20px 20px !important;
+}
+
+.phone-screen.bg-aurora {
+  background: 
+    radial-gradient(at 10% 20%, var(--theme-glow) 0px, transparent 55%),
+    radial-gradient(at 90% 80%, var(--theme-secondary) 0px, transparent 55%),
+    var(--theme-background) !important;
+}
+
+/* Typography styles */
+.phone-screen.font-outfit {
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.phone-screen.font-inter {
+  font-family: 'Inter', sans-serif !important;
+}
+
+.phone-screen.font-mono {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+.phone-screen.font-orbitron {
+  font-family: 'Orbitron', sans-serif !important;
+  letter-spacing: 0.5px;
+}
+
+.phone-screen.font-serif {
+  font-family: 'Playfair Display', serif !important;
+}
+
+/* Icon Styles */
+.phone-screen.icons-sharp .mockup-play-btn,
+.phone-screen.icons-sharp .dock-item,
+.phone-screen.icons-sharp .playlist-card-mock {
+  border-radius: 2px !important;
+}
+
+.phone-screen.icons-line .mockup-play-btn {
+  background: transparent !important;
+  border: 2px solid var(--theme-primary) !important;
+}
+.phone-screen.icons-line .mockup-play-btn svg {
+  fill: var(--theme-primary) !important;
+}
+
+.phone-screen.icons-glow .mockup-play-btn {
+  box-shadow: 0 0 25px var(--theme-primary), 0 0 10px #fff !important;
+}
+.phone-screen.icons-glow .mockup-ctrl-btn svg {
+  filter: drop-shadow(0 0 6px var(--theme-primary));
+}
+
+/* Player Artwork Layout: Square Card Art */
+.album-card-art {
+  width: 175px;
+  height: 175px;
+  margin: 0 auto;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px var(--theme-glow);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.album-card-art svg {
+  width: 60px;
+  height: 60px;
+  fill: #000;
 }

@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Каталог и Витрина тем OpenFy | Стили для лучшего офлайн-плеера</title>
-  <meta name="description" content="Официальная интерактивная витрина тем для музыкального плеера OpenFy. Тестируйте темы в реальном времени на живом макете плеера, оценивайте, создавайте свои и устанавливайте в 1 клик.">
+  <title>Каталог и Студия тем OpenFy | Стили для лучшего офлайн-плеера</title>
+  <meta name="description" content="Официальная интерактивная витрина и расширенная студия тем для OpenFy. Авторизация через GitHub и Discord, синхронизация с телефоном, настройка палитр, фонов, шрифтов и иконок с живым предпросмотром.">
   <meta name="keywords" content="OpenFy, музыкальный плеер, темы оформления, кастомизация, Android, open source, F-Droid, material you, synthwave, cyberpunk">
   <meta name="author" content="ArtiomITPROGRAMING">
   <meta name="theme-color" content="#00FF66">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Каталог и Витрина тем OpenFy">
-  <meta property="og:description" content="Оценивайте и выбирайте готовые темы или создайте свою в онлайн-студии с живым предпросмотром для плеера OpenFy.">
+  <meta property="og:title" content="Каталог и Студия тем OpenFy">
+  <meta property="og:description" content="Оценивайте готовые темы или создайте свой уникальный стиль с настраиваемыми фонами, шрифтами и иконками в живом макете плеера.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://artiomitprograming.github.io/OpenFy/">
 
@@ -32,13 +32,15 @@
 
       <nav class="nav-links">
         <a href="#themes-hub" class="nav-link active">Каталог тем</a>
-        <a href="#studio-section" class="nav-link">Конструктор тем</a>
+        <a href="#studio-section" class="nav-link">Студия создания</a>
         <a href="#guide-section" class="nav-link">Как установить</a>
       </nav>
 
       <div class="nav-actions">
-        <span class="badge-pill active">Open Source</span>
-        <span class="badge-pill">GPL v3</span>
+        <div class="user-auth-widget" id="user-auth-widget">
+          <!-- Rendered by authEngine in app.js -->
+        </div>
+
         <a href="https://github.com/ArtiomITPROGRAMING/OpenFy" target="_blank" rel="noopener noreferrer" class="btn-github">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
           GitHub
@@ -47,15 +49,20 @@
     </div>
   </header>
 
+  <!-- Account Mismatch Warning Banner -->
+  <div class="account-mismatch-banner" id="account-mismatch-banner" style="display: none;">
+    <!-- Filled dynamically if mismatch is detected -->
+  </div>
+
   <!-- Hero Section -->
   <section class="hero">
-    <div class="hero-tagline">Интерактивная галерея тем оформления OpenFy</div>
+    <div class="hero-tagline">Интерактивная галерея и Студия дизайна OpenFy</div>
     <h1 class="hero-title">
       Сделайте свой плеер <br>
       <span class="gradient-text">уникальным и живым</span>
     </h1>
     <p class="hero-desc">
-      Оценивайте темы сообщества, тестируйте палитры на интерактивном живом макете плеера в реальном времени, создавайте свои собственные стили и устанавливайте в OpenFy прямо со страницы в один клик.
+      Оценивайте темы сообщества, настраивайте палитры, фоны, шрифты и стили экранов в онлайн-студии с живым предпросмотром на макете и устанавливайте в OpenFy в 1 клик с автоматической синхронизацией аккаунта.
     </p>
 
     <div class="hero-stats">
@@ -68,12 +75,12 @@
         <div class="stat-label">Офлайн & Open Source</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value">0<span></span></div>
-        <div class="stat-label">Рекламы и трекеров</div>
+        <div class="stat-value">Sync<span></span></div>
+        <div class="stat-label">Телефон ⟷ Сайт</div>
       </div>
       <div class="stat-item">
         <div class="stat-value">1<span> клик</span></div>
-        <div class="stat-label">Установка в телефон</div>
+        <div class="stat-label">Установка на телефон</div>
       </div>
     </div>
   </section>
@@ -114,7 +121,7 @@
       </div>
 
       <div class="phone-chassis">
-        <div class="phone-screen">
+        <div class="phone-screen bg-grid font-outfit icons-rounded">
           
           <!-- Dynamic Island -->
           <div class="dynamic-island">
@@ -136,50 +143,158 @@
       </div>
       
       <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-dim); text-align: center;">
-        Макет живой: выберите тему слева или нажмите Play/Pause для проверки волны
+        Живой макет: переключайте темы, фоны, шрифты и иконки ниже
       </p>
     </div>
 
   </main>
 
-  <!-- Online Theme Studio (Creator) -->
+  <!-- Next-Gen Online Theme Studio (Creator) -->
   <section class="studio-section" id="studio-section">
     <div class="section-header">
-      <div class="section-tag">Онлайн-лаборатория</div>
-      <h2 class="section-title">Конструктор тем OpenFy</h2>
-      <p style="color: var(--text-muted); max-width: 600px; margin: 8px auto 0;">
-        Создайте собственную цветовую схему прямо в браузере. Изменения мгновенно применяются к макету смартфона выше!
+      <div class="section-tag">Творческая мастерская</div>
+      <h2 class="section-title">Расширенная Студия создания тем</h2>
+      <p style="color: var(--text-muted); max-width: 680px; margin: 8px auto 0;">
+        Настраивайте не только цвета, но и типы фона, шрифты, стили иконок и макет обложки. Все изменения мгновенно отображаются на макете смартфона выше!
       </p>
     </div>
 
+    <!-- Studio Tab Navigation -->
+    <div class="studio-tabs-bar">
+      <button class="studio-tab-nav active" data-panel="panel-palette">1. Палитра и Цвета</button>
+      <button class="studio-tab-nav" data-panel="panel-background">2. Тип фона</button>
+      <button class="studio-tab-nav" data-panel="panel-typography">3. Шрифты</button>
+      <button class="studio-tab-nav" data-panel="panel-icons">4. Стиль иконок</button>
+      <button class="studio-tab-nav" data-panel="panel-layout">5. Дизайн плеера</button>
+    </div>
+
     <div class="studio-grid">
+      <!-- Left Configuration Panel -->
       <div class="creator-panel">
+        
         <div class="form-group">
-          <label class="form-label">Название вашей темы</label>
+          <label class="form-label">Название темы</label>
           <input type="text" class="form-input" id="creator-name" value="Моя Студийная Тема">
         </div>
 
         <div class="form-group">
-          <label class="form-label">Автор / Никнейм</label>
-          <input type="text" class="form-input" id="creator-author" value="OpenFy Explorer">
+          <label class="form-label">Автор / Никнейм профиля</label>
+          <input type="text" class="form-input" id="creator-author" value="OpenFy Creator">
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Быстрые пресеты палитр:</label>
-          <div class="preset-pills">
-            <button class="preset-pill-btn" onclick="applyStudioPreset('#00FF66', '#00E5FF', '#050B07', '#0C1810', '#E0F5E6')">Изумруд</button>
-            <button class="preset-pill-btn" onclick="applyStudioPreset('#A855F7', '#EC4899', '#0E0817', '#1A102B', '#F3E8FF')">Аметист</button>
-            <button class="preset-pill-btn" onclick="applyStudioPreset('#FF7A00', '#FF007A', '#12091A', '#1D102A', '#FFE6F0')">Синтвейв</button>
-            <button class="preset-pill-btn" onclick="applyStudioPreset('#38BDF8', '#818CF8', '#080E1A', '#111A2E', '#E2E8F0')">Арктика</button>
-            <button class="preset-pill-btn" onclick="applyStudioPreset('#FFD700', '#FFA000', '#0C0A05', '#19150B', '#FFF8E7')">Оникс Золото</button>
-            <button class="preset-pill-btn" onclick="applyStudioPreset('#EF4444', '#F97316', '#140808', '#241010', '#FEE2E2')">Пламя Дракулы</button>
+        <!-- TAB 1: Palette -->
+        <div class="studio-tab-panel active" id="panel-palette">
+          <div class="form-group">
+            <label class="form-label">Быстрые пресеты палитр:</label>
+            <div class="preset-pills">
+              <button class="preset-pill-btn" onclick="applyStudioPreset('#00FF66', '#00E5FF', '#050B07', '#0C1810', '#E0F5E6', 'CYBER_GRID', 'MONO')">Изумруд Матрица</button>
+              <button class="preset-pill-btn" onclick="applyStudioPreset('#A855F7', '#EC4899', '#0E0817', '#1A102B', '#F3E8FF', 'AURORA_MESH', 'OUTFIT')">Аметист Неон</button>
+              <button class="preset-pill-btn" onclick="applyStudioPreset('#FF7A00', '#FF007A', '#12091A', '#1D102A', '#FFE6F0', 'RADIAL_GLOW', 'ORBITRON')">Синтвейв 80-х</button>
+              <button class="preset-pill-btn" onclick="applyStudioPreset('#38BDF8', '#818CF8', '#080E1A', '#111A2E', '#E2E8F0', 'AURORA_MESH', 'INTER')">Северный Иней</button>
+              <button class="preset-pill-btn" onclick="applyStudioPreset('#FFD700', '#FFA000', '#0C0A05', '#19150B', '#FFF8E7', 'SOLID', 'PLAYFAIR')">Королевский Оникс</button>
+              <button class="preset-pill-btn" onclick="applyStudioPreset('#EF4444', '#F97316', '#140808', '#241010', '#FEE2E2', 'LINEAR_GRADIENT', 'ORBITRON')">Пламя Дракулы</button>
+            </div>
           </div>
         </div>
+
+        <!-- TAB 2: Background Style -->
+        <div class="studio-tab-panel" id="panel-background">
+          <label class="form-label">Выберите стиль и эффекты фона:</label>
+          <div class="options-grid">
+            <div class="option-card-pill bg-pill" onclick="selectBackgroundStyle('SOLID', this)">
+              <div class="option-preview-box" style="background: #0B0E14;">AMOLED</div>
+              <span class="option-title">Сплошной глубокий</span>
+            </div>
+            <div class="option-card-pill bg-pill" onclick="selectBackgroundStyle('LINEAR_GRADIENT', this)">
+              <div class="option-preview-box" style="background: linear-gradient(135deg, #0B0E14, #1E293B, #00FF66);">Градиент</div>
+              <span class="option-title">Линейный градиент</span>
+            </div>
+            <div class="option-card-pill bg-pill" onclick="selectBackgroundStyle('RADIAL_GLOW', this)">
+              <div class="option-preview-box" style="background: radial-gradient(circle, rgba(0,255,102,0.4), #050B07);">Неон</div>
+              <span class="option-title">Радиальное свечение</span>
+            </div>
+            <div class="option-card-pill bg-pill active" onclick="selectBackgroundStyle('CYBER_GRID', this)">
+              <div class="option-preview-box" style="background-color: #050B07; background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 8px 8px;">Сетка</div>
+              <span class="option-title">Кибер-сетка 80-х</span>
+            </div>
+            <div class="option-card-pill bg-pill" onclick="selectBackgroundStyle('AURORA_MESH', this)">
+              <div class="option-preview-box" style="background: radial-gradient(at 0% 0%, #00FF66 0px, transparent 50%), radial-gradient(at 100% 100%, #38BDF8 0px, transparent 50%), #050B07;">Аврора</div>
+              <span class="option-title">Северное сияние</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: Typography -->
+        <div class="studio-tab-panel" id="panel-typography">
+          <label class="form-label">Выберите гарнитуру шрифтов интерфейса:</label>
+          <div class="options-grid">
+            <div class="option-card-pill font-pill active" onclick="selectFontFamily('OUTFIT', this)">
+              <div class="option-preview-box" style="font-family: 'Outfit';">Outfit Aa</div>
+              <span class="option-title">Современный гротеск</span>
+            </div>
+            <div class="option-card-pill font-pill" onclick="selectFontFamily('INTER', this)">
+              <div class="option-preview-box" style="font-family: 'Inter';">Inter Aa</div>
+              <span class="option-title">Технологичный минимал</span>
+            </div>
+            <div class="option-card-pill font-pill" onclick="selectFontFamily('MONO', this)">
+              <div class="option-preview-box" style="font-family: 'JetBrains Mono';">Mono &lt;/&gt;</div>
+              <span class="option-title">Хакерский терминал</span>
+            </div>
+            <div class="option-card-pill font-pill" onclick="selectFontFamily('ORBITRON', this)">
+              <div class="option-preview-box" style="font-family: 'Orbitron';">ORBITRON</div>
+              <span class="option-title">Футуристический Sci-Fi</span>
+            </div>
+            <div class="option-card-pill font-pill" onclick="selectFontFamily('PLAYFAIR', this)">
+              <div class="option-preview-box" style="font-family: 'Playfair Display';">Playfair Aa</div>
+              <span class="option-title">Королевская антиква</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: Icon Style -->
+        <div class="studio-tab-panel" id="panel-icons">
+          <label class="form-label">Выберите форму и стиль элементов:</label>
+          <div class="options-grid">
+            <div class="option-card-pill icon-pill active" onclick="selectIconStyle('ROUNDED', this)">
+              <div class="option-preview-box" style="border-radius: 20px; background: rgba(255,255,255,0.1);">● Круг</div>
+              <span class="option-title">Material Rounded</span>
+            </div>
+            <div class="option-card-pill icon-pill" onclick="selectIconStyle('CYBER_SHARP', this)">
+              <div class="option-preview-box" style="border-radius: 2px; background: rgba(255,255,255,0.1);">■ Острый</div>
+              <span class="option-title">Cyber Sharp</span>
+            </div>
+            <div class="option-card-pill icon-pill" onclick="selectIconStyle('MINIMAL_LINE', this)">
+              <div class="option-preview-box" style="border: 1.5px solid var(--theme-primary); background: transparent;">○ Контур</div>
+              <span class="option-title">Minimal Line</span>
+            </div>
+            <div class="option-card-pill icon-pill" onclick="selectIconStyle('NEON_GLOW', this)">
+              <div class="option-preview-box" style="box-shadow: 0 0 15px var(--theme-primary); background: rgba(255,255,255,0.1);">★ Неон</div>
+              <span class="option-title">Neon Glow</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 5: Player Screen Layout -->
+        <div class="studio-tab-panel" id="panel-layout">
+          <label class="form-label">Выберите формат обложки плеера:</label>
+          <div class="options-grid">
+            <div class="option-card-pill layout-pill active" onclick="selectPlayerLayout('VINYL_DISC', this)">
+              <div class="option-preview-box" style="border-radius: 50%; width: 34px; height: 34px; background: #000; border: 2px solid var(--theme-primary); margin: 0 auto;"></div>
+              <span class="option-title">Виниловая пластинка</span>
+            </div>
+            <div class="option-card-pill layout-pill" onclick="selectPlayerLayout('ALBUM_CARD', this)">
+              <div class="option-preview-box" style="border-radius: 8px; width: 34px; height: 34px; background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); margin: 0 auto;"></div>
+              <span class="option-title">Парящая карточка альбома</span>
+            </div>
+          </div>
+        </div>
+
       </div>
 
+      <!-- Right Colors & Export Actions Panel -->
       <div class="creator-panel">
         <div class="form-group">
-          <label class="form-label">Настройка цветов (нажмите для выбора):</label>
+          <label class="form-label">Цветовая палитра темы:</label>
           <div class="color-picker-row">
             
             <div class="color-picker-box">
@@ -226,14 +341,19 @@
         </div>
 
         <div class="studio-actions">
-          <button class="btn btn-primary" onclick="exportCustomThemeJson()">
+          <button class="btn btn-primary" onclick="installStudioThemeInOpenFy()">
+            <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+            Установить в OpenFy (1 клик)
+          </button>
+
+          <button class="btn btn-secondary" onclick="exportCustomThemeJson()">
             <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-            Скачать theme.json
+            Скачать .json
           </button>
 
           <button class="btn btn-secondary" onclick="copyCustomThemeJson()">
             <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-            Скопировать JSON
+            Скопировать конфигурацию
           </button>
         </div>
       </div>
@@ -256,17 +376,76 @@
 
       <div class="guide-card">
         <div class="step-badge">2</div>
-        <h3>По прямой ссылке</h3>
-        <p>Нажмите иконку копирования ссылки. В плеере перейдите в <i>Настройки → Темы → По ссылке (URL)</i>, вставьте ссылку и нажмите «Установить».</p>
+        <h3>Авто-синхронизация аккаунта</h3>
+        <p>Перейдите на этот сайт из плеера (<i>Настройки → Темы → Веб-витрина</i>). Профиль на сайте синхронизируется с телефоном автоматически без паролей.</p>
       </div>
 
       <div class="guide-card">
         <div class="step-badge">3</div>
         <h3>Через файл .thm или .json</h3>
-        <p>Скачайте файл `.thm` или `.json`, затем в плеере нажмите <i>«Импорт из файла»</i> либо просто откройте файл в проводнике телефона.</p>
+        <p>Скачайте созданный файл темы `.thm` или `.json`, затем в плеере нажмите <i>«Импорт из файла»</i> либо просто откройте файл в проводнике телефона.</p>
       </div>
     </div>
   </section>
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-box" style="max-width: 480px;">
+      <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+      <h3 style="font-family: var(--font-heading); font-size: 1.4rem;">Профиль Автора OpenFy</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; margin-bottom: 1.25rem;">
+        Привяжите профиль для публикации тем и синхронизации с телефоном
+      </p>
+
+      <div class="studio-tabs-bar" style="margin-bottom: 1rem;">
+        <button class="studio-tab-nav auth-tab-btn active" onclick="switchAuthTab('github', this)">GitHub</button>
+        <button class="studio-tab-nav auth-tab-btn" onclick="switchAuthTab('discord', this)">Discord</button>
+        <button class="studio-tab-nav auth-tab-btn" onclick="switchAuthTab('guest', this)">Гость</button>
+        <button class="studio-tab-nav auth-tab-btn" onclick="switchAuthTab('sync', this)">С телефона</button>
+      </div>
+
+      <!-- GitHub Panel -->
+      <div class="auth-tab-panel active" id="auth-panel-github">
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label">Никнейм на GitHub или Personal Access Token:</label>
+          <input type="text" class="form-input" id="auth-github-input" placeholder="например: ArtiomITPROGRAMING">
+        </div>
+        <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="authEngine.loginWithGitHub(document.getElementById('auth-github-input').value)">
+          Войти через GitHub
+        </button>
+      </div>
+
+      <!-- Discord Panel -->
+      <div class="auth-tab-panel" id="auth-panel-discord" style="display: none;">
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label">Ваш Discord никнейм:</label>
+          <input type="text" class="form-input" id="auth-discord-input" placeholder="например: openfy_music">
+        </div>
+        <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="authEngine.loginWithDiscord(document.getElementById('auth-discord-input').value)">
+          Войти через Discord
+        </button>
+      </div>
+
+      <!-- Guest Panel -->
+      <div class="auth-tab-panel" id="auth-panel-guest" style="display: none;">
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label">Придумайте никнейм создателя тем:</label>
+          <input type="text" class="form-input" id="auth-guest-input" placeholder="например: NeonDesigner">
+        </div>
+        <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="authEngine.loginAsGuest(document.getElementById('auth-guest-input').value)">
+          Продолжить как гость
+        </button>
+      </div>
+
+      <!-- Phone Sync Panel -->
+      <div class="auth-tab-panel" id="auth-panel-sync" style="display: none; text-align: left;">
+        <div style="background: rgba(0, 255, 102, 0.08); border: 1px solid rgba(0, 255, 102, 0.3); padding: 12px; border-radius: var(--radius-md); font-size: 0.85rem; color: var(--text-main);">
+          📱 <b>Автоматическая синхронизация:</b><br>
+          Откройте плеер OpenFy на телефоне, перейдите в <i>Настройки → Темы → «Веб-витрина (GitHub Pages)»</i>. Ваш профиль автоматически передастся на этот сайт без необходимости ввода логинов и паролей!
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- QR Code Modal -->
   <div class="modal-overlay" id="qr-modal">

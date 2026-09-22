@@ -1,5 +1,5 @@
 /*
- * OpenFy Themes Hub - Interactive Client Application
+ * OpenFy Themes Hub - Interactive Client Application with Auth & Advanced Theme Studio
  * Copyright (C) 2026 ArtiomITPROGRAMING - GNU GPL v3
  */
 
@@ -16,6 +16,10 @@ const THEMES_DATA = [
     description: "Кибернетический изумрудный терминал в стиле научной фантастики, матричного кода и хакерской эстетики с максимальным контрастом.",
     downloadUrl: "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/emerald-matrix.thm",
     rawJsonUrl: "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/emerald-matrix/theme.json",
+    backgroundStyle: "CYBER_GRID",
+    fontFamily: "MONO",
+    iconStyle: "CYBER_SHARP",
+    playerLayout: "VINYL_DISC",
     colors: {
       primary: "#00FF66",
       onPrimary: "#000000",
@@ -44,6 +48,10 @@ const THEMES_DATA = [
     description: "Холодная арктическая эстетика с мерцанием полярного сияния, глубоким сапфировым фоном и акцентами цвета ледяного кристалла.",
     downloadUrl: "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/nordic-frost.thm",
     rawJsonUrl: "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/nordic-frost/theme.json",
+    backgroundStyle: "AURORA_MESH",
+    fontFamily: "INTER",
+    iconStyle: "ROUNDED",
+    playerLayout: "ALBUM_CARD",
     colors: {
       primary: "#38BDF8",
       onPrimary: "#001E2E",
@@ -72,6 +80,10 @@ const THEMES_DATA = [
     description: "Атмосфера Майами 80-х: неоновый закат, яркие оранжевые и фуксия градиенты с тёмным фиолетовым ночным фоном шоссе.",
     downloadUrl: "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/sunset-synthwave.thm",
     rawJsonUrl: "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/sunset-synthwave/theme.json",
+    backgroundStyle: "RADIAL_GLOW",
+    fontFamily: "ORBITRON",
+    iconStyle: "NEON_GLOW",
+    playerLayout: "VINYL_DISC",
     colors: {
       primary: "#FF7A00",
       onPrimary: "#000000",
@@ -100,6 +112,10 @@ const THEMES_DATA = [
     description: "Пастельная сакура и неоновые огни ночного квартала Сибуя: мягкий розовый и деликатный индиго на глубоком асфальтовом фоне.",
     downloadUrl: "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/tokyo-night.thm",
     rawJsonUrl: "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/tokyo-night/theme.json",
+    backgroundStyle: "LINEAR_GRADIENT",
+    fontFamily: "OUTFIT",
+    iconStyle: "MINIMAL_LINE",
+    playerLayout: "ALBUM_CARD",
     colors: {
       primary: "#F43F5E",
       onPrimary: "#FFFFFF",
@@ -128,6 +144,10 @@ const THEMES_DATA = [
     description: "Премиальный глубокий обсидиановый оникс в сочетании с благородным 24k золотом и тёплыми янтарными акцентами для ценителей роскоши.",
     downloadUrl: "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/pure-gold-luxury.thm",
     rawJsonUrl: "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/pure-gold-luxury/theme.json",
+    backgroundStyle: "SOLID",
+    fontFamily: "PLAYFAIR",
+    iconStyle: "ROUNDED",
+    playerLayout: "VINYL_DISC",
     colors: {
       primary: "#FFD700",
       onPrimary: "#000000",
@@ -147,12 +167,28 @@ const THEMES_DATA = [
   }
 ];
 
-// App State
+// App Global State
 let currentPreviewTheme = THEMES_DATA[0];
 let activeCategory = "all";
 let searchQuery = "";
 let isMockupPlaying = true;
 let currentMockupTab = "player"; // 'player' | 'library' | 'studio'
+
+// Studio Customization State
+let studioState = {
+  name: "Моя Студийная Тема",
+  author: "OpenFy Creator",
+  version: "1.0.0",
+  primary: "#00FF66",
+  secondary: "#00E5FF",
+  background: "#050B07",
+  surface: "#0C1810",
+  onSurface: "#E0F5E6",
+  backgroundStyle: "CYBER_GRID", // SOLID, LINEAR_GRADIENT, RADIAL_GLOW, CYBER_GRID, AURORA_MESH
+  fontFamily: "OUTFIT",          // OUTFIT, INTER, MONO, ORBITRON, PLAYFAIR
+  iconStyle: "ROUNDED",          // ROUNDED, CYBER_SHARP, MINIMAL_LINE, NEON_GLOW
+  playerLayout: "VINYL_DISC"     // VINYL_DISC, ALBUM_CARD
+};
 
 // Local Storage Helper
 const storage = {
@@ -176,11 +212,234 @@ const storage = {
     data[id] = !data[id];
     localStorage.setItem("openfy_theme_likes", JSON.stringify(data));
     return data[id];
+  },
+  getUser() {
+    try {
+      return JSON.parse(localStorage.getItem("openfy_auth_user") || "null");
+    } catch { return null; }
+  },
+  saveUser(user) {
+    localStorage.setItem("openfy_auth_user", JSON.stringify(user));
+  },
+  clearUser() {
+    localStorage.removeItem("openfy_auth_user");
   }
 };
 
+// ============================================================================
+// Auth & Phone Sync Engine
+// ============================================================================
+const authEngine = {
+  currentUser: null,
+  pendingAppUser: null,
+
+  init() {
+    this.currentUser = storage.getUser();
+    this.checkUrlSyncParams();
+    this.renderHeaderUserWidget();
+  },
+
+  checkUrlSyncParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("auth_sync") === "1") {
+      const incomingUser = {
+        username: params.get("user") || "OpenFy User",
+        provider: params.get("provider") || "openfy_sync",
+        avatarUrl: params.get("avatar") || "",
+        id: params.get("id") || `sync_${Date.now()}`,
+        syncedWithApp: true
+      };
+
+      // Check for mismatch
+      if (this.currentUser && this.currentUser.username.toLowerCase() !== incomingUser.username.toLowerCase()) {
+        this.pendingAppUser = incomingUser;
+        this.showMismatchBanner(this.currentUser, incomingUser);
+      } else {
+        // Automatic login & sync
+        this.currentUser = incomingUser;
+        storage.saveUser(incomingUser);
+        showToast(`Авторизовано через OpenFy: @${incomingUser.username}`);
+      }
+
+      // Update creator author in studio
+      if (studioState) {
+        studioState.author = incomingUser.username;
+        const authorInput = document.getElementById("creator-author");
+        if (authorInput) authorInput.value = incomingUser.username;
+      }
+
+      // Clean query parameters from URL
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+  },
+
+  showMismatchBanner(webUser, appUser) {
+    const banner = document.getElementById("account-mismatch-banner");
+    if (!banner) return;
+
+    banner.innerHTML = `
+      <div>
+        ⚠️ <strong>Несовпадение аккаунтов:</strong> на сайте активен <b>@${webUser.username}</b>, а в приложении OpenFy на телефоне <b>@${appUser.username}</b>.
+      </div>
+      <div class="mismatch-actions">
+        <button class="btn-mismatch-sync" onclick="authEngine.applyAppSync()">Синхронизировать с телефоном</button>
+        <button class="btn-mismatch-dismiss" onclick="authEngine.dismissMismatchBanner()">Оставить @${webUser.username}</button>
+      </div>
+    `;
+    banner.style.display = "flex";
+  },
+
+  applyAppSync() {
+    if (this.pendingAppUser) {
+      this.currentUser = this.pendingAppUser;
+      storage.saveUser(this.pendingAppUser);
+      this.pendingAppUser = null;
+      this.dismissMismatchBanner();
+      this.renderHeaderUserWidget();
+      showToast(`Профиль синхронизирован с телефоном: @${this.currentUser.username}`);
+      
+      const authorInput = document.getElementById("creator-author");
+      if (authorInput) authorInput.value = this.currentUser.username;
+    }
+  },
+
+  dismissMismatchBanner() {
+    const banner = document.getElementById("account-mismatch-banner");
+    if (banner) banner.style.display = "none";
+  },
+
+  renderHeaderUserWidget() {
+    const container = document.getElementById("user-auth-widget");
+    if (!container) return;
+
+    if (!this.currentUser) {
+      container.innerHTML = `
+        <button class="btn-github" onclick="openAuthModal()" style="font-size: 0.8rem; padding: 6px 14px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+          Войти
+        </button>
+      `;
+    } else {
+      const avatarInitial = this.currentUser.username.charAt(0).toUpperCase();
+      const avatarHtml = this.currentUser.avatarUrl ? 
+        `<img src="${this.currentUser.avatarUrl}" alt="${this.currentUser.username}" onerror="this.onerror=null; this.parentNode.textContent='${avatarInitial}';"/>` :
+        avatarInitial;
+
+      const providerBadge = this.currentUser.syncedWithApp ? "OpenFy Sync" : (this.currentUser.provider || "Web");
+
+      container.innerHTML = `
+        <button class="user-profile-btn" onclick="authEngine.toggleUserDropdown()">
+          <div class="user-avatar-circle">${avatarHtml}</div>
+          <span>@${this.currentUser.username}</span>
+          <span class="badge-pill active" style="font-size: 0.65rem; padding: 2px 6px;">${providerBadge}</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+        </button>
+
+        <div class="user-dropdown-menu" id="user-dropdown-menu">
+          <div class="user-dropdown-header">
+            <strong>${this.currentUser.username}</strong>
+            <div>${providerBadge} • Создатель тем</div>
+          </div>
+          <button class="user-dropdown-item" onclick="openAuthModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+            Переключить аккаунт
+          </button>
+          <button class="user-dropdown-item" onclick="authEngine.logout()" style="color: #F43F5E;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            Выйти
+          </button>
+        </div>
+      `;
+    }
+  },
+
+  toggleUserDropdown() {
+    const menu = document.getElementById("user-dropdown-menu");
+    if (menu) menu.classList.toggle("show");
+  },
+
+  loginAsGuest(nickname) {
+    const nick = (nickname || "").trim() || "OpenFy Creator";
+    this.currentUser = {
+      username: nick,
+      provider: "guest",
+      avatarUrl: "",
+      id: `guest_${Date.now()}`,
+      syncedWithApp: false
+    };
+    storage.saveUser(this.currentUser);
+    this.renderHeaderUserWidget();
+    closeAuthModal();
+    showToast(`Добро пожаловать, ${nick}!`);
+    
+    const authorInput = document.getElementById("creator-author");
+    if (authorInput) authorInput.value = nick;
+  },
+
+  loginWithGitHub(tokenOrUsername) {
+    const val = (tokenOrUsername || "").trim();
+    if (!val) {
+      alert("Пожалуйста, введите ваш никнейм GitHub или Personal Access Token");
+      return;
+    }
+
+    const username = val.replace(/^@/, "");
+    this.currentUser = {
+      username: username,
+      provider: "github",
+      avatarUrl: `https://github.com/${username}.png`,
+      id: `gh_${username}`,
+      syncedWithApp: false
+    };
+    storage.saveUser(this.currentUser);
+    this.renderHeaderUserWidget();
+    closeAuthModal();
+    showToast(`Успешный вход через GitHub: @${username}!`);
+
+    const authorInput = document.getElementById("creator-author");
+    if (authorInput) authorInput.value = username;
+  },
+
+  loginWithDiscord(tag) {
+    const val = (tag || "").trim() || "DiscordCreator";
+    this.currentUser = {
+      username: val,
+      provider: "discord",
+      avatarUrl: "",
+      id: `dc_${Date.now()}`,
+      syncedWithApp: false
+    };
+    storage.saveUser(this.currentUser);
+    this.renderHeaderUserWidget();
+    closeAuthModal();
+    showToast(`Успешный вход через Discord: ${val}!`);
+
+    const authorInput = document.getElementById("creator-author");
+    if (authorInput) authorInput.value = val;
+  },
+
+  logout() {
+    storage.clearUser();
+    this.currentUser = null;
+    this.renderHeaderUserWidget();
+    showToast("Вы вышли из профиля");
+  }
+};
+
+// Close dropdown on click outside
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".user-auth-widget")) {
+    const menu = document.getElementById("user-dropdown-menu");
+    if (menu) menu.classList.remove("show");
+  }
+});
+
+// ============================================================================
 // DOM Init
+// ============================================================================
 document.addEventListener("DOMContentLoaded", () => {
+  authEngine.init();
   renderThemeCards();
   setupFilters();
   setupSearch();
@@ -272,7 +531,7 @@ function renderThemeCards() {
         </div>
 
         <div class="theme-card-actions">
-          <button class="btn btn-primary" onclick="installInOpenFy('${theme.id}', '${theme.downloadUrl}')" title="Установить сразу в плеер на телефоне">
+          <button class="btn btn-primary" onclick="installInOpenFy('${theme.id}', '${theme.downloadUrl}', '${theme.author}')" title="Установить сразу в плеер на телефоне">
             <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
             В OpenFy
           </button>
@@ -345,10 +604,13 @@ window.toggleThemeLike = function(id) {
   renderThemeCards();
 };
 
-// Mockup Interaction & Theming
+// ============================================================================
+// Mockup Interaction & Theming Engine
+// ============================================================================
 function applyThemeToMockup(theme) {
   currentPreviewTheme = theme;
   const root = document.documentElement;
+  const phoneScreen = document.querySelector(".phone-screen");
 
   root.style.setProperty("--theme-primary", theme.colors.primary);
   root.style.setProperty("--theme-on-primary", theme.colors.onPrimary || "#000000");
@@ -360,6 +622,43 @@ function applyThemeToMockup(theme) {
   root.style.setProperty("--theme-on-surface-variant", theme.colors.onSurfaceVariant);
   root.style.setProperty("--theme-accent", theme.colors.accent);
   root.style.setProperty("--theme-glow", theme.colors.glow || `${theme.colors.primary}66`);
+
+  if (phoneScreen) {
+    // Background style
+    phoneScreen.classList.remove("bg-solid", "bg-gradient", "bg-radial", "bg-grid", "bg-aurora");
+    const bgMap = {
+      "SOLID": "bg-solid",
+      "LINEAR_GRADIENT": "bg-gradient",
+      "RADIAL_GLOW": "bg-radial",
+      "CYBER_GRID": "bg-grid",
+      "AURORA_MESH": "bg-aurora"
+    };
+    phoneScreen.classList.add(bgMap[theme.backgroundStyle] || "bg-solid");
+
+    // Font style
+    phoneScreen.classList.remove("font-outfit", "font-inter", "font-mono", "font-orbitron", "font-serif");
+    const fontMap = {
+      "OUTFIT": "font-outfit",
+      "INTER": "font-inter",
+      "MONO": "font-mono",
+      "ORBITRON": "font-orbitron",
+      "PLAYFAIR": "font-serif"
+    };
+    phoneScreen.classList.add(fontMap[theme.fontFamily] || "font-outfit");
+
+    // Icon style
+    phoneScreen.classList.remove("icons-rounded", "icons-sharp", "icons-line", "icons-glow");
+    const iconMap = {
+      "ROUNDED": "icons-rounded",
+      "CYBER_SHARP": "icons-sharp",
+      "MINIMAL_LINE": "icons-line",
+      "NEON_GLOW": "icons-glow"
+    };
+    phoneScreen.classList.add(iconMap[theme.iconStyle] || "icons-rounded");
+  }
+
+  // Re-render mockup content to reflect artwork layout (vinyl vs card)
+  renderMockupContent();
 
   // Highlight card
   document.querySelectorAll(".theme-card").forEach(c => c.classList.remove("active-preview"));
@@ -376,14 +675,13 @@ window.previewTheme = function(id) {
 };
 
 // Deep Linking to OpenFy App
-window.installInOpenFy = function(id, downloadUrl) {
-  const deepLink = `openfy://theme/install?id=${encodeURIComponent(id)}&url=${encodeURIComponent(downloadUrl)}&apply=true`;
+window.installInOpenFy = function(id, downloadUrl, creator) {
+  const creatorParam = creator || (authEngine.currentUser ? authEngine.currentUser.username : "");
+  const deepLink = `openfy://theme/install?id=${encodeURIComponent(id)}&url=${encodeURIComponent(downloadUrl)}&creator=${encodeURIComponent(creatorParam)}&apply=true`;
   
-  // Try opening deep link
   const startTime = Date.now();
   window.location.href = deepLink;
 
-  // Fallback for desktop / without app installed
   setTimeout(() => {
     if (Date.now() - startTime < 1500) {
       openQrModal("Установка темы в OpenFy", id, downloadUrl);
@@ -418,12 +716,16 @@ function setupMockupControls() {
     });
   });
 
+  bindPlayButton();
+}
+
+function bindPlayButton() {
   const playBtn = document.getElementById("mockup-play-btn");
   const vinylDisc = document.getElementById("vinyl-disc");
-  if (playBtn && vinylDisc) {
+  if (playBtn) {
     playBtn.addEventListener("click", () => {
       isMockupPlaying = !isMockupPlaying;
-      vinylDisc.classList.toggle("playing", isMockupPlaying);
+      if (vinylDisc) vinylDisc.classList.toggle("playing", isMockupPlaying);
       playBtn.innerHTML = isMockupPlaying ? 
         `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>` : 
         `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
@@ -435,7 +737,24 @@ function renderMockupContent() {
   const container = document.getElementById("mockup-screens-container");
   if (!container) return;
 
+  const currentTheme = currentPreviewTheme || THEMES_DATA[0];
+  const layout = currentTheme.playerLayout || "VINYL_DISC";
+
   if (currentMockupTab === "player") {
+    const artworkHtml = layout === "ALBUM_CARD" ? `
+      <div class="album-card-art">
+        <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+      </div>
+    ` : `
+      <div class="vinyl-container">
+        <div class="vinyl-disc ${isMockupPlaying ? 'playing' : ''}" id="vinyl-disc">
+          <div class="vinyl-art">
+            <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+          </div>
+        </div>
+      </div>
+    `;
+
     container.innerHTML = `
       <div class="mockup-now-playing">
         <div class="mockup-top-nav">
@@ -444,13 +763,7 @@ function renderMockupContent() {
           <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
         </div>
 
-        <div class="vinyl-container">
-          <div class="vinyl-disc ${isMockupPlaying ? 'playing' : ''}" id="vinyl-disc">
-            <div class="vinyl-art">
-              <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-            </div>
-          </div>
-        </div>
+        ${artworkHtml}
 
         <div class="waveform-box" id="waveform-box">
           ${Array.from({ length: 24 }).map(() => `<div class="wave-bar"></div>`).join('')}
@@ -488,7 +801,7 @@ function renderMockupContent() {
         </div>
       </div>
     `;
-    setupMockupControls();
+    bindPlayButton();
   } else if (currentMockupTab === "library") {
     container.innerHTML = `
       <div class="mockup-library">
@@ -570,8 +883,23 @@ function startWaveformAnimation() {
   }, 120);
 }
 
-// Online Theme Studio (Creator)
+// ============================================================================
+// Next-Gen Online Theme Studio (Multi-tab creator)
+// ============================================================================
 function setupThemeStudio() {
+  // Setup Studio Tab Navigation
+  const studioTabs = document.querySelectorAll(".studio-tab-nav");
+  studioTabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      studioTabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      const targetPanelId = tab.dataset.panel;
+      document.querySelectorAll(".studio-tab-panel").forEach(p => p.classList.remove("active"));
+      const targetPanel = document.getElementById(targetPanelId);
+      if (targetPanel) targetPanel.classList.add("active");
+    });
+  });
+
   const pickers = {
     primary: document.getElementById("creator-primary"),
     secondary: document.getElementById("creator-secondary"),
@@ -582,30 +910,14 @@ function setupThemeStudio() {
 
   if (!pickers.primary) return;
 
-  function updateFromCreator() {
-    const customTheme = {
-      id: "custom_theme_" + Date.now(),
-      name: document.getElementById("creator-name")?.value || "Моя пользовательская тема",
-      nameEn: "Custom Studio Theme",
-      author: document.getElementById("creator-author")?.value || "OpenFy User",
-      version: "1.0.0",
-      category: "custom",
-      categoryLabel: "Пользовательская",
-      description: "Создана в онлайн-студии тем OpenFy Themes Hub",
-      colors: {
-        primary: pickers.primary.value,
-        onPrimary: "#000000",
-        secondary: pickers.secondary.value,
-        background: pickers.background.value,
-        surface: pickers.surface.value,
-        surfaceVariant: pickers.surface.value,
-        onSurface: pickers.onSurface.value,
-        onSurfaceVariant: "#8C96AD",
-        accent: pickers.secondary.value,
-        card: pickers.surface.value,
-        glow: `${pickers.primary.value}66`
-      }
-    };
+  function updateStudioTheme() {
+    studioState.name = document.getElementById("creator-name")?.value || "Моя Студийная Тема";
+    studioState.author = document.getElementById("creator-author")?.value || (authEngine.currentUser ? authEngine.currentUser.username : "OpenFy User");
+    studioState.primary = pickers.primary.value;
+    studioState.secondary = pickers.secondary.value;
+    studioState.background = pickers.background.value;
+    studioState.surface = pickers.surface.value;
+    studioState.onSurface = pickers.onSurface.value;
 
     // Update Hex labels
     document.getElementById("hex-primary").textContent = pickers.primary.value.toUpperCase();
@@ -614,21 +926,86 @@ function setupThemeStudio() {
     document.getElementById("hex-surface").textContent = pickers.surface.value.toUpperCase();
     document.getElementById("hex-onsurface").textContent = pickers.onSurface.value.toUpperCase();
 
-    applyThemeToMockup(customTheme);
+    const liveThemeObj = {
+      id: "studio_custom_" + Date.now(),
+      name: studioState.name,
+      nameEn: "Custom Theme",
+      author: studioState.author,
+      version: studioState.version,
+      category: "custom",
+      categoryLabel: "Пользовательская",
+      description: "Создана в онлайн-студии тем OpenFy Themes Hub",
+      backgroundStyle: studioState.backgroundStyle,
+      fontFamily: studioState.fontFamily,
+      iconStyle: studioState.iconStyle,
+      playerLayout: studioState.playerLayout,
+      colors: {
+        primary: studioState.primary,
+        onPrimary: "#000000",
+        secondary: studioState.secondary,
+        background: studioState.background,
+        surface: studioState.surface,
+        surfaceVariant: studioState.surface,
+        onSurface: studioState.onSurface,
+        onSurfaceVariant: "#8C96AD",
+        accent: studioState.secondary,
+        card: studioState.surface,
+        glow: `${studioState.primary}66`
+      }
+    };
+
+    applyThemeToMockup(liveThemeObj);
   }
 
   Object.values(pickers).forEach(input => {
-    if (input) input.addEventListener("input", updateFromCreator);
+    if (input) input.addEventListener("input", updateStudioTheme);
   });
 
+  document.getElementById("creator-name")?.addEventListener("input", updateStudioTheme);
+  document.getElementById("creator-author")?.addEventListener("input", updateStudioTheme);
+
+  // Background style selector
+  window.selectBackgroundStyle = function(styleKey, el) {
+    studioState.backgroundStyle = styleKey;
+    document.querySelectorAll(".bg-pill").forEach(p => p.classList.remove("active"));
+    if (el) el.classList.add("active");
+    updateStudioTheme();
+  };
+
+  // Typography selector
+  window.selectFontFamily = function(fontKey, el) {
+    studioState.fontFamily = fontKey;
+    document.querySelectorAll(".font-pill").forEach(p => p.classList.remove("active"));
+    if (el) el.classList.add("active");
+    updateStudioTheme();
+  };
+
+  // Icon style selector
+  window.selectIconStyle = function(iconKey, el) {
+    studioState.iconStyle = iconKey;
+    document.querySelectorAll(".icon-pill").forEach(p => p.classList.remove("active"));
+    if (el) el.classList.add("active");
+    updateStudioTheme();
+  };
+
+  // Player layout selector
+  window.selectPlayerLayout = function(layoutKey, el) {
+    studioState.playerLayout = layoutKey;
+    document.querySelectorAll(".layout-pill").forEach(p => p.classList.remove("active"));
+    if (el) el.classList.add("active");
+    updateStudioTheme();
+  };
+
   // Preset Buttons
-  window.applyStudioPreset = function(primary, secondary, bg, surf, onSurf) {
+  window.applyStudioPreset = function(primary, secondary, bg, surf, onSurf, bgStyle = "SOLID", font = "OUTFIT") {
     pickers.primary.value = primary;
     pickers.secondary.value = secondary;
     pickers.background.value = bg;
     pickers.surface.value = surf;
     pickers.onSurface.value = onSurf;
-    updateFromCreator();
+    studioState.backgroundStyle = bgStyle;
+    studioState.fontFamily = font;
+    updateStudioTheme();
     showToast("Пресет палитры применён в студии!");
   };
 
@@ -639,42 +1016,91 @@ function setupThemeStudio() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "theme.json";
+    a.download = `${themeJson.id}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    showToast("Файл theme.json успешно сгенерирован и скачан!");
+    showToast("Файл темы успешно сгенерирован и скачан!");
   };
 
   // Copy JSON
   window.copyCustomThemeJson = function() {
     const themeJson = generateThemeJsonContent();
     navigator.clipboard.writeText(JSON.stringify(themeJson, null, 2)).then(() => {
-      showToast("Конфигурация JSON скопирована в буфер обмена!");
+      showToast("Полная конфигурация темы скопирована в буфер!");
     });
+  };
+
+  // Install in OpenFy directly from Studio
+  window.installStudioThemeInOpenFy = function() {
+    const themeJson = generateThemeJsonContent();
+    const jsonStr = JSON.stringify(themeJson);
+    const id = themeJson.id;
+    const author = themeJson.author;
+    const deepLink = `openfy://theme/install?id=${encodeURIComponent(id)}&creator=${encodeURIComponent(author)}&apply=true`;
+    
+    window.location.href = deepLink;
+    showToast(`Переход в OpenFy для установки темы «${themeJson.name}»...`);
   };
 }
 
 function generateThemeJsonContent() {
-  const name = document.getElementById("creator-name")?.value || "Custom Theme";
-  const author = document.getElementById("creator-author")?.value || "OpenFy User";
+  const name = studioState.name || "Custom Theme";
+  const author = studioState.author || (authEngine.currentUser ? authEngine.currentUser.username : "OpenFy User");
   const id = name.toLowerCase().replace(/[^a-z0-9]/g, "_") || "custom_theme";
 
   return {
     id: id,
     name: name,
     author: author,
-    version: "1.0.0",
+    version: studioState.version || "1.0.0",
     isDark: true,
-    primary: document.getElementById("creator-primary")?.value || "#00FF66",
-    onPrimary: "#000000",
-    secondary: document.getElementById("creator-secondary")?.value || "#00E5FF",
-    background: document.getElementById("creator-background")?.value || "#050B07",
-    surface: document.getElementById("creator-surface")?.value || "#0C1810",
-    onSurface: document.getElementById("creator-onsurface")?.value || "#E0F5E6"
+    backgroundStyle: studioState.backgroundStyle,
+    fontFamily: studioState.fontFamily,
+    iconStyle: studioState.iconStyle,
+    playerLayout: studioState.playerLayout,
+    creatorProfile: authEngine.currentUser ? {
+      username: authEngine.currentUser.username,
+      provider: authEngine.currentUser.provider,
+      avatarUrl: authEngine.currentUser.avatarUrl
+    } : null,
+    colors: {
+      primary: studioState.primary,
+      onPrimary: "#000000",
+      secondary: studioState.secondary,
+      background: studioState.background,
+      surface: studioState.surface,
+      surfaceVariant: studioState.surface,
+      onSurface: studioState.onSurface,
+      onSurfaceVariant: "#8C96AD",
+      accent: studioState.secondary,
+      cardColor: studioState.surface
+    }
   };
 }
 
-// QR Code Modal (Pure SVG generation)
+// ============================================================================
+// Auth Modal Handlers
+// ============================================================================
+window.openAuthModal = function() {
+  const modal = document.getElementById("auth-modal");
+  if (modal) modal.classList.add("open");
+};
+
+window.closeAuthModal = function() {
+  const modal = document.getElementById("auth-modal");
+  if (modal) modal.classList.remove("open");
+};
+
+window.switchAuthTab = function(tabName, el) {
+  document.querySelectorAll(".auth-tab-btn").forEach(b => b.classList.remove("active"));
+  if (el) el.classList.add("active");
+
+  document.querySelectorAll(".auth-tab-panel").forEach(p => p.classList.remove("active"));
+  const panel = document.getElementById(`auth-panel-${tabName}`);
+  if (panel) panel.classList.add("active");
+};
+
+// QR Code Modal
 window.openQrModal = function(title, id, url) {
   const modal = document.getElementById("qr-modal");
   const modalTitle = document.getElementById("qr-modal-title");
@@ -683,10 +1109,10 @@ window.openQrModal = function(title, id, url) {
   if (!modal || !qrContainer) return;
 
   modalTitle.textContent = title;
-  const deepLink = `openfy://theme/install?id=${encodeURIComponent(id)}&url=${encodeURIComponent(url)}&apply=true`;
+  const creator = authEngine.currentUser ? authEngine.currentUser.username : "";
+  const deepLink = `openfy://theme/install?id=${encodeURIComponent(id)}&url=${encodeURIComponent(url)}&creator=${encodeURIComponent(creator)}&apply=true`;
   if (directLinkBtn) directLinkBtn.href = deepLink;
 
-  // Render SVG QR representation
   qrContainer.innerHTML = generateSvgQrCode(url);
   modal.classList.add("open");
 };
@@ -696,21 +1122,19 @@ window.closeQrModal = function() {
   if (modal) modal.classList.remove("open");
 };
 
-// Lightweight deterministic SVG QR code matrix generator
+// Deterministic SVG QR Code Generator
 function generateSvgQrCode(text) {
-  // Deterministic seed matrix from text string
   let hash = 0;
   for (let i = 0; i < text.length; i++) {
     hash = ((hash << 5) - hash) + text.charCodeAt(i);
     hash |= 0;
   }
 
-  const size = 25; // 25x25 grid
+  const size = 25;
   const cellSize = 8;
   const total = size * cellSize;
   let rects = '';
 
-  // Corner markers
   function addMarker(x0, y0) {
     for (let r = 0; r < 7; r++) {
       for (let c = 0; c < 7; c++) {
@@ -727,12 +1151,9 @@ function generateSvgQrCode(text) {
   addMarker(size - 7, 0);
   addMarker(0, size - 7);
 
-  // Fill data cells
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size; c++) {
-      // skip corner markers
       if ((r < 8 && c < 8) || (r < 8 && c >= size - 8) || (r >= size - 8 && c < 8)) continue;
-      // pseudorandom based on text hash
       const cellHash = (hash ^ (r * 31 + c * 17) ^ (text.charCodeAt((r + c) % text.length) * 13)) & 1;
       if (cellHash === 1) {
         rects += `<rect x="${c * cellSize}" y="${r * cellSize}" width="${cellSize}" height="${cellSize}" fill="#000"/>`;
