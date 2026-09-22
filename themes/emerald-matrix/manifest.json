@@ -1,0 +1,10 @@
+{
+  "id": "emerald-matrix",
+  "name": "Изумрудная Матрица (Cyber Emerald)",
+  "author": "OpenFy Team",
+  "version": "1.0.0",
+  "minAppVersion": 1,
+  "isDark": true,
+  "description": "Кибернетический изумрудный терминал в стиле научной фантастики и матричного кода",
+  "previewAccentHex": "#00FF66"
+}

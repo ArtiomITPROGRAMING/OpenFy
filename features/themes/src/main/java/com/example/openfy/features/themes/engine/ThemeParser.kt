@@ -55,37 +55,51 @@ object ThemeParser {
         targetDir: File
     ): Result<ThemeMetadata> = withContext(Dispatchers.IO) {
         try {
+            val allBytes = inputStream.readBytes()
+            val isZip = allBytes.size >= 4 && allBytes[0] == 0x50.toByte() && allBytes[1] == 0x4B.toByte()
+
             val extractedFiles = mutableMapOf<String, ByteArray>()
 
-            ZipInputStream(inputStream).use { zip ->
-                var entry: ZipEntry? = zip.nextEntry
-                while (entry != null) {
-                    val name = entry.name.substringAfterLast("/").substringAfterLast("\\")
-                    if (!entry.isDirectory && name.isNotEmpty()) {
-                        val buffer = ByteArrayOutputStream()
-                        zip.copyTo(buffer)
-                        extractedFiles[name.lowercase()] = buffer.toByteArray()
+            if (isZip) {
+                java.io.ByteArrayInputStream(allBytes).use { bais ->
+                    ZipInputStream(bais).use { zip ->
+                        var entry: ZipEntry? = zip.nextEntry
+                        while (entry != null) {
+                            val name = entry.name.substringAfterLast("/").substringAfterLast("\\")
+                            if (!entry.isDirectory && name.isNotEmpty()) {
+                                val buffer = ByteArrayOutputStream()
+                                zip.copyTo(buffer)
+                                extractedFiles[name.lowercase()] = buffer.toByteArray()
+                            }
+                            zip.closeEntry()
+                            entry = zip.nextEntry
+                        }
                     }
-                    zip.closeEntry()
-                    entry = zip.nextEntry
                 }
+            } else {
+                // Direct JSON theme file
+                extractedFiles[THEME_CONFIG_FILE] = allBytes
             }
 
             val themeBytes = extractedFiles[THEME_CONFIG_FILE]
                 ?: extractedFiles[MANIFEST_CONFIG_FILE]
-                ?: return@withContext Result.failure(IllegalStateException("В архиве темы отсутствует '$THEME_CONFIG_FILE'"))
+                ?: return@withContext Result.failure(IllegalStateException("В файле темы отсутствуют корректные данные конфигурации '$THEME_CONFIG_FILE'"))
 
             val themeStr = themeBytes.decodeToString()
 
-            // Try decoding ThemeMetadata or fallback to parsing from manifest
+            // Try decoding ThemeMetadata or fallback to parsing from manifest or raw JSON object
             val metadata: ThemeMetadata = try {
                 json.decodeFromString<ThemeMetadata>(themeStr)
             } catch (_: Exception) {
                 val manifestBytes = extractedFiles[MANIFEST_CONFIG_FILE]
                 if (manifestBytes != null) {
-                    json.decodeFromString<ThemeMetadata>(manifestBytes.decodeToString())
+                    try {
+                        json.decodeFromString<ThemeMetadata>(manifestBytes.decodeToString())
+                    } catch (_: Exception) {
+                        ThemeMetadata(id = "imported_theme", name = "Импортированная тема")
+                    }
                 } else {
-                    return@withContext Result.failure(IllegalArgumentException("Не удалось извлечь метаданные темы из theme.json / manifest.json"))
+                    ThemeMetadata(id = "imported_theme", name = "Импортированная тема")
                 }
             }
 

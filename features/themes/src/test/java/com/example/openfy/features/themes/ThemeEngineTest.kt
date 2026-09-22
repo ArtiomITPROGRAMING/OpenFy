@@ -146,6 +146,57 @@ class ThemeEngineTest {
     }
 
     @Test
+    fun `ThemeParser parseAndExtractThm also parses raw standalone JSON theme files`() = runTest {
+        val themeJson = """
+            {
+                "id": "emerald_direct",
+                "name": "Emerald Direct",
+                "author": "OpenFy Team",
+                "version": "1.0.0",
+                "isDark": true,
+                "primary": "#00FF66",
+                "background": "#050B07",
+                "surface": "#0C1810"
+            }
+        """.trimIndent()
+
+        val tempDir = File.createTempFile("openfy_json_test", "").apply {
+            delete()
+            mkdirs()
+        }
+
+        try {
+            val result = ThemeParser.parseAndExtractThm(ByteArrayInputStream(themeJson.toByteArray()), tempDir)
+            assertTrue(result.isSuccess)
+            val metadata = result.getOrThrow()
+            assertEquals("emerald_direct", metadata.id)
+            assertEquals("Emerald Direct", metadata.name)
+
+            val extractedDir = File(tempDir, "emerald_direct")
+            assertTrue(File(extractedDir, ThemeParser.THEME_CONFIG_FILE).exists())
+            assertTrue(File(extractedDir, ThemeParser.MANIFEST_CONFIG_FILE).exists())
+        } finally {
+            tempDir.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `ThemeCatalogRepository BUILT_IN_CATALOG contains 5 valid themes with valid hex colors`() {
+        val catalog = com.example.openfy.features.themes.engine.ThemeCatalogRepository.BUILT_IN_CATALOG
+        assertEquals(5, catalog.size)
+
+        for (item in catalog) {
+            assertTrue(item.id.isNotBlank())
+            assertTrue(item.name.isNotBlank())
+            val primaryColor = parseHexColor(item.colors.primary)
+            assertNotNull(primaryColor)
+
+            val scheme = item.colors.toColorScheme(isDark = item.isDark)
+            assertNotNull(scheme)
+        }
+    }
+
+    @Test
     fun `invalid JSON produces descriptive failure without crash`() {
         val malformedJson = "{ id: missing_quotes }"
         val result = runCatching {

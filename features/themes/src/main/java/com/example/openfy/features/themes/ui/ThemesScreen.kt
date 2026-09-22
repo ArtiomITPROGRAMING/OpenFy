@@ -50,20 +50,26 @@ import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import com.example.openfy.features.themes.engine.CatalogThemeItem
+import com.example.openfy.features.themes.engine.ThemeCatalogRepository
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -113,6 +119,18 @@ fun ThemesScreen(
 
     var installedThemes by remember { mutableStateOf(ThemeEngine.getInstalledThemes(context)) }
     var themeToDelete by remember { mutableStateOf<ThemeManifest?>(null) }
+
+    var catalogThemes by remember { mutableStateOf(ThemeCatalogRepository.BUILT_IN_CATALOG) }
+    var showUrlDialog by remember { mutableStateOf(false) }
+    var inputUrl by remember { mutableStateOf("") }
+    var isDownloadingUrl by remember { mutableStateOf(false) }
+    var installingThemeId by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            catalogThemes = ThemeCatalogRepository.getCatalogThemes()
+        }
+    }
 
     fun refreshInstalledThemes() {
         installedThemes = ThemeEngine.getInstalledThemes(context)
@@ -224,91 +242,125 @@ fun ThemesScreen(
 
                             Spacer(modifier = Modifier.height(14.dp))
 
-                            Button(
-                                onClick = {
-                                    themePickerLauncher.launch(arrayOf("*/*", "application/zip", "application/octet-stream"))
-                                },
+                            Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (currentThemeStyle == AppThemeStyle.SERIOUS_DARK) Color.White else primaryAccent,
-                                    contentColor = if (currentThemeStyle == AppThemeStyle.SERIOUS_DARK) Color.Black else Color.White
-                                )
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.FileDownload,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "Выбрать .thm файл",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
+                                Button(
+                                    onClick = {
+                                        themePickerLauncher.launch(arrayOf("*/*", "application/zip", "application/json", "application/octet-stream"))
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (currentThemeStyle == AppThemeStyle.SERIOUS_DARK) Color.White else primaryAccent,
+                                        contentColor = if (currentThemeStyle == AppThemeStyle.SERIOUS_DARK) Color.Black else Color.White
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.FileDownload,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "Выбрать файл",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+
+                                OutlinedButton(
+                                    onClick = { showUrlDialog = true },
+                                    modifier = Modifier.weight(1f),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Link,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "По ссылке (URL)",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
                             }
                         }
                     }
                 }
 
-                // Online Catalog
+                // Online Catalog Header
                 item {
-                    GlassCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/ArtiomCrudu2010/OpenFy-Themes"))
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "КАТАЛОГ ТЕМ OPENFY (GITHUB)",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = primaryAccent,
+                            letterSpacing = 1.sp
+                        )
+
+                        TextButton(
+                            onClick = {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(ThemeCatalogRepository.GITHUB_THEMES_REPO_URL))
                                 try {
                                     context.startActivity(intent)
                                 } catch (_: Exception) {
-                                    Toast.makeText(context, "Ссылка: https://github.com/ArtiomCrudu2010/OpenFy-Themes", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(context, "Ссылка: ${ThemeCatalogRepository.GITHUB_THEMES_REPO_URL}", Toast.LENGTH_LONG).show()
                                 }
                             },
-                        shape = RoundedCornerShape(18.dp),
-                        backgroundColor = cardBg
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(14.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .background(Color(0xFFBD00FF).copy(alpha = 0.15f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Palette,
-                                    contentDescription = null,
-                                    tint = Color(0xFFBD00FF),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = "Онлайн-каталог тем OpenFy",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Text(
-                                    text = "Скачивайте открытые темы оформления от сообщества",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+                            Text("Открыть на GitHub", fontSize = 12.sp, color = primaryAccent)
+                            Spacer(modifier = Modifier.width(4.dp))
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.OpenInNew,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(14.dp),
+                                tint = primaryAccent
                             )
                         }
                     }
+                }
+
+                // Catalog themes list
+                items(catalogThemes, key = { "catalog_${it.id}" }) { item ->
+                    val isInstalled = installedThemes.any { it.id == item.id }
+                    val isActive = customThemeId == item.id
+                    val isInstalling = installingThemeId == item.id
+
+                    CatalogThemeCard(
+                        item = item,
+                        isInstalled = isInstalled,
+                        isActive = isActive,
+                        isInstalling = isInstalling,
+                        cardBg = cardBg,
+                        onInstallAndApply = {
+                            installingThemeId = item.id
+                            scope.launch {
+                                val result = ThemeCatalogRepository.installCatalogTheme(context, settingsRepository, item)
+                                installingThemeId = null
+                                result.onSuccess {
+                                    refreshInstalledThemes()
+                                    Toast.makeText(context, "Тема «${item.name}» успешно установлена и применена!", Toast.LENGTH_SHORT).show()
+                                }.onFailure { err ->
+                                    Toast.makeText(context, "Ошибка установки темы: ${err.localizedMessage}", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        },
+                        onApply = {
+                            settingsRepository.setCustomThemeId(item.id)
+                            Toast.makeText(context, "Применена тема «${item.name}»", Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 }
 
                 // App Launcher Icon Switcher
@@ -422,6 +474,65 @@ fun ThemesScreen(
             },
             dismissButton = {
                 TextButton(onClick = { themeToDelete = null }) {
+                    Text("Отмена")
+                }
+            }
+        )
+    }
+
+    if (showUrlDialog) {
+        AlertDialog(
+            onDismissRequest = { if (!isDownloadingUrl) showUrlDialog = false },
+            title = { Text("Скачать тему по ссылке", fontWeight = FontWeight.Bold) },
+            text = {
+                Column {
+                    Text(
+                        text = "Вставьте прямую ссылку на .thm архив или theme.json (например, из GitHub):",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = inputUrl,
+                        onValueChange = { inputUrl = it },
+                        placeholder = { Text("https://.../theme.json") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (inputUrl.isNotBlank()) {
+                            isDownloadingUrl = true
+                            scope.launch {
+                                val res = ThemeCatalogRepository.downloadAndInstallThemeFromUrl(context, settingsRepository, inputUrl)
+                                isDownloadingUrl = false
+                                showUrlDialog = false
+                                res.onSuccess {
+                                    refreshInstalledThemes()
+                                    Toast.makeText(context, "Тема «${it.name}» успешно скачана и установлена!", Toast.LENGTH_SHORT).show()
+                                }.onFailure { err ->
+                                    Toast.makeText(context, "Ошибка загрузки темы: ${err.localizedMessage}", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        }
+                    },
+                    enabled = !isDownloadingUrl && inputUrl.isNotBlank()
+                ) {
+                    if (isDownloadingUrl) {
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                    } else {
+                        Text("Скачать и применить")
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showUrlDialog = false },
+                    enabled = !isDownloadingUrl
+                ) {
                     Text("Отмена")
                 }
             }
@@ -617,6 +728,170 @@ private fun CustomThemeCard(
                     contentDescription = "Удалить тему",
                     tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CatalogThemeCard(
+    item: CatalogThemeItem,
+    isInstalled: Boolean,
+    isActive: Boolean,
+    isInstalling: Boolean,
+    cardBg: Color,
+    onInstallAndApply: () -> Unit,
+    onApply: () -> Unit
+) {
+    val accentColor = parseHexColor(item.previewAccentHex, fallback = MaterialTheme.colorScheme.primary)
+
+    GlassCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        shape = RoundedCornerShape(18.dp),
+        backgroundColor = if (isActive) MaterialTheme.colorScheme.surface else cardBg,
+        hasGlowBorder = isActive,
+        glowColor = accentColor
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                    Box(
+                        modifier = Modifier
+                            .size(14.dp)
+                            .clip(CircleShape)
+                            .background(accentColor)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column {
+                        Text(
+                            text = item.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = "v${item.version} • ${item.author}",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                if (isActive) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = accentColor.copy(alpha = 0.2f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, accentColor),
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                tint = accentColor,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "АКТИВНА",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = accentColor
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (item.description.isNotBlank()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = item.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 12.sp,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Palette color circles & Action button
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Color dots preview
+                Row(horizontalArrangement = Arrangement.spacedBy((-6).dp)) {
+                    item.previewColors.take(4).forEach { hex ->
+                        Box(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clip(CircleShape)
+                                .background(parseHexColor(hex))
+                                .border(1.5.dp, Color.Black, CircleShape)
+                        )
+                    }
+                }
+
+                // Action button
+                if (isActive) {
+                    // Already active
+                } else if (isInstalling) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp,
+                        color = accentColor
+                    )
+                } else if (isInstalled) {
+                    Button(
+                        onClick = onApply,
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 4.dp)
+                    ) {
+                        Text("Применить", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    }
+                } else {
+                    Button(
+                        onClick = onInstallAndApply,
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = accentColor,
+                            contentColor = Color.Black
+                        ),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FileDownload,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Установить", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
             }
         }
     }
