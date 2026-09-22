@@ -1750,3 +1750,497 @@ body {
   height: 60px;
   fill: #000;
 }
+
+/* ==========================================================================
+   Wi-Fi Indicator & Direct P2P Controls
+   ========================================================================== */
+
+.wifi-indicator-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: var(--radius-full);
+  color: #00E5FF;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.wifi-indicator-pill:hover {
+  background: rgba(0, 229, 255, 0.16);
+  border-color: #00E5FF;
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.3);
+}
+
+.wifi-indicator-pill.connected {
+  background: rgba(0, 255, 102, 0.1);
+  border-color: rgba(0, 255, 102, 0.4);
+  color: #00FF66;
+}
+
+.wifi-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #64748B;
+  display: inline-block;
+}
+
+.wifi-indicator-pill.connected .wifi-pulse-dot,
+.wifi-pulse-dot.online {
+  background: #00FF66;
+  box-shadow: 0 0 8px #00FF66;
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(0, 255, 102, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
+}
+
+/* Wi-Fi Direct Apply Buttons */
+.btn-wifi {
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.18), rgba(0, 255, 102, 0.18));
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  color: #00E5FF;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+
+.btn-wifi:hover {
+  background: linear-gradient(135deg, #00E5FF, #00FF66);
+  border-color: #00FF66;
+  color: #000000;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Mobile Nav Toggle & Drawer */
+.btn-mobile-nav {
+  display: none;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  color: var(--text-main);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.btn-mobile-nav:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--theme-primary);
+}
+
+.mobile-nav-drawer {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 82%;
+  max-width: 320px;
+  height: 100vh;
+  background: #0A0D14;
+  border-left: 1px solid var(--card-border);
+  z-index: 1000;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.7);
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-nav-drawer.open {
+  right: 0;
+}
+
+.mobile-nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 1.5rem;
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobile-nav-link {
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  transition: var(--transition);
+}
+
+.mobile-nav-link:hover, .mobile-nav-link:active {
+  background: rgba(0, 255, 102, 0.08);
+  border-color: rgba(0, 255, 102, 0.3);
+  color: var(--theme-primary);
+}
+
+/* 2FA Security Modal Styles */
+.security-modal-box {
+  max-width: 520px;
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  box-shadow: 0 0 40px rgba(0, 229, 255, 0.2), var(--shadow-lg);
+}
+
+.security-badge-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #00E5FF;
+  margin-bottom: 8px;
+}
+
+.sec-pin-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 1.5rem 0 1rem;
+}
+
+.sec-pin-cell {
+  width: 46px;
+  height: 58px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(0, 255, 102, 0.4);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #00FF66;
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
+  transition: var(--transition);
+}
+
+.sec-pin-cell:hover {
+  transform: translateY(-2px);
+  border-color: #00FF66;
+  box-shadow: 0 0 25px rgba(0, 255, 102, 0.4);
+}
+
+.sec-pin-divider {
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-dim);
+  padding: 0 4px;
+}
+
+.sec-timer-wrapper {
+  margin: 1rem 0;
+}
+
+.sec-timer-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.sec-timer-bar {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.sec-timer-progress {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #00FF66, #00E5FF);
+  border-radius: var(--radius-full);
+  transition: width 1s linear;
+}
+
+.security-meta-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.sec-info-pill {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--card-border);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* Wi-Fi Status Card */
+.wifi-status-card {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-top: 10px;
+}
+
+.wifi-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wifi-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-full);
+}
+
+.wifi-status-badge.online {
+  background: rgba(0, 255, 102, 0.1);
+  color: #00FF66;
+}
+
+/* ==========================================================================
+   Comprehensive Mobile & Tablet Media Queries
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .main-hub {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    padding: 0 1.5rem 3rem;
+  }
+
+  .mockup-wrapper {
+    position: static;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: 2.8rem;
+  }
+
+  .studio-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0.75rem 1rem;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .btn-mobile-nav {
+    display: inline-flex;
+  }
+
+  .brand-title {
+    font-size: 1.25rem;
+  }
+
+  .brand-logo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .hero {
+    padding: 2rem 1rem 1.5rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+
+  .hero-desc {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .stat-item {
+    padding: 12px;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .themes-grid {
+    gap: 1rem;
+  }
+
+  .theme-card {
+    padding: 1.15rem;
+  }
+
+  .theme-card-top {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .theme-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .btn-card-action {
+    flex: 1;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .filter-bar {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+    margin-bottom: 1rem;
+  }
+
+  .filter-chip {
+    white-space: nowrap;
+    padding: 8px 14px;
+    font-size: 0.82rem;
+  }
+
+  .studio-section {
+    padding: 2rem 1rem;
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+  }
+
+  .studio-grid {
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .studio-tabs-bar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .studio-tab-nav {
+    padding: 10px 14px;
+    min-height: 44px;
+  }
+
+  .studio-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .studio-actions .btn {
+    width: 100%;
+    min-height: 46px;
+    justify-content: center;
+  }
+
+  .color-picker-box {
+    padding: 10px;
+  }
+
+  /* Modals as Modern Mobile Bottom Sheets */
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 90vh;
+    border-radius: 24px 24px 0 0 !important;
+    padding: 1.5rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 16px));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sec-pin-cell {
+    width: 38px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 1.75rem;
+  }
+
+  .sec-pin-cell {
+    width: 34px;
+    height: 46px;
+    font-size: 1.35rem;
+  }
+
+  .sec-pin-display {
+    gap: 4px;
+  }
+
+  .mockup-wrapper {
+    max-width: 100%;
+  }
+
+  .smartphone-frame {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}

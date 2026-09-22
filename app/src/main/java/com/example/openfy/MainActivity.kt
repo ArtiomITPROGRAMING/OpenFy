@@ -42,6 +42,8 @@ import com.example.openfy.core.ui.theme.OpenFyTheme
 import com.example.openfy.features.community.storage.AuthStorage
 import com.example.openfy.features.community.ui.ProfileViewModel
 import com.example.openfy.features.themes.engine.ThemeEngine
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 import com.example.openfy.ui.components.NetworkConsentBottomSheet
@@ -79,7 +81,34 @@ class MainActivity : ComponentActivity() {
             val themeStyle by playbackManager.settingsRepository.themeStyle.collectAsState()
             val customThemeId by playbackManager.settingsRepository.customThemeId.collectAsState()
             val networkConsentPromptShown by playbackManager.settingsRepository.networkConsentPromptShown.collectAsState()
+            val networkConsentGranted by playbackManager.settingsRepository.networkConsentGranted.collectAsState()
             val context = LocalContext.current
+
+            LaunchedEffect(networkConsentGranted) {
+                if (networkConsentGranted) {
+                    com.example.openfy.features.community.sync.LocalShareServer.startWifiSyncServer(8888) { themeJson ->
+                        try {
+                            val meta = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }.decodeFromString<com.example.openfy.features.themes.model.ThemeMetadata>(themeJson)
+                            val targetDir = ThemeEngine.getThemesDirectory(this@MainActivity)
+                            val themeFolder = java.io.File(targetDir, meta.id).apply { mkdirs() }
+                            java.io.File(themeFolder, com.example.openfy.features.themes.engine.ThemeParser.THEME_CONFIG_FILE).writeText(themeJson)
+                            lifecycleScope.launch(Dispatchers.Main) {
+                                playbackManager.settingsRepository.setCustomThemeId(meta.id)
+                                android.widget.Toast.makeText(
+                                    this@MainActivity,
+                                    "Тема «${meta.name}» успешно установлена и применена по Wi-Fi!",
+                                    android.widget.Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            true
+                        } catch (_: Exception) {
+                            false
+                        }
+                    }
+                } else {
+                    com.example.openfy.features.community.sync.LocalShareServer.stopServer()
+                }
+            }
 
             val customColorScheme = remember(customThemeId) {
                 if (customThemeId != null) {

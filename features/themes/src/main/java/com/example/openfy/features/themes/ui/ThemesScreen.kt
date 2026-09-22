@@ -17,6 +17,7 @@
 
 package com.example.openfy.features.themes.ui
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -311,6 +312,10 @@ fun ThemesScreen(
                         TextButton(
                             onClick = {
                                 val syncUrl = ThemeCatalogRepository.getWebShowcaseSyncUrl(context)
+                                val secCode = context.getSharedPreferences("openfy_security_pairing", Context.MODE_PRIVATE).getString("active_sec_code", null)
+                                if (!secCode.isNullOrBlank()) {
+                                    Toast.makeText(context, "Код безопасности OpenFy 2FA: $secCode", Toast.LENGTH_LONG).show()
+                                }
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(syncUrl))
                                 try {
                                     context.startActivity(intent)

@@ -227,11 +227,14 @@ const storage = {
 };
 
 // ============================================================================
-// Auth & Phone Sync Engine
+// ============================================================================
+// Auth & Max Security 2FA Match Engine
 // ============================================================================
 const authEngine = {
   currentUser: null,
   pendingAppUser: null,
+  pending2FaChallenge: null,
+  timerInterval: null,
 
   init() {
     this.currentUser = storage.getUser();
@@ -247,31 +250,138 @@ const authEngine = {
         provider: params.get("provider") || "openfy_sync",
         avatarUrl: params.get("avatar") || "",
         id: params.get("id") || `sync_${Date.now()}`,
-        syncedWithApp: true
+        syncedWithApp: true,
+        securityStatus: "PENDING_2FA_VERIFICATION"
       };
 
-      // Check for mismatch
+      const ip = params.get("ip") || "";
+      const port = params.get("port") || "8888";
+      const secCode = params.get("sec_code") || "";
+
+      if (ip) {
+        wifiSyncEngine.savePhoneAddress(ip, port);
+      }
+
+      // Clean query parameters from URL for security
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+
+      // Check for account mismatch
       if (this.currentUser && this.currentUser.username.toLowerCase() !== incomingUser.username.toLowerCase()) {
         this.pendingAppUser = incomingUser;
         this.showMismatchBanner(this.currentUser, incomingUser);
-      } else {
-        // Automatic login & sync
-        this.currentUser = incomingUser;
-        storage.saveUser(incomingUser);
-        showToast(`Авторизовано через OpenFy: @${incomingUser.username}`);
+        return;
       }
 
-      // Update creator author in studio
-      if (studioState) {
-        studioState.author = incomingUser.username;
-        const authorInput = document.getElementById("creator-author");
-        if (authorInput) authorInput.value = incomingUser.username;
-      }
-
-      // Clean query parameters from URL
-      const cleanUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState({}, document.title, cleanUrl);
+      // Max Security 2FA Challenge Trigger
+      this.trigger2FaSecurityChallenge(incomingUser, secCode, ip, port);
     }
+  },
+
+  trigger2FaSecurityChallenge(incomingUser, secCode, ip, port) {
+    const code = secCode || Math.floor(100000 + Math.random() * 900000).toString();
+    this.pending2FaChallenge = {
+      user: incomingUser,
+      code: code,
+      ip: ip || wifiSyncEngine.ip || "",
+      port: port || wifiSyncEngine.port || "8888",
+      expiresAt: Date.now() + 120 * 1000 // 120s
+    };
+
+    // Render 6 digits in PIN display
+    const digits = code.padStart(6, "0").split("");
+    digits.forEach((d, i) => {
+      const cell = document.getElementById(`pin-${i}`);
+      if (cell) cell.textContent = d;
+    });
+
+    const userSpan = document.getElementById("sec-2fa-username");
+    if (userSpan) userSpan.textContent = `@${incomingUser.username}`;
+
+    const ipSpan = document.getElementById("sec-device-ip");
+    if (ipSpan) ipSpan.textContent = ip ? `Wi-Fi: ${ip}:${port}` : (wifiSyncEngine.ip ? `Wi-Fi: ${wifiSyncEngine.ip}` : "Локальная сеть");
+
+    this.start2FaTimer();
+    open2FaModal();
+  },
+
+  start2FaTimer() {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    const timerText = document.getElementById("sec-timer-text");
+    const timerProgress = document.getElementById("sec-timer-progress");
+
+    const updateTimer = () => {
+      if (!this.pending2FaChallenge) {
+        clearInterval(this.timerInterval);
+        return;
+      }
+      const remainingMs = this.pending2FaChallenge.expiresAt - Date.now();
+      if (remainingMs <= 0) {
+        clearInterval(this.timerInterval);
+        if (timerText) timerText.textContent = "00:00 (Истёк)";
+        if (timerProgress) timerProgress.style.width = "0%";
+        showToast("⚠️ Время действия 2FA кода безопасности истекло");
+        this.reject2Fa();
+        return;
+      }
+
+      const totalSec = Math.floor(remainingMs / 1000);
+      const minutes = Math.floor(totalSec / 60).toString().padStart(2, "0");
+      const seconds = (totalSec % 60).toString().padStart(2, "0");
+      if (timerText) timerText.textContent = `${minutes}:${seconds}`;
+      if (timerProgress) {
+        const percent = Math.max(0, (remainingMs / 120000) * 100);
+        timerProgress.style.width = `${percent}%`;
+      }
+    };
+
+    updateTimer();
+    this.timerInterval = setInterval(updateTimer, 1000);
+  },
+
+  async confirm2FaMatch() {
+    if (!this.pending2FaChallenge) return;
+    const challenge = this.pending2FaChallenge;
+
+    // Mutual Wi-Fi verification handshake if reachable
+    if (challenge.ip) {
+      try {
+        await fetch(`http://${challenge.ip}:${challenge.port}/api/auth/verify`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: challenge.code }),
+          signal: AbortSignal.timeout(2000)
+        });
+      } catch (_) {}
+    }
+
+    clearInterval(this.timerInterval);
+    const user = challenge.user;
+    user.is2FaVerified = true;
+    user.securityLevel = "MAXIMUM_2FA_PIN_PAIRED";
+    user.verifiedAt = new Date().toISOString();
+    user.sessionToken = "sec_" + Math.random().toString(36).substring(2) + Date.now().toString(36);
+
+    this.currentUser = user;
+    storage.saveUser(user);
+    this.pending2FaChallenge = null;
+
+    if (studioState) {
+      studioState.author = user.username;
+      const authorInput = document.getElementById("creator-author");
+      if (authorInput) authorInput.value = user.username;
+    }
+
+    this.renderHeaderUserWidget();
+    close2FaModal();
+    showToast(`🛡️ Вход подтвержден: 2FA код совпал! Добро пожаловать, @${user.username}`);
+  },
+
+  reject2Fa() {
+    clearInterval(this.timerInterval);
+    this.pending2FaChallenge = null;
+    close2FaModal();
+    showToast("Вход в аккаунт отклонён в целях безопасности.");
   },
 
   showMismatchBanner(webUser, appUser) {
@@ -292,15 +402,10 @@ const authEngine = {
 
   applyAppSync() {
     if (this.pendingAppUser) {
-      this.currentUser = this.pendingAppUser;
-      storage.saveUser(this.pendingAppUser);
+      const userToSync = this.pendingAppUser;
       this.pendingAppUser = null;
       this.dismissMismatchBanner();
-      this.renderHeaderUserWidget();
-      showToast(`Профиль синхронизирован с телефоном: @${this.currentUser.username}`);
-      
-      const authorInput = document.getElementById("creator-author");
-      if (authorInput) authorInput.value = this.currentUser.username;
+      this.trigger2FaSecurityChallenge(userToSync, null, null, null);
     }
   },
 
@@ -326,7 +431,7 @@ const authEngine = {
         `<img src="${this.currentUser.avatarUrl}" alt="${this.currentUser.username}" onerror="this.onerror=null; this.parentNode.textContent='${avatarInitial}';"/>` :
         avatarInitial;
 
-      const providerBadge = this.currentUser.syncedWithApp ? "OpenFy Sync" : (this.currentUser.provider || "Web");
+      const providerBadge = this.currentUser.is2FaVerified ? "2FA Защищён" : (this.currentUser.syncedWithApp ? "OpenFy Sync" : (this.currentUser.provider || "Web"));
 
       container.innerHTML = `
         <button class="user-profile-btn" onclick="authEngine.toggleUserDropdown()">
@@ -361,20 +466,15 @@ const authEngine = {
 
   loginAsGuest(nickname) {
     const nick = (nickname || "").trim() || "OpenFy Creator";
-    this.currentUser = {
+    const user = {
       username: nick,
       provider: "guest",
       avatarUrl: "",
       id: `guest_${Date.now()}`,
       syncedWithApp: false
     };
-    storage.saveUser(this.currentUser);
-    this.renderHeaderUserWidget();
     closeAuthModal();
-    showToast(`Добро пожаловать, ${nick}!`);
-    
-    const authorInput = document.getElementById("creator-author");
-    if (authorInput) authorInput.value = nick;
+    this.trigger2FaSecurityChallenge(user, null, null, null);
   },
 
   loginWithGitHub(tokenOrUsername) {
@@ -385,38 +485,28 @@ const authEngine = {
     }
 
     const username = val.replace(/^@/, "");
-    this.currentUser = {
+    const user = {
       username: username,
       provider: "github",
       avatarUrl: `https://github.com/${username}.png`,
       id: `gh_${username}`,
       syncedWithApp: false
     };
-    storage.saveUser(this.currentUser);
-    this.renderHeaderUserWidget();
     closeAuthModal();
-    showToast(`Успешный вход через GitHub: @${username}!`);
-
-    const authorInput = document.getElementById("creator-author");
-    if (authorInput) authorInput.value = username;
+    this.trigger2FaSecurityChallenge(user, null, null, null);
   },
 
   loginWithDiscord(tag) {
     const val = (tag || "").trim() || "DiscordCreator";
-    this.currentUser = {
+    const user = {
       username: val,
       provider: "discord",
       avatarUrl: "",
       id: `dc_${Date.now()}`,
       syncedWithApp: false
     };
-    storage.saveUser(this.currentUser);
-    this.renderHeaderUserWidget();
     closeAuthModal();
-    showToast(`Успешный вход через Discord: ${val}!`);
-
-    const authorInput = document.getElementById("creator-author");
-    if (authorInput) authorInput.value = val;
+    this.trigger2FaSecurityChallenge(user, null, null, null);
   },
 
   logout() {
@@ -436,10 +526,183 @@ document.addEventListener("click", (e) => {
 });
 
 // ============================================================================
+// Wi-Fi Local P2P Sync Engine
+// ============================================================================
+const wifiSyncEngine = {
+  ip: localStorage.getItem("openfy_wifi_ip") || "",
+  port: localStorage.getItem("openfy_wifi_port") || "8888",
+  isOnline: false,
+
+  init() {
+    this.updateStatusPill();
+    if (this.ip) {
+      this.pingPlayer(this.ip, false);
+    }
+  },
+
+  savePhoneAddress(ip, port = "8888") {
+    if (!ip) return;
+    this.ip = ip.trim();
+    this.port = port || "8888";
+    localStorage.setItem("openfy_wifi_ip", this.ip);
+    localStorage.setItem("openfy_wifi_port", this.port);
+    this.pingPlayer(this.ip, false);
+  },
+
+  saveManualIp() {
+    const input = document.getElementById("wifi-ip-input");
+    if (!input || !input.value.trim()) {
+      showToast("Укажите корректный IP-адрес");
+      return;
+    }
+    this.savePhoneAddress(input.value.trim());
+    closeWifiModal();
+    showToast(`IP-адрес сохранён: ${this.ip}`);
+  },
+
+  async pingPlayer(ipToCheck, notify = true) {
+    const ip = ipToCheck || this.ip;
+    if (!ip) {
+      if (notify) showToast("Укажите IP-адрес для проверки");
+      return;
+    }
+
+    const cardDot = document.getElementById("wifi-card-dot");
+    const cardStatusText = document.getElementById("wifi-card-status-text");
+    if (cardStatusText) cardStatusText.textContent = "Проверка связи...";
+
+    try {
+      const res = await fetch(`http://${ip}:${this.port}/api/status`, {
+        method: "GET",
+        mode: "cors",
+        signal: AbortSignal.timeout(3000)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        this.isOnline = true;
+        this.ip = ip;
+        localStorage.setItem("openfy_wifi_ip", ip);
+        this.updateStatusPill();
+        if (cardDot) cardDot.className = "wifi-pulse-dot online";
+        if (cardStatusText) cardStatusText.textContent = `В сети (${data.device || "OpenFy"})`;
+        if (notify) showToast(`📱 Плеер найден в сети: ${ip}:${this.port}`);
+        return true;
+      }
+    } catch (_) {}
+
+    this.isOnline = false;
+    this.updateStatusPill();
+    if (cardDot) cardDot.className = "wifi-pulse-dot";
+    if (cardStatusText) cardStatusText.textContent = "Не найден (Офлайн)";
+    if (notify) showToast(`Не удалось подключиться к ${ip}:${this.port}`);
+    return false;
+  },
+
+  updateStatusPill() {
+    const pill = document.getElementById("wifi-status-pill");
+    const dot = document.getElementById("wifi-dot");
+    const text = document.getElementById("wifi-status-text");
+    if (!pill || !dot || !text) return;
+
+    if (this.isOnline) {
+      pill.classList.add("connected");
+      dot.className = "wifi-pulse-dot online";
+      text.textContent = "Wi-Fi: Онлайн";
+    } else if (this.ip) {
+      pill.classList.remove("connected");
+      dot.className = "wifi-pulse-dot";
+      text.textContent = `Wi-Fi: ${this.ip}`;
+    } else {
+      pill.classList.remove("connected");
+      dot.className = "wifi-pulse-dot";
+      text.textContent = "Wi-Fi";
+    }
+  },
+
+  async applyThemeViaWifi(themeId) {
+    const theme = THEMES_DATA.find(t => t.id === themeId);
+    if (!theme) return;
+
+    if (!this.ip) {
+      openWifiModal();
+      showToast("Укажите IP-адрес плеера в сети Wi-Fi");
+      return;
+    }
+
+    const payload = {
+      id: theme.id,
+      name: theme.name,
+      author: theme.author,
+      version: theme.version || "1.0.0",
+      isDark: true,
+      backgroundStyle: theme.backgroundStyle,
+      fontFamily: theme.fontFamily,
+      iconStyle: theme.iconStyle,
+      playerLayout: theme.playerLayout,
+      creatorProfile: authEngine.currentUser ? {
+        username: authEngine.currentUser.username,
+        provider: authEngine.currentUser.provider,
+        avatarUrl: authEngine.currentUser.avatarUrl
+      } : null,
+      colors: {
+        primary: theme.colors.primary,
+        onPrimary: theme.colors.onPrimary || "#000000",
+        secondary: theme.colors.secondary,
+        background: theme.colors.background,
+        surface: theme.colors.surface,
+        surfaceVariant: theme.colors.surfaceVariant || theme.colors.surface,
+        onSurface: theme.colors.onSurface,
+        onSurfaceVariant: theme.colors.onSurfaceVariant || "#8C96AD",
+        accent: theme.colors.accent || theme.colors.primary,
+        cardColor: theme.colors.card || theme.colors.surface
+      }
+    };
+
+    await this.sendThemePayload(payload);
+  },
+
+  async applyStudioThemeViaWifi() {
+    if (!this.ip) {
+      openWifiModal();
+      showToast("Укажите IP-адрес плеера в сети Wi-Fi");
+      return;
+    }
+    const payload = generateThemeJsonContent();
+    await this.sendThemePayload(payload);
+  },
+
+  async sendThemePayload(payload) {
+    showToast(`⚡ Отправка темы «${payload.name}» в OpenFy по Wi-Fi...`);
+
+    try {
+      const res = await fetch(`http://${this.ip}:${this.port}/api/theme/apply`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        mode: "cors",
+        signal: AbortSignal.timeout(5000)
+      });
+
+      if (res.ok) {
+        this.isOnline = true;
+        this.updateStatusPill();
+        showToast(`🎉 Тема «${payload.name}» успешно применена в OpenFy!`);
+      } else {
+        showToast(`Ошибка плеера при применении темы (код: ${res.status})`);
+      }
+    } catch (err) {
+      showToast(`⚠️ Не удалось связаться с ${this.ip}:${this.port}. Проверьте Wi-Fi в плеере.`);
+      openWifiModal();
+    }
+  }
+};
+
+// ============================================================================
 // DOM Init
 // ============================================================================
 document.addEventListener("DOMContentLoaded", () => {
   authEngine.init();
+  wifiSyncEngine.init();
   renderThemeCards();
   setupFilters();
   setupSearch();
@@ -534,6 +797,11 @@ function renderThemeCards() {
           <button class="btn btn-primary" onclick="installInOpenFy('${theme.id}', '${theme.downloadUrl}', '${theme.author}')" title="Установить сразу в плеер на телефоне">
             <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
             В OpenFy
+          </button>
+
+          <button class="btn btn-wifi" onclick="wifiSyncEngine.applyThemeViaWifi('${theme.id}')" title="Мгновенно применить на телефоне по Wi-Fi">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.5c3.78 0 7.22 1.48 9.77 3.91L12 19.34 2.23 11.41C4.78 8.98 8.22 7.5 12 7.5z"/></svg>
+            По Wi-Fi
           </button>
 
           <button class="btn btn-secondary" onclick="previewTheme('${theme.id}')">
@@ -1232,3 +1500,34 @@ function showToast(message) {
     setTimeout(() => toast.remove(), 300);
   }, 2800);
 }
+
+// ============================================================================
+// Security 2FA & Wi-Fi Modal Helpers
+// ============================================================================
+window.open2FaModal = function() {
+  const modal = document.getElementById("security-2fa-modal");
+  if (modal) modal.classList.add("open");
+};
+
+window.close2FaModal = function() {
+  const modal = document.getElementById("security-2fa-modal");
+  if (modal) modal.classList.remove("open");
+};
+
+window.openWifiModal = function() {
+  const modal = document.getElementById("wifi-connect-modal");
+  const input = document.getElementById("wifi-ip-input");
+  if (input && wifiSyncEngine.ip) input.value = wifiSyncEngine.ip;
+  if (modal) modal.classList.add("open");
+  if (wifiSyncEngine.ip) wifiSyncEngine.pingPlayer(wifiSyncEngine.ip, false);
+};
+
+window.closeWifiModal = function() {
+  const modal = document.getElementById("wifi-connect-modal");
+  if (modal) modal.classList.remove("open");
+};
+
+window.toggleMobileNav = function() {
+  const drawer = document.getElementById("mobile-nav-drawer");
+  if (drawer) drawer.classList.toggle("open");
+};

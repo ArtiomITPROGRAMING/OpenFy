@@ -57,10 +57,10 @@ object ThemeCatalogRepository {
     }
 
     /**
-     * Builds a URL with profile synchronization parameters to automatically authenticate
-     * the user on the GitHub Pages showcase with their in-app OpenFy account.
+     * Builds a URL with profile synchronization parameters, local Wi-Fi IP, and 6-digit 2FA match code
+     * to automatically authenticate and pair the web showcase with this OpenFy player.
      */
-    fun getWebShowcaseSyncUrl(context: Context): String {
+    fun getWebShowcaseSyncUrl(context: Context, ip: String? = null, secCode: String? = null): String {
         try {
             // Check fallback or standard prefs
             val prefs = context.getSharedPreferences("openfy_community_auth_secure_fallback", Context.MODE_PRIVATE)
@@ -85,16 +85,57 @@ object ThemeCatalogRepository {
                 userId = idMatch?.groupValues?.get(1) ?: ""
             }
 
-            if (username.isNotBlank()) {
-                val encodedUser = java.net.URLEncoder.encode(username, "UTF-8")
-                val encodedAvatar = java.net.URLEncoder.encode(avatarUrl, "UTF-8")
-                val encodedId = java.net.URLEncoder.encode(userId, "UTF-8")
-                return "$GITHUB_PAGES_SHOWCASE_URL?auth_sync=1&provider=$provider&user=$encodedUser&avatar=$encodedAvatar&id=$encodedId"
+            val targetIp = ip ?: getLocalIpAddress() ?: ""
+            val securityPrefs = context.getSharedPreferences("openfy_security_pairing", Context.MODE_PRIVATE)
+            val targetSecCode = if (!secCode.isNullOrBlank()) {
+                secCode
+            } else {
+                val generated = (100000..999999).random().toString()
+                securityPrefs.edit()
+                    .putString("active_sec_code", generated)
+                    .putLong("sec_code_expiry", System.currentTimeMillis() + 5 * 60 * 1000L)
+                    .apply()
+                generated
             }
+
+            val queryParts = mutableListOf("auth_sync=1")
+            if (username.isNotBlank()) {
+                queryParts.add("provider=${java.net.URLEncoder.encode(provider, "UTF-8")}")
+                queryParts.add("user=${java.net.URLEncoder.encode(username, "UTF-8")}")
+                queryParts.add("avatar=${java.net.URLEncoder.encode(avatarUrl, "UTF-8")}")
+                queryParts.add("id=${java.net.URLEncoder.encode(userId, "UTF-8")}")
+            }
+            if (targetIp.isNotBlank()) {
+                queryParts.add("ip=${java.net.URLEncoder.encode(targetIp, "UTF-8")}")
+                queryParts.add("port=8888")
+            }
+            if (targetSecCode.isNotBlank()) {
+                queryParts.add("sec_code=${java.net.URLEncoder.encode(targetSecCode, "UTF-8")}")
+            }
+
+            return "$GITHUB_PAGES_SHOWCASE_URL?${queryParts.joinToString("&")}"
         } catch (_: Exception) {
             // Fall back to clean URL if prefs are encrypted or error occurs
         }
         return GITHUB_PAGES_SHOWCASE_URL
+    }
+
+    private fun getLocalIpAddress(): String? {
+        try {
+            val interfaces = java.net.NetworkInterface.getNetworkInterfaces()
+            while (interfaces.hasMoreElements()) {
+                val iface = interfaces.nextElement()
+                if (iface.isLoopback || !iface.isUp) continue
+                val addresses = iface.inetAddresses
+                while (addresses.hasMoreElements()) {
+                    val addr = addresses.nextElement()
+                    if (!addr.isLoopbackAddress && addr is java.net.Inet4Address) {
+                        return addr.hostAddress
+                    }
+                }
+            }
+        } catch (_: Exception) {}
+        return null
     }
 
     /**
