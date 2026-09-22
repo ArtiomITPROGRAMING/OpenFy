@@ -1,0 +1,10 @@
+{
+  "id": "tokyo-night",
+  "name": "Токийская Ночь (Tokyo Night & Sakura)",
+  "author": "OpenFy Team",
+  "version": "1.0.0",
+  "minAppVersion": 1,
+  "isDark": true,
+  "description": "Атмосфера ночного Сибуя: неоновые вывески, лепестки сакуры и глубокая полночь",
+  "previewAccentHex": "#F43F5E"
+}

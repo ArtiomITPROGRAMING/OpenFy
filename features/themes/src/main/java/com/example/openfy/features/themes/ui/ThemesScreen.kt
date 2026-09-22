@@ -310,16 +310,16 @@ fun ThemesScreen(
 
                         TextButton(
                             onClick = {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(ThemeCatalogRepository.GITHUB_THEMES_REPO_URL))
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(ThemeCatalogRepository.GITHUB_PAGES_SHOWCASE_URL))
                                 try {
                                     context.startActivity(intent)
                                 } catch (_: Exception) {
-                                    Toast.makeText(context, "Ссылка: ${ThemeCatalogRepository.GITHUB_THEMES_REPO_URL}", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(context, "Ссылка: ${ThemeCatalogRepository.GITHUB_PAGES_SHOWCASE_URL}", Toast.LENGTH_LONG).show()
                                 }
                             },
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                         ) {
-                            Text("Открыть на GitHub", fontSize = 12.sp, color = primaryAccent)
+                            Text("Веб-витрина (GitHub Pages)", fontSize = 12.sp, color = primaryAccent)
                             Spacer(modifier = Modifier.width(4.dp))
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.OpenInNew,

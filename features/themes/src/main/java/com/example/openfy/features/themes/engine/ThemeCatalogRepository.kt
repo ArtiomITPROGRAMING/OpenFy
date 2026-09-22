@@ -46,8 +46,10 @@ data class CatalogThemeItem(
 
 object ThemeCatalogRepository {
 
+    const val GITHUB_PAGES_SHOWCASE_URL = "https://artiomitprograming.github.io/OpenFy/"
     const val GITHUB_THEMES_REPO_URL = "https://github.com/ArtiomITPROGRAMING/OpenFy/tree/main/themes"
     const val GITHUB_CATALOG_RAW_URL = "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/catalog.json"
+    const val GITHUB_PAGES_CATALOG_URL = "https://artiomitprograming.github.io/OpenFy/catalog.json"
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -294,6 +296,19 @@ object ThemeCatalogRepository {
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    /**
+     * Installs a catalog theme by its [themeId].
+     */
+    suspend fun installCatalogThemeById(
+        context: Context,
+        settingsRepository: SettingsRepository,
+        themeId: String
+    ): Result<ThemeMetadata> {
+        val item = BUILT_IN_CATALOG.find { it.id.equals(themeId, ignoreCase = true) }
+            ?: return Result.failure(IllegalArgumentException("Тема с ID '$themeId' не найдена в каталоге"))
+        return installCatalogTheme(context, settingsRepository, item)
     }
 
     /**

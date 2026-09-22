@@ -1,0 +1,10 @@
+{
+  "id": "sunset-synthwave",
+  "name": "Закатный Синтвейв (Sunset Synthwave)",
+  "author": "OpenFy Team",
+  "version": "1.0.0",
+  "minAppVersion": 1,
+  "isDark": true,
+  "description": "Неоновые закаты Майами 80-х, тёплый янтарь и винтажная лазерная сетка",
+  "previewAccentHex": "#FF7A00"
+}

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Каталог и Витрина тем OpenFy | Стили для лучшего офлайн-плеера</title>
+  <meta name="description" content="Официальная интерактивная витрина тем для музыкального плеера OpenFy. Тестируйте темы в реальном времени на живом макете плеера, оценивайте, создавайте свои и устанавливайте в 1 клик.">
+  <meta name="keywords" content="OpenFy, музыкальный плеер, темы оформления, кастомизация, Android, open source, F-Droid, material you, synthwave, cyberpunk">
+  <meta name="author" content="ArtiomITPROGRAMING">
+  <meta name="theme-color" content="#00FF66">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Каталог и Витрина тем OpenFy">
+  <meta property="og:description" content="Оценивайте и выбирайте готовые темы или создайте свою в онлайн-студии с живым предпросмотром для плеера OpenFy.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://artiomitprograming.github.io/OpenFy/">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="#" class="brand" id="brand-link">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        </div>
+        <div class="brand-title">Open<span>Fy</span> Themes</div>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#themes-hub" class="nav-link active">Каталог тем</a>
+        <a href="#studio-section" class="nav-link">Конструктор тем</a>
+        <a href="#guide-section" class="nav-link">Как установить</a>
+      </nav>
+
+      <div class="nav-actions">
+        <span class="badge-pill active">Open Source</span>
+        <span class="badge-pill">GPL v3</span>
+        <a href="https://github.com/ArtiomITPROGRAMING/OpenFy" target="_blank" rel="noopener noreferrer" class="btn-github">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-tagline">Интерактивная галерея тем оформления OpenFy</div>
+    <h1 class="hero-title">
+      Сделайте свой плеер <br>
+      <span class="gradient-text">уникальным и живым</span>
+    </h1>
+    <p class="hero-desc">
+      Оценивайте темы сообщества, тестируйте палитры на интерактивном живом макете плеера в реальном времени, создавайте свои собственные стили и устанавливайте в OpenFy прямо со страницы в один клик.
+    </p>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-value">5<span>+</span></div>
+        <div class="stat-label">Готовых тем</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">100<span>%</span></div>
+        <div class="stat-label">Офлайн & Open Source</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">0<span></span></div>
+        <div class="stat-label">Рекламы и трекеров</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">1<span> клик</span></div>
+        <div class="stat-label">Установка в телефон</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Hub (Themes Explorer + Sticky Phone Mockup) -->
+  <main class="main-hub" id="themes-hub">
+    
+    <!-- Left: Theme Explorer -->
+    <div class="themes-explorer">
+      <div class="explorer-header">
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" class="search-input" id="search-input" placeholder="Поиск по названию, автору или настроению...">
+        </div>
+
+        <div class="filter-bar">
+          <button class="filter-chip active" data-category="all">Все темы</button>
+          <button class="filter-chip" data-category="cyberpunk">Киберпанк & Неон</button>
+          <button class="filter-chip" data-category="chill">Северный чилл</button>
+          <button class="filter-chip" data-category="retro">Ретровейв 80-х</button>
+          <button class="filter-chip" data-category="tokyo">Токио Сакура</button>
+          <button class="filter-chip" data-category="luxury">Королевский люкс</button>
+        </div>
+      </div>
+
+      <!-- Dynamic Themes Container -->
+      <div class="themes-grid" id="themes-container">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+
+    <!-- Right: Sticky Interactive Smartphone Mockup -->
+    <div class="mockup-wrapper">
+      <div class="mockup-controls-top">
+        <button class="mockup-tab-btn active" data-tab="player">Сейчас играет</button>
+        <button class="mockup-tab-btn" data-tab="library">Медиатека</button>
+        <button class="mockup-tab-btn" data-tab="studio">Студия FX</button>
+      </div>
+
+      <div class="phone-chassis">
+        <div class="phone-screen">
+          
+          <!-- Dynamic Island -->
+          <div class="dynamic-island">
+            <div class="island-sensor"></div>
+            <div class="camera-lens"></div>
+          </div>
+
+          <!-- Status Bar -->
+          <div class="phone-status-bar">
+            <span>12:45</span>
+            <span>OpenFy • 100%</span>
+          </div>
+
+          <!-- Screen Container -->
+          <div class="phone-content" id="mockup-screens-container">
+            <!-- Screen 1: Now Playing Mockup (rendered by app.js) -->
+          </div>
+        </div>
+      </div>
+      
+      <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-dim); text-align: center;">
+        Макет живой: выберите тему слева или нажмите Play/Pause для проверки волны
+      </p>
+    </div>
+
+  </main>
+
+  <!-- Online Theme Studio (Creator) -->
+  <section class="studio-section" id="studio-section">
+    <div class="section-header">
+      <div class="section-tag">Онлайн-лаборатория</div>
+      <h2 class="section-title">Конструктор тем OpenFy</h2>
+      <p style="color: var(--text-muted); max-width: 600px; margin: 8px auto 0;">
+        Создайте собственную цветовую схему прямо в браузере. Изменения мгновенно применяются к макету смартфона выше!
+      </p>
+    </div>
+
+    <div class="studio-grid">
+      <div class="creator-panel">
+        <div class="form-group">
+          <label class="form-label">Название вашей темы</label>
+          <input type="text" class="form-input" id="creator-name" value="Моя Студийная Тема">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Автор / Никнейм</label>
+          <input type="text" class="form-input" id="creator-author" value="OpenFy Explorer">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Быстрые пресеты палитр:</label>
+          <div class="preset-pills">
+            <button class="preset-pill-btn" onclick="applyStudioPreset('#00FF66', '#00E5FF', '#050B07', '#0C1810', '#E0F5E6')">Изумруд</button>
+            <button class="preset-pill-btn" onclick="applyStudioPreset('#A855F7', '#EC4899', '#0E0817', '#1A102B', '#F3E8FF')">Аметист</button>
+            <button class="preset-pill-btn" onclick="applyStudioPreset('#FF7A00', '#FF007A', '#12091A', '#1D102A', '#FFE6F0')">Синтвейв</button>
+            <button class="preset-pill-btn" onclick="applyStudioPreset('#38BDF8', '#818CF8', '#080E1A', '#111A2E', '#E2E8F0')">Арктика</button>
+            <button class="preset-pill-btn" onclick="applyStudioPreset('#FFD700', '#FFA000', '#0C0A05', '#19150B', '#FFF8E7')">Оникс Золото</button>
+            <button class="preset-pill-btn" onclick="applyStudioPreset('#EF4444', '#F97316', '#140808', '#241010', '#FEE2E2')">Пламя Дракулы</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="creator-panel">
+        <div class="form-group">
+          <label class="form-label">Настройка цветов (нажмите для выбора):</label>
+          <div class="color-picker-row">
+            
+            <div class="color-picker-box">
+              <label>Основной (Primary)</label>
+              <div class="color-input-wrapper">
+                <input type="color" id="creator-primary" value="#00FF66">
+                <span class="color-hex-text" id="hex-primary">#00FF66</span>
+              </div>
+            </div>
+
+            <div class="color-picker-box">
+              <label>Акцентный (Accent)</label>
+              <div class="color-input-wrapper">
+                <input type="color" id="creator-secondary" value="#00E5FF">
+                <span class="color-hex-text" id="hex-secondary">#00E5FF</span>
+              </div>
+            </div>
+
+            <div class="color-picker-box">
+              <label>Фон (Background)</label>
+              <div class="color-input-wrapper">
+                <input type="color" id="creator-background" value="#050B07">
+                <span class="color-hex-text" id="hex-background">#050B07</span>
+              </div>
+            </div>
+
+            <div class="color-picker-box">
+              <label>Поверхность (Surface)</label>
+              <div class="color-input-wrapper">
+                <input type="color" id="creator-surface" value="#0C1810">
+                <span class="color-hex-text" id="hex-surface">#0C1810</span>
+              </div>
+            </div>
+
+            <div class="color-picker-box">
+              <label>Текст (OnSurface)</label>
+              <div class="color-input-wrapper">
+                <input type="color" id="creator-onsurface" value="#E0F5E6">
+                <span class="color-hex-text" id="hex-onsurface">#E0F5E6</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="studio-actions">
+          <button class="btn btn-primary" onclick="exportCustomThemeJson()">
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Скачать theme.json
+          </button>
+
+          <button class="btn btn-secondary" onclick="copyCustomThemeJson()">
+            <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            Скопировать JSON
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How to Install Guide -->
+  <section class="guide-section" id="guide-section">
+    <div class="section-header">
+      <div class="section-tag">Инструкция</div>
+      <h2 class="section-title">Как установить тему в OpenFy</h2>
+    </div>
+
+    <div class="guide-steps">
+      <div class="guide-card">
+        <div class="step-badge">1</div>
+        <h3>Установка в 1 клик</h3>
+        <p>Откройте эту страницу на телефоне и нажмите кнопку <b>«В OpenFy»</b> на любой теме. Плеер автоматически откроется и применит тему!</p>
+      </div>
+
+      <div class="guide-card">
+        <div class="step-badge">2</div>
+        <h3>По прямой ссылке</h3>
+        <p>Нажмите иконку копирования ссылки. В плеере перейдите в <i>Настройки → Темы → По ссылке (URL)</i>, вставьте ссылку и нажмите «Установить».</p>
+      </div>
+
+      <div class="guide-card">
+        <div class="step-badge">3</div>
+        <h3>Через файл .thm или .json</h3>
+        <p>Скачайте файл `.thm` или `.json`, затем в плеере нажмите <i>«Импорт из файла»</i> либо просто откройте файл в проводнике телефона.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- QR Code Modal -->
+  <div class="modal-overlay" id="qr-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeQrModal()">&times;</button>
+      <h3 id="qr-modal-title" style="font-family: var(--font-heading); font-size: 1.3rem;">Установка темы в OpenFy</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Наведите камеру смартфона для быстрой установки в плеер</p>
+      
+      <div class="qr-placeholder" id="qr-container">
+        <!-- Pure SVG rendered by app.js -->
+      </div>
+
+      <div style="display: flex; gap: 8px; justify-content: center;">
+        <a id="qr-direct-link" href="#" class="btn btn-primary" style="font-size: 0.8rem;">Открыть в приложении</a>
+        <button class="btn btn-secondary" onclick="closeQrModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="https://github.com/ArtiomITPROGRAMING/OpenFy" class="footer-link">Репозиторий OpenFy</a>
+      <a href="https://github.com/ArtiomITPROGRAMING/OpenFy/tree/main/themes" class="footer-link">Каталог на GitHub</a>
+      <a href="https://github.com/ArtiomITPROGRAMING/OpenFy/blob/main/LICENSE" class="footer-link">Лицензия GNU GPL v3</a>
+    </div>
+    <p>© 2026 OpenFy • 100% Offline-First Free & Open Source Music Player for Android.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>

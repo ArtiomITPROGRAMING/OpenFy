@@ -103,6 +103,30 @@
                 <data android:scheme="openfy" android:host="share" />
             </intent-filter>
 
+            <!-- Intent filter for installing themes directly from Web / GitHub Pages (openfy://theme/install) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="openfy" android:host="theme" />
+            </intent-filter>
+
+            <!-- Intent filter for opening .thm theme files directly from file managers -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="file" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.thm" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.thm" />
+            </intent-filter>
+
             <!-- Intent filter for receiving streaming audio links from external apps via Share (ACTION_SEND) -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

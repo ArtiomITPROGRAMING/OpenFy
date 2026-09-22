@@ -1,0 +1,10 @@
+{
+  "id": "pure-gold-luxury",
+  "name": "Королевский Оникс (Obsidian & Royal Gold)",
+  "author": "OpenFy Team",
+  "version": "1.0.0",
+  "minAppVersion": 1,
+  "isDark": true,
+  "description": "Премиальный минимализм чистого золота на бархатном ониксовом фоне",
+  "previewAccentHex": "#FFD700"
+}

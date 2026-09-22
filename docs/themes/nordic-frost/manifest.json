@@ -1,0 +1,10 @@
+{
+  "id": "nordic-frost",
+  "name": "Северное Сияние (Nordic Frost)",
+  "author": "OpenFy Team",
+  "version": "1.0.0",
+  "minAppVersion": 1,
+  "isDark": true,
+  "description": "Холодная арктическая эстетика с мерцанием полярного сияния и ледяным акцентом",
+  "previewAccentHex": "#38BDF8"
+}

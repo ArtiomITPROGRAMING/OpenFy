@@ -137,8 +137,74 @@ class MainActivity : ComponentActivity() {
         val uri: Uri = intent.data ?: return
         val scheme = uri.scheme ?: ""
         val host = uri.host ?: ""
+        val path = uri.path ?: ""
+
+        // 2. Handle Direct .thm theme file opening
+        if (path.endsWith(".thm", ignoreCase = true) || uri.toString().endsWith(".thm", ignoreCase = true)) {
+            val playbackManager = (application as OpenFyApp).playbackManager
+            val themeManager = com.example.openfy.features.themes.engine.ThemeManager(this, playbackManager.settingsRepository)
+            lifecycleScope.launch {
+                val result = themeManager.importTheme(uri)
+                result.onSuccess { meta ->
+                    themeManager.applyTheme(meta.id)
+                    android.widget.Toast.makeText(
+                        this@MainActivity,
+                        "Тема «${meta.name}» успешно импортирована и применена!",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                }.onFailure { err ->
+                    android.widget.Toast.makeText(
+                        this@MainActivity,
+                        "Ошибка импорта темы: ${err.localizedMessage}",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+            return
+        }
+
         if (scheme == "openfy" && (host == "oauth-callback" || host == "discord-callback" || host == "github-callback")) {
             profileViewModel.handleOAuthRedirect(uri)
+        } else if (scheme == "openfy" && host == "theme") {
+            // 3. Handle theme installation deep link: openfy://theme/install?id=...&url=...
+            val themeId = uri.getQueryParameter("id") ?: ""
+            val downloadUrl = uri.getQueryParameter("url") ?: ""
+            val applyTheme = uri.getBooleanQueryParameter("apply", true)
+
+            val playbackManager = (application as OpenFyApp).playbackManager
+            val settingsRepo = playbackManager.settingsRepository
+
+            lifecycleScope.launch {
+                val result = if (downloadUrl.isNotBlank()) {
+                    com.example.openfy.features.themes.engine.ThemeCatalogRepository.downloadAndInstallThemeFromUrl(
+                        context = this@MainActivity,
+                        settingsRepository = settingsRepo,
+                        urlStr = downloadUrl
+                    )
+                } else if (themeId.isNotBlank()) {
+                    com.example.openfy.features.themes.engine.ThemeCatalogRepository.installCatalogThemeById(
+                        context = this@MainActivity,
+                        settingsRepository = settingsRepo,
+                        themeId = themeId
+                    )
+                } else {
+                    Result.failure(IllegalArgumentException("Не указан идентификатор или ссылка на тему"))
+                }
+
+                result.onSuccess { meta ->
+                    android.widget.Toast.makeText(
+                        this@MainActivity,
+                        "Тема «${meta.name}» успешно установлена и применена!",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                }.onFailure { err ->
+                    android.widget.Toast.makeText(
+                        this@MainActivity,
+                        "Ошибка установки темы: ${err.localizedMessage}",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         } else if (scheme == "openfy" && host == "share") {
             val playbackManager = (application as OpenFyApp).playbackManager
             val themeManager = com.example.openfy.features.themes.engine.ThemeManager(this, playbackManager.settingsRepository)
