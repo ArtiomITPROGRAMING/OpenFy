@@ -20,9 +20,12 @@ package com.example.openfy.features.community.sync
 import android.content.Context
 import android.net.Uri
 import com.example.openfy.core.audio.data.PlaylistRepository
+import com.example.openfy.core.audio.data.SettingsRepository
+import com.example.openfy.features.themes.engine.ThemeCatalogRepository
 import com.example.openfy.features.themes.engine.ThemeEngine
 import com.example.openfy.features.themes.engine.ThemeManager
 import com.example.openfy.features.themes.engine.ThemeParser
+import com.example.openfy.features.themes.model.ThemeMetadata
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -56,10 +59,12 @@ object UniversalImportHandler {
         context: Context,
         rawInput: String,
         playlistRepository: PlaylistRepository,
-        themeManager: ThemeManager? = null
+        themeManager: ThemeManager? = null,
+        settingsRepository: SettingsRepository? = null
     ): Result<ImportResult> = withContext(Dispatchers.IO) {
         try {
             val cleanInput = rawInput.trim()
+            val effectiveSettings = settingsRepository ?: themeManager?.settingsRepository
 
             // 1. Try if input is a URI to a local file
             if (cleanInput.startsWith("content://") || cleanInput.startsWith("file://")) {
@@ -86,7 +91,62 @@ object UniversalImportHandler {
                 return@withContext processPayloadString(context, fileContent, playlistRepository, themeManager)
             }
 
-            // 2. Process payload string
+            // 2. Try OpenFy theme install deep link: openfy://theme/install?id=...&url=...&creator=...&apply=true
+            if (cleanInput.startsWith("openfy://theme/install")) {
+                val uri = Uri.parse(cleanInput)
+                val themeId = uri.getQueryParameter("id") ?: ""
+                val downloadUrl = uri.getQueryParameter("url") ?: ""
+                val applyTheme = uri.getBooleanQueryParameter("apply", true)
+
+                if (effectiveSettings != null) {
+                    val installResult = if (downloadUrl.isNotBlank()) {
+                        ThemeCatalogRepository.downloadAndInstallThemeFromUrl(context, effectiveSettings, downloadUrl)
+                    } else if (themeId.isNotBlank()) {
+                        ThemeCatalogRepository.installCatalogThemeById(context, effectiveSettings, themeId)
+                    } else {
+                        Result.failure(IllegalArgumentException("В ссылке не указан id или url темы"))
+                    }
+
+                    return@withContext installResult.map { meta ->
+                        if (applyTheme) {
+                            themeManager?.applyTheme(meta.id)
+                        }
+                        themeManager?.refreshInstalledThemes()
+                        ImportResult.ThemeImported(meta.name, meta.id)
+                    }
+                }
+            }
+
+            // 3. Try direct HTTP/HTTPS URL to theme archive or json
+            if (cleanInput.startsWith("http://") || cleanInput.startsWith("https://")) {
+                if (cleanInput.endsWith(".thm", ignoreCase = true) || cleanInput.endsWith(".json", ignoreCase = true) || cleanInput.contains("/themes/")) {
+                    if (effectiveSettings != null) {
+                        val installResult = ThemeCatalogRepository.downloadAndInstallThemeFromUrl(context, effectiveSettings, cleanInput)
+                        return@withContext installResult.map { meta ->
+                            themeManager?.applyTheme(meta.id)
+                            themeManager?.refreshInstalledThemes()
+                            ImportResult.ThemeImported(meta.name, meta.id)
+                        }
+                    }
+                }
+            }
+
+            // 4. Try raw Theme JSON string directly (e.g. from Studio QR code)
+            if (cleanInput.startsWith("{") && (cleanInput.contains("\"palette\"") || cleanInput.contains("\"colors\"") || cleanInput.contains("\"backgroundStyle\""))) {
+                try {
+                    val metadata = json.decodeFromString<ThemeMetadata>(cleanInput)
+                    val targetDir = ThemeEngine.getThemesDirectory(context)
+                    val themeFolder = java.io.File(targetDir, metadata.id).apply { mkdirs() }
+                    java.io.File(themeFolder, ThemeParser.THEME_CONFIG_FILE).writeText(cleanInput)
+                    themeManager?.refreshInstalledThemes()
+                    themeManager?.applyTheme(metadata.id)
+                    return@withContext Result.success(ImportResult.ThemeImported(metadata.name, metadata.id))
+                } catch (_: Exception) {
+                    // Fallthrough if not valid ThemeMetadata
+                }
+            }
+
+            // 5. Process standard P2P payload string
             processPayloadString(context, cleanInput, playlistRepository, themeManager)
         } catch (e: Exception) {
             Result.failure(e)

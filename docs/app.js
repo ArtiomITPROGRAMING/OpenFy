@@ -1030,16 +1030,31 @@ function setupThemeStudio() {
     });
   };
 
+  // Open QR modal for current Studio theme
+  window.openStudioQrModal = function() {
+    const themeJson = generateThemeJsonContent();
+    const id = themeJson.id;
+    const author = themeJson.author;
+    const deepLink = `openfy://theme/install?id=${encodeURIComponent(id)}&creator=${encodeURIComponent(author)}&apply=true`;
+    openQrModal(`Тема «${themeJson.name}»`, id, deepLink);
+  };
+
   // Install in OpenFy directly from Studio
   window.installStudioThemeInOpenFy = function() {
     const themeJson = generateThemeJsonContent();
-    const jsonStr = JSON.stringify(themeJson);
     const id = themeJson.id;
     const author = themeJson.author;
     const deepLink = `openfy://theme/install?id=${encodeURIComponent(id)}&creator=${encodeURIComponent(author)}&apply=true`;
     
+    const startTime = Date.now();
     window.location.href = deepLink;
     showToast(`Переход в OpenFy для установки темы «${themeJson.name}»...`);
+
+    setTimeout(() => {
+      if (Date.now() - startTime < 1500) {
+        openQrModal(`Установка «${themeJson.name}» в OpenFy`, id, deepLink);
+      }
+    }, 1000);
   };
 }
 
@@ -1101,6 +1116,14 @@ window.switchAuthTab = function(tabName, el) {
 };
 
 // QR Code Modal
+let currentQrData = {
+  title: "",
+  id: "",
+  url: "",
+  deepLink: "",
+  mode: "deeplink"
+};
+
 window.openQrModal = function(title, id, url) {
   const modal = document.getElementById("qr-modal");
   const modalTitle = document.getElementById("qr-modal-title");
@@ -1111,62 +1134,76 @@ window.openQrModal = function(title, id, url) {
   modalTitle.textContent = title;
   const creator = authEngine.currentUser ? authEngine.currentUser.username : "";
   const deepLink = `openfy://theme/install?id=${encodeURIComponent(id)}&url=${encodeURIComponent(url)}&creator=${encodeURIComponent(creator)}&apply=true`;
+
+  currentQrData = {
+    title: title,
+    id: id,
+    url: url,
+    deepLink: deepLink,
+    mode: "deeplink"
+  };
+
   if (directLinkBtn) directLinkBtn.href = deepLink;
 
-  qrContainer.innerHTML = generateSvgQrCode(url);
+  const tabDeeplink = document.getElementById("qr-tab-deeplink");
+  const tabUrl = document.getElementById("qr-tab-url");
+  const scanHint = document.getElementById("qr-scan-hint");
+  if (tabDeeplink && tabUrl) {
+    tabDeeplink.classList.add("active");
+    tabUrl.classList.remove("active");
+    if (scanHint) scanHint.textContent = "Диплинк: мгновенная установка в плеер OpenFy через камеру или сканер.";
+  }
+
+  updateQrDisplay();
   modal.classList.add("open");
 };
+
+window.switchQrMode = function(mode) {
+  currentQrData.mode = mode;
+  const tabDeeplink = document.getElementById("qr-tab-deeplink");
+  const tabUrl = document.getElementById("qr-tab-url");
+  const scanHint = document.getElementById("qr-scan-hint");
+  if (tabDeeplink && tabUrl) {
+    if (mode === "deeplink") {
+      tabDeeplink.classList.add("active");
+      tabUrl.classList.remove("active");
+      if (scanHint) scanHint.textContent = "Диплинк: мгновенная установка в плеер OpenFy через камеру или сканер.";
+    } else {
+      tabUrl.classList.add("active");
+      tabDeeplink.classList.remove("active");
+      if (scanHint) scanHint.textContent = "Прямая ссылка: для загрузки .thm архива или открытия в браузере.";
+    }
+  }
+  updateQrDisplay();
+};
+
+function updateQrDisplay() {
+  const qrContainer = document.getElementById("qr-container");
+  if (!qrContainer) return;
+
+  const targetText = currentQrData.mode === "deeplink" ? currentQrData.deepLink : currentQrData.url;
+  qrContainer.innerHTML = generateSvgQrCode(targetText);
+}
 
 window.closeQrModal = function() {
   const modal = document.getElementById("qr-modal");
   if (modal) modal.classList.remove("open");
 };
 
-// Deterministic SVG QR Code Generator
+// Standard ISO/IEC 18004 QR Code Generator using qrcode-generator
 function generateSvgQrCode(text) {
-  let hash = 0;
-  for (let i = 0; i < text.length; i++) {
-    hash = ((hash << 5) - hash) + text.charCodeAt(i);
-    hash |= 0;
-  }
-
-  const size = 25;
-  const cellSize = 8;
-  const total = size * cellSize;
-  let rects = '';
-
-  function addMarker(x0, y0) {
-    for (let r = 0; r < 7; r++) {
-      for (let c = 0; c < 7; c++) {
-        const isBorder = (r === 0 || r === 6 || c === 0 || c === 6);
-        const isCore = (r >= 2 && r <= 4 && c >= 2 && c <= 4);
-        if (isBorder || isCore) {
-          rects += `<rect x="${(x0 + c) * cellSize}" y="${(y0 + r) * cellSize}" width="${cellSize}" height="${cellSize}" fill="#000"/>`;
-        }
-      }
+  try {
+    if (typeof qrcode !== "undefined") {
+      // typeNumber: 0 (auto), errorCorrectionLevel: 'M'
+      const qr = qrcode(0, 'M');
+      qr.addData(text);
+      qr.make();
+      return qr.createSvgTag({ cellSize: 5, margin: 4, scalable: true });
     }
+  } catch (err) {
+    console.error("QR Code Generation failed:", err);
   }
-
-  addMarker(0, 0);
-  addMarker(size - 7, 0);
-  addMarker(0, size - 7);
-
-  for (let r = 0; r < size; r++) {
-    for (let c = 0; c < size; c++) {
-      if ((r < 8 && c < 8) || (r < 8 && c >= size - 8) || (r >= size - 8 && c < 8)) continue;
-      const cellHash = (hash ^ (r * 31 + c * 17) ^ (text.charCodeAt((r + c) % text.length) * 13)) & 1;
-      if (cellHash === 1) {
-        rects += `<rect x="${c * cellSize}" y="${r * cellSize}" width="${cellSize}" height="${cellSize}" fill="#000"/>`;
-      }
-    }
-  }
-
-  return `
-    <svg viewBox="0 0 ${total} ${total}" xmlns="http://www.w3.org/2000/svg">
-      <rect width="${total}" height="${total}" fill="#fff" rx="8"/>
-      ${rects}
-    </svg>
-  `;
+  return '<p style="color:#ef4444;font-size:0.85rem;padding:2rem;">Ошибка генерации QR-кода</p>';
 }
 
 // Toast Notifications

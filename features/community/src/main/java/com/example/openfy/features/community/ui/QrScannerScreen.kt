@@ -243,7 +243,8 @@ fun QrScannerScreen(
                                 context = context,
                                 rawInput = scannedData,
                                 playlistRepository = playlistRepository,
-                                themeManager = themeManager
+                                themeManager = themeManager,
+                                settingsRepository = settingsRepository
                             )
                             result.onSuccess { res ->
                                 importResult = res

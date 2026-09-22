@@ -44,7 +44,7 @@ data class ThemeState(
 
 class ThemeManager(
     private val context: Context,
-    private val settingsRepository: SettingsRepository
+    val settingsRepository: SettingsRepository
 ) {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
