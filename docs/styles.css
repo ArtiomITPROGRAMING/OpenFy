@@ -1923,12 +1923,74 @@ body {
   margin-bottom: 8px;
 }
 
+.sec-app-launch-btn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 16px;
+  margin: 14px 0 10px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 20px rgba(0, 255, 102, 0.35);
+  animation: secPulseGlow 2.5s infinite alternate;
+}
+
+@keyframes secPulseGlow {
+  0% { box-shadow: 0 0 15px rgba(0, 255, 102, 0.25); }
+  100% { box-shadow: 0 0 28px rgba(0, 255, 102, 0.55), 0 0 40px rgba(0, 229, 255, 0.3); }
+}
+
+.sec-delivery-card {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  text-align: left;
+}
+
+.sec-delivery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sec-status-msg {
+  font-size: 0.78rem;
+  margin-top: 6px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  line-height: 1.35;
+}
+
+.sec-status-msg.success {
+  background: rgba(0, 255, 102, 0.1);
+  color: #00FF66;
+  border: 1px solid rgba(0, 255, 102, 0.3);
+}
+
+.sec-status-msg.error {
+  background: rgba(244, 63, 94, 0.1);
+  color: #F43F5E;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
+#sec-qr-container svg {
+  width: 170px;
+  height: 170px;
+  display: block;
+  margin: 0 auto;
+}
+
 .sec-pin-display {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 1.5rem 0 1rem;
+  margin: 0.75rem 0 0.5rem;
 }
 
 .sec-pin-cell {

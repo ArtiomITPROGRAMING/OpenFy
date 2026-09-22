@@ -23,12 +23,23 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.Inet4Address
 import java.net.NetworkInterface
 import java.net.ServerSocket
 import java.net.Socket
+
+data class AuthChallengeRequest(
+    val username: String,
+    val device: String,
+    val code: String,
+    val ip: String = "",
+    val timestamp: Long = System.currentTimeMillis()
+)
 
 object LocalShareServer {
 
@@ -40,6 +51,34 @@ object LocalShareServer {
 
     private var activeSecurityCode: String? = null
     private var securityCodeExpiryTimeMs: Long = 0L
+
+    private val _activeAuthChallenge = MutableStateFlow<AuthChallengeRequest?>(null)
+    val activeAuthChallenge: StateFlow<AuthChallengeRequest?> = _activeAuthChallenge.asStateFlow()
+
+    private var challengeApprovedCode: String? = null
+
+    fun postAuthChallenge(username: String, device: String, code: String, ip: String = "") {
+        val pin = if (code.isNotBlank()) code else generateSecurityCode()
+        activeSecurityCode = pin
+        securityCodeExpiryTimeMs = System.currentTimeMillis() + 5 * 60 * 1000L
+        challengeApprovedCode = null
+        _activeAuthChallenge.value = AuthChallengeRequest(username, device, pin, ip)
+    }
+
+    fun approveChallenge(code: String) {
+        challengeApprovedCode = code
+        activeSecurityCode = code
+        securityCodeExpiryTimeMs = System.currentTimeMillis() + 5 * 60 * 1000L
+        _activeAuthChallenge.value = null
+    }
+
+    fun dismissChallenge() {
+        _activeAuthChallenge.value = null
+        activeSecurityCode = null
+        challengeApprovedCode = null
+    }
+
+    fun isChallengeApproved(): Boolean = challengeApprovedCode != null
 
     /**
      * Generates a cryptographically random 6-digit match verification PIN for 2FA pairing.
@@ -223,7 +262,56 @@ object LocalShareServer {
                     return
                 }
 
-                // 4. 2FA Security Code Verification: POST /api/auth/verify
+                // 4. Request 2FA Challenge from Website to App: POST /api/auth/request_challenge
+                if ((path == "/api/auth/request_challenge" || path.startsWith("/api/auth/request_challenge")) && method.equals("POST", ignoreCase = true)) {
+                    val bodyChars = CharArray(contentLength)
+                    var readTotal = 0
+                    while (readTotal < contentLength) {
+                        val count = reader.read(bodyChars, readTotal, contentLength - readTotal)
+                        if (count <= 0) break
+                        readTotal += count
+                    }
+                    val bodyString = String(bodyChars, 0, readTotal)
+                    val userMatch = Regex("\"username\"\\s*:\\s*\"([^\"]+)\"").find(bodyString)
+                        ?: Regex("\"user\"\\s*:\\s*\"([^\"]+)\"").find(bodyString)
+                    val codeMatch = Regex("\"code\"\\s*:\\s*\"([^\"]+)\"").find(bodyString)
+                    val username = userMatch?.groupValues?.get(1) ?: "Пользователь"
+                    val incomingCode = codeMatch?.groupValues?.get(1)?.filter { it.isDigit() } ?: ""
+                    val finalCode = if (incomingCode.length == 6) incomingCode else generateSecurityCode()
+
+                    postAuthChallenge(username, "Веб-витрина OpenFy", finalCode)
+
+                    val jsonResponse = "{\"success\":true,\"code\":\"$finalCode\",\"message\":\"Запрос на подтверждение входа отправлен в приложение OpenFy\"}"
+                    val bytes = jsonResponse.toByteArray(Charsets.UTF_8)
+                    val response = "HTTP/1.1 200 OK\r\n" +
+                            "Access-Control-Allow-Origin: *\r\n" +
+                            "Content-Type: application/json; charset=UTF-8\r\n" +
+                            "Content-Length: ${bytes.size}\r\n" +
+                            "Connection: close\r\n\r\n"
+                    os.write(response.toByteArray(Charsets.UTF_8))
+                    os.write(bytes)
+                    os.flush()
+                    return
+                }
+
+                // 5. Query 2FA Confirmation Status: GET /api/auth/status
+                if ((path == "/api/auth/status" || path.startsWith("/api/auth/status")) && method.equals("GET", ignoreCase = true)) {
+                    val approved = isChallengeApproved()
+                    val code = getActiveSecurityCode() ?: ""
+                    val jsonResponse = "{\"approved\":$approved,\"code\":\"$code\"}"
+                    val bytes = jsonResponse.toByteArray(Charsets.UTF_8)
+                    val response = "HTTP/1.1 200 OK\r\n" +
+                            "Access-Control-Allow-Origin: *\r\n" +
+                            "Content-Type: application/json; charset=UTF-8\r\n" +
+                            "Content-Length: ${bytes.size}\r\n" +
+                            "Connection: close\r\n\r\n"
+                    os.write(response.toByteArray(Charsets.UTF_8))
+                    os.write(bytes)
+                    os.flush()
+                    return
+                }
+
+                // 6. 2FA Security Code Verification: POST /api/auth/verify
                 if ((path == "/api/auth/verify" || path.startsWith("/api/auth/verify")) && method.equals("POST", ignoreCase = true)) {
                     val bodyChars = CharArray(contentLength)
                     var readTotal = 0

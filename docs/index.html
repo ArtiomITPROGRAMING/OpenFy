@@ -517,7 +517,7 @@
 
   <!-- Max Security 2FA Match Verification Modal -->
   <div class="modal-overlay" id="security-2fa-modal">
-    <div class="modal-box security-modal-box">
+    <div class="modal-box security-modal-box" style="max-width: 500px;">
       <div class="security-badge-top">
         <svg viewBox="0 0 24 24" width="26" height="26" fill="var(--theme-primary)"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
         <span>MAXIMUM 2FA SECURITY</span>
@@ -525,24 +525,71 @@
 
       <h3 style="font-family: var(--font-heading); font-size: 1.35rem; margin-top: 6px;">Подтверждение входа в аккаунт</h3>
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; line-height: 1.5;">
-        Запрос на привязку профиля <b id="sec-2fa-username" style="color: var(--text-main);">@OpenFy User</b>. Для защиты от несанкционированного доступа сверьте 6-значный защитный код с кодом на экране вашего смартфона:
+        Запрос на вход в профиль <b id="sec-2fa-username" style="color: var(--text-main);">@OpenFy User</b>. Подтвердите запрос на вашем смартфоне с установленным приложением OpenFy:
       </p>
 
-      <!-- 6-Digit PIN Display -->
-      <div class="sec-pin-display" id="sec-pin-display">
-        <div class="sec-pin-cell" id="pin-0">8</div>
-        <div class="sec-pin-cell" id="pin-1">4</div>
-        <div class="sec-pin-cell" id="pin-2">9</div>
-        <div class="sec-pin-divider">-</div>
-        <div class="sec-pin-cell" id="pin-3">2</div>
-        <div class="sec-pin-cell" id="pin-4">0</div>
-        <div class="sec-pin-cell" id="pin-5">1</div>
+      <!-- Primary Action: Direct Deep Link to Open App on Phone -->
+      <a id="sec-deeplink-btn" href="#" class="btn btn-primary sec-app-launch-btn">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+        <span>📱 Открыть подтверждение в OpenFy на телефоне</span>
+      </a>
+
+      <!-- Channel 1: Wi-Fi Push to Phone -->
+      <div class="sec-delivery-card">
+        <div class="sec-delivery-header">
+          <span style="font-weight: 600; font-size: 0.82rem; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--theme-primary)"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.5c3.78 0 7.22 1.48 9.77 3.91L12 19.34 2.23 11.41C4.78 8.98 8.22 7.5 12 7.5z"/></svg>
+            Отправить на телефон по Wi-Fi
+          </span>
+          <span class="badge-pill active" id="sec-wifi-pill" style="font-size: 0.65rem;">Wi-Fi P2P</span>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 8px;">
+          <input type="text" id="sec-wifi-ip-input" class="form-input" placeholder="IP смартфона (напр. 192.168.1.55)" style="font-size: 0.85rem; padding: 8px 12px; flex: 1;">
+          <button class="btn btn-secondary" onclick="authEngine.sendChallengeToPhoneWifi(true)" style="white-space: nowrap; font-size: 0.82rem; padding: 8px 14px;">
+            Отправить
+          </button>
+        </div>
+        <div id="sec-wifi-push-status" class="sec-status-msg" style="display: none;"></div>
       </div>
 
-      <!-- Verification Input if needed -->
-      <div class="sec-input-row" id="sec-input-row" style="display: none;">
-        <label style="font-size: 0.8rem; color: var(--text-muted);">Введите 6 цифр из приложения:</label>
-        <input type="text" class="form-input" id="sec-user-pin-input" maxlength="6" placeholder="______" style="text-align: center; font-size: 1.2rem; letter-spacing: 6px; font-family: var(--font-mono);">
+      <!-- Channel 2: QR Code for OpenFy Camera Scanner -->
+      <div class="sec-delivery-card" style="margin-top: 8px;">
+        <div class="sec-delivery-header" style="cursor: pointer;" onclick="authEngine.toggleQrCodeSection()">
+          <span style="font-weight: 600; font-size: 0.82rem; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="#00E5FF"><path d="M3 5v4h2V5h4V3H5c-1.1 0-2 .9-2 2zm2 10H3v4c0 1.1.9 2 2 2h4v-2H5v-4zm14 4h-4v2h4c1.1 0 2-.9 2-2v-4h-2v4zm0-16h-4v2h4v4h2V5c0-1.1-.9-2-2-2z"/></svg>
+            QR-код для встроенного сканера OpenFy
+          </span>
+          <span id="sec-qr-toggle-label" style="font-size: 0.75rem; color: var(--text-muted);">Показать QR ▼</span>
+        </div>
+        <div id="sec-qr-section" style="display: none; text-align: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--card-border);">
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px;">В приложении OpenFy откройте «Комьюнити» → «Сканер» и наведите камеру:</p>
+          <div id="sec-qr-container" style="background: #fff; padding: 10px; border-radius: 12px; display: inline-block;"></div>
+        </div>
+      </div>
+
+      <!-- 6-Digit PIN Display -->
+      <div style="margin-top: 12px; text-align: center;">
+        <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px;">Сгенерированный 6-значный код совпадения:</div>
+        <div class="sec-pin-display" id="sec-pin-display">
+          <div class="sec-pin-cell" id="pin-0">8</div>
+          <div class="sec-pin-cell" id="pin-1">4</div>
+          <div class="sec-pin-cell" id="pin-2">9</div>
+          <div class="sec-pin-divider">-</div>
+          <div class="sec-pin-cell" id="pin-3">2</div>
+          <div class="sec-pin-cell" id="pin-4">0</div>
+          <div class="sec-pin-cell" id="pin-5">1</div>
+        </div>
+
+        <div style="margin-top: 6px;">
+          <label style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Или введите 6 цифр, показанных на экране телефона:</label>
+          <input type="text" class="form-input" id="sec-user-pin-input" maxlength="6" placeholder="000000" style="text-align: center; font-size: 1.25rem; letter-spacing: 6px; font-family: var(--font-mono); max-width: 220px; margin: 0 auto; display: block;" oninput="authEngine.onManualPinInput(this.value)">
+        </div>
+      </div>
+
+      <!-- Real-time Status / Polling -->
+      <div id="sec-auto-verify-indicator" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem; color: #00E5FF; margin-top: 10px; background: rgba(0, 229, 255, 0.08); padding: 8px; border-radius: 8px; border: 1px solid rgba(0, 229, 255, 0.2);">
+        <span class="wifi-pulse-dot online"></span>
+        <span id="sec-auto-status-text">Ожидание подтверждения на смартфоне...</span>
       </div>
 
       <div class="sec-timer-wrapper">
@@ -557,11 +604,11 @@
 
       <div class="security-meta-info" id="sec-meta-info">
         <span class="sec-info-pill">📱 OpenFy Player</span>
-        <span class="sec-info-pill" id="sec-device-ip">Wi-Fi: 192.168.1.XX</span>
+        <span class="sec-info-pill" id="sec-device-ip">Wi-Fi / P2P</span>
         <span class="sec-info-pill">Шифрование: AES-256</span>
       </div>
 
-      <div style="display: flex; gap: 10px; margin-top: 1.25rem;">
+      <div style="display: flex; gap: 10px; margin-top: 1rem;">
         <button class="btn btn-primary" id="btn-sec-confirm" style="flex: 1;" onclick="authEngine.confirm2FaMatch()">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
           Код совпадает — Войти
@@ -569,6 +616,10 @@
         <button class="btn btn-secondary" onclick="authEngine.reject2Fa()">
           Отклонить
         </button>
+      </div>
+
+      <div style="margin-top: 12px; font-size: 0.74rem; color: var(--text-muted); text-align: left; background: rgba(255,255,255,0.03); border-radius: 8px; padding: 8px 12px; border: 1px solid var(--card-border); line-height: 1.4;">
+        🔒 <b>100% приватность без облака:</b> OpenFy работает строго офлайн и в локальной сети, без серверов слежки и Google Push. Чтобы диалог подтверждения появился в приложении: нажмите зелёную кнопку <b>«Открыть в OpenFy»</b> выше, отправьте по Wi-Fi или отсканируйте QR-код сканером OpenFy.
       </div>
     </div>
   </div>

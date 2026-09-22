@@ -109,6 +109,14 @@
                 <data android:scheme="openfy" android:host="share" />
             </intent-filter>
 
+            <!-- Intent filter for 2FA Security Challenge pairing (openfy://auth) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="openfy" android:host="auth" />
+            </intent-filter>
+
             <!-- Intent filter for installing themes directly from Web / GitHub Pages (openfy://theme/install) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

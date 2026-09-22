@@ -36,6 +36,7 @@ sealed interface ImportResult {
     data class PlaylistImported(val playlistName: String, val trackCount: Int) : ImportResult
     data class ThemeImported(val themeName: String, val themeId: String) : ImportResult
     data class TrackMetaImported(val title: String, val artist: String) : ImportResult
+    data class AuthChallengeReceived(val username: String, val code: String) : ImportResult
 }
 
 @Serializable
@@ -65,6 +66,15 @@ object UniversalImportHandler {
         try {
             val cleanInput = rawInput.trim()
             val effectiveSettings = settingsRepository ?: themeManager?.settingsRepository
+
+            // 0. Handle 2FA Auth Challenge QR / Deep link: openfy://auth?user=...&code=...
+            if (cleanInput.startsWith("openfy://auth")) {
+                val uri = Uri.parse(cleanInput)
+                val user = uri.getQueryParameter("user") ?: uri.getQueryParameter("username") ?: "Пользователь"
+                val code = uri.getQueryParameter("code") ?: ""
+                LocalShareServer.postAuthChallenge(user, "QR-сканер OpenFy", code)
+                return@withContext Result.success(ImportResult.AuthChallengeReceived(user, code))
+            }
 
             // 1. Try if input is a URI to a local file
             if (cleanInput.startsWith("content://") || cleanInput.startsWith("file://")) {

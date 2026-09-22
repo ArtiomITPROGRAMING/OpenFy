@@ -278,31 +278,220 @@ const authEngine = {
     }
   },
 
+  wifiPollInterval: null,
+
   trigger2FaSecurityChallenge(incomingUser, secCode, ip, port) {
     const code = secCode || Math.floor(100000 + Math.random() * 900000).toString();
+    const effectiveIp = ip || (typeof wifiSyncEngine !== "undefined" && wifiSyncEngine.ip ? wifiSyncEngine.ip : "");
+    const effectivePort = port || (typeof wifiSyncEngine !== "undefined" && wifiSyncEngine.port ? wifiSyncEngine.port : "8888");
+
     this.pending2FaChallenge = {
       user: incomingUser,
       code: code,
-      ip: ip || wifiSyncEngine.ip || "",
-      port: port || wifiSyncEngine.port || "8888",
+      ip: effectiveIp,
+      port: effectivePort,
       expiresAt: Date.now() + 120 * 1000 // 120s
     };
 
-    // Render 6 digits in PIN display
+    // 1. Render 6 digits in PIN display
     const digits = code.padStart(6, "0").split("");
     digits.forEach((d, i) => {
       const cell = document.getElementById(`pin-${i}`);
       if (cell) cell.textContent = d;
     });
 
+    // 2. Set username in modal
     const userSpan = document.getElementById("sec-2fa-username");
     if (userSpan) userSpan.textContent = `@${incomingUser.username}`;
 
     const ipSpan = document.getElementById("sec-device-ip");
-    if (ipSpan) ipSpan.textContent = ip ? `Wi-Fi: ${ip}:${port}` : (wifiSyncEngine.ip ? `Wi-Fi: ${wifiSyncEngine.ip}` : "Локальная сеть");
+    if (ipSpan) ipSpan.textContent = effectiveIp ? `Wi-Fi: ${effectiveIp}:${effectivePort}` : "Локальная сеть / P2P";
 
+    // 3. Configure Direct Deep Link Button for Mobile (Instant Open in OpenFy)
+    const deepLink = `openfy://auth?user=${encodeURIComponent(incomingUser.username)}&code=${code}`;
+    const deepLinkBtn = document.getElementById("sec-deeplink-btn");
+    if (deepLinkBtn) deepLinkBtn.href = deepLink;
+
+    // 4. Populate Wi-Fi IP input
+    const ipInput = document.getElementById("sec-wifi-ip-input");
+    if (ipInput) ipInput.value = effectiveIp;
+
+    // 5. Generate and render QR code for OpenFy camera scanner
+    const qrContainer = document.getElementById("sec-qr-container");
+    if (qrContainer && typeof generateSvgQrCode === "function") {
+      qrContainer.innerHTML = generateSvgQrCode(deepLink);
+    }
+
+    // 6. Reset manual PIN input & status indicators
+    const manualPinInput = document.getElementById("sec-user-pin-input");
+    if (manualPinInput) manualPinInput.value = "";
+
+    const pushStatus = document.getElementById("sec-wifi-push-status");
+    if (pushStatus) {
+      pushStatus.style.display = "none";
+      pushStatus.className = "sec-status-msg";
+      pushStatus.textContent = "";
+    }
+
+    const autoStatusText = document.getElementById("sec-auto-status-text");
+    if (autoStatusText) {
+      autoStatusText.textContent = effectiveIp 
+        ? `Отправка запроса на ${effectiveIp}...` 
+        : "Ожидание подтверждения на смартфоне...";
+    }
+
+    // 7. Start timer & open modal
     this.start2FaTimer();
     open2FaModal();
+
+    // 8. If phone IP is already configured, automatically push challenge & start polling!
+    if (effectiveIp) {
+      this.sendChallengeToPhoneWifi(false);
+    }
+  },
+
+  async sendChallengeToPhoneWifi(showNotification = true) {
+    if (!this.pending2FaChallenge) return;
+    const challenge = this.pending2FaChallenge;
+    const ipInput = document.getElementById("sec-wifi-ip-input");
+    const ip = (ipInput ? ipInput.value.trim() : "") || challenge.ip || (typeof wifiSyncEngine !== "undefined" ? wifiSyncEngine.ip : "");
+    const port = challenge.port || "8888";
+
+    const pushStatus = document.getElementById("sec-wifi-push-status");
+    const autoStatusText = document.getElementById("sec-auto-status-text");
+
+    if (!ip) {
+      if (pushStatus) {
+        pushStatus.style.display = "block";
+        pushStatus.className = "sec-status-msg error";
+        pushStatus.textContent = "⚠️ Укажите IP-адрес смартфона в вашей сети Wi-Fi (напр. 192.168.1.55)";
+      }
+      if (showNotification) showToast("Укажите IP-адрес смартфона");
+      return;
+    }
+
+    challenge.ip = ip;
+    if (typeof wifiSyncEngine !== "undefined" && wifiSyncEngine.savePhoneAddress) {
+      wifiSyncEngine.savePhoneAddress(ip, port);
+    }
+
+    if (pushStatus) {
+      pushStatus.style.display = "block";
+      pushStatus.className = "sec-status-msg";
+      pushStatus.style.background = "rgba(0, 229, 255, 0.1)";
+      pushStatus.style.color = "#00E5FF";
+      pushStatus.style.border = "1px solid rgba(0, 229, 255, 0.3)";
+      pushStatus.textContent = `📡 Отправка запроса на ${ip}:${port}...`;
+    }
+
+    try {
+      const res = await fetch(`http://${ip}:${port}/api/auth/request_challenge`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: challenge.user.username, code: challenge.code }),
+        signal: AbortSignal.timeout(3500)
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        // If server provided code, synchronize it
+        if (data.code && data.code.length === 6 && data.code !== challenge.code) {
+          challenge.code = data.code;
+          const digits = data.code.split("");
+          digits.forEach((d, i) => {
+            const cell = document.getElementById(`pin-${i}`);
+            if (cell) cell.textContent = d;
+          });
+        }
+
+        if (pushStatus) {
+          pushStatus.style.display = "block";
+          pushStatus.className = "sec-status-msg success";
+          pushStatus.textContent = `✅ Запрос передан в OpenFy на ${ip}! Нажмите «Подтвердить» на экране телефона.`;
+        }
+        if (autoStatusText) {
+          autoStatusText.textContent = `Запрос передан на ${ip}! Нажмите «Подтвердить» в приложении.`;
+        }
+        if (showNotification) showToast(`✅ Запрос отправлен в OpenFy на телефоне (${ip})`);
+        
+        // Start polling for approval from phone
+        this.startWifiAuthPolling(ip, port);
+        return;
+      }
+    } catch (_) {}
+
+    if (pushStatus) {
+      pushStatus.style.display = "block";
+      pushStatus.className = "sec-status-msg error";
+      pushStatus.textContent = `⚠️ Телефон ${ip} не ответил. Убедитесь, что OpenFy запущен на телефоне в той же сети Wi-Fi, либо нажмите «Открыть в OpenFy» выше.`;
+    }
+    if (autoStatusText) {
+      autoStatusText.textContent = "Ожидание подтверждения на смартфоне...";
+    }
+    if (showNotification) showToast(`Не удалось связаться с ${ip}:${port}`);
+  },
+
+  startWifiAuthPolling(ip, port) {
+    this.stopWifiAuthPolling();
+    const effectiveIp = ip || (this.pending2FaChallenge ? this.pending2FaChallenge.ip : "");
+    const effectivePort = port || "8888";
+    if (!effectiveIp) return;
+
+    this.wifiPollInterval = setInterval(async () => {
+      if (!this.pending2FaChallenge) {
+        this.stopWifiAuthPolling();
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://${effectiveIp}:${effectivePort}/api/auth/status`, {
+          method: "GET",
+          signal: AbortSignal.timeout(2000)
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.approved === true) {
+            this.stopWifiAuthPolling();
+            showToast("🛡️ Вход подтвержден в приложении на телефоне!");
+            this.confirm2FaMatch();
+          }
+        }
+      } catch (_) {}
+    }, 1500);
+  },
+
+  stopWifiAuthPolling() {
+    if (this.wifiPollInterval) {
+      clearInterval(this.wifiPollInterval);
+      this.wifiPollInterval = null;
+    }
+  },
+
+  toggleQrCodeSection() {
+    const sec = document.getElementById("sec-qr-section");
+    const label = document.getElementById("sec-qr-toggle-label");
+    const qrContainer = document.getElementById("sec-qr-container");
+    if (!sec) return;
+    const isHidden = sec.style.display === "none";
+    sec.style.display = isHidden ? "block" : "none";
+    if (label) label.textContent = isHidden ? "Скрыть QR ▲" : "Показать QR ▼";
+    if (isHidden && qrContainer && this.pending2FaChallenge) {
+      const deepLink = `openfy://auth?user=${encodeURIComponent(this.pending2FaChallenge.user.username)}&code=${this.pending2FaChallenge.code}`;
+      qrContainer.innerHTML = generateSvgQrCode(deepLink);
+    }
+  },
+
+  onManualPinInput(val) {
+    if (!this.pending2FaChallenge) return;
+    const clean = (val || "").replace(/\D/g, "");
+    if (clean.length === 6) {
+      if (clean === this.pending2FaChallenge.code) {
+        showToast("✅ 6-значный код безопасности совпал!");
+        this.confirm2FaMatch();
+      } else {
+        showToast("❌ Код не совпадает с кодом из приложения");
+      }
+    }
   },
 
   start2FaTimer() {
@@ -343,6 +532,8 @@ const authEngine = {
     if (!this.pending2FaChallenge) return;
     const challenge = this.pending2FaChallenge;
 
+    this.stopWifiAuthPolling();
+
     // Mutual Wi-Fi verification handshake if reachable
     if (challenge.ip) {
       try {
@@ -379,6 +570,7 @@ const authEngine = {
 
   reject2Fa() {
     clearInterval(this.timerInterval);
+    this.stopWifiAuthPolling();
     this.pending2FaChallenge = null;
     close2FaModal();
     showToast("Вход в аккаунт отклонён в целях безопасности.");
@@ -1467,7 +1659,7 @@ function generateSvgQrCode(text) {
       const qr = qrcode(0, 'M');
       qr.addData(text);
       qr.make();
-      return qr.createSvgTag({ cellSize: 5, margin: 4, scalable: true });
+      return qr.createSvgTag({ cellSize: 4, margin: 2, scalable: false });
     }
   } catch (err) {
     console.error("QR Code Generation failed:", err);

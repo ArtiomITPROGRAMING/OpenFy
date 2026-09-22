@@ -436,6 +436,8 @@ fun QrScannerScreen(
                             "Тема оформления установлена!" to "«${result.themeName}» теперь доступна в настройках тем"
                         is ImportResult.TrackMetaImported ->
                             "Метаданные трека получены" to "«${result.title}» — ${result.artist}"
+                        is ImportResult.AuthChallengeReceived ->
+                            "Запрос на подтверждение входа!" to "Поступил запрос для профиля @${result.username}. Подтвердите вход."
                     }
 
                     Text(

@@ -130,6 +130,24 @@ class MainActivity : ComponentActivity() {
                         windowWidthSizeClass = windowSizeClass.widthSizeClass
                     )
 
+                    val activeAuthChallenge by com.example.openfy.features.community.sync.LocalShareServer.activeAuthChallenge.collectAsState()
+                    if (activeAuthChallenge != null) {
+                        com.example.openfy.features.community.ui.AuthChallengeDialog(
+                            challenge = activeAuthChallenge!!,
+                            onApprove = { code ->
+                                com.example.openfy.features.community.sync.LocalShareServer.approveChallenge(code)
+                                android.widget.Toast.makeText(
+                                    this@MainActivity,
+                                    "Вход подтверждён! Код безопасности: $code",
+                                    android.widget.Toast.LENGTH_LONG
+                                ).show()
+                            },
+                            onDismiss = {
+                                com.example.openfy.features.community.sync.LocalShareServer.dismissChallenge()
+                            }
+                        )
+                    }
+
                     if (!networkConsentPromptShown) {
                         NetworkConsentBottomSheet(
                             onAccept = {
@@ -211,6 +229,11 @@ class MainActivity : ComponentActivity() {
 
         if (scheme == "openfy" && (host == "oauth-callback" || host == "discord-callback" || host == "github-callback")) {
             profileViewModel.handleOAuthRedirect(uri)
+        } else if (scheme == "openfy" && host == "auth") {
+            // Handle 2FA Auth Challenge deep link: openfy://auth?user=...&code=...
+            val user = uri.getQueryParameter("user") ?: uri.getQueryParameter("username") ?: "Пользователь"
+            val code = uri.getQueryParameter("code") ?: ""
+            com.example.openfy.features.community.sync.LocalShareServer.postAuthChallenge(user, "Веб-витрина OpenFy", code)
         } else if (scheme == "openfy" && host == "theme") {
             // 3. Handle theme installation deep link: openfy://theme/install?id=...&url=...
             val themeId = uri.getQueryParameter("id") ?: ""
@@ -292,6 +315,8 @@ class MainActivity : ComponentActivity() {
                             "Тема «${importResult.themeName}» успешно импортирована!"
                         is com.example.openfy.features.community.sync.ImportResult.TrackMetaImported ->
                             "Трек «${importResult.title}» получен"
+                        is com.example.openfy.features.community.sync.ImportResult.AuthChallengeReceived ->
+                            "Запрос на вход в аккаунт для @${importResult.username}"
                     }
                     android.widget.Toast.makeText(this@MainActivity, msg, android.widget.Toast.LENGTH_LONG).show()
                 }.onFailure { err ->
