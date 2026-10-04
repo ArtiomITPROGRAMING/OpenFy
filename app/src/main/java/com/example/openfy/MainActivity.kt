@@ -122,7 +122,7 @@ class MainActivity : ComponentActivity() {
                         playbackManager.playStreamTrack(meta.toSong())
                         android.widget.Toast.makeText(
                             this@MainActivity,
-                            "Воспроизведение потока «${meta.title}»",
+                            getString(R.string.stream_playback_msg, meta.title),
                             android.widget.Toast.LENGTH_SHORT
                         ).show()
                     }.onFailure {

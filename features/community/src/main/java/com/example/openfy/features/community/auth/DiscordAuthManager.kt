@@ -80,6 +80,9 @@ object DiscordAuthManager {
         code: String,
         redirectUri: String = DEFAULT_REDIRECT_URI
     ): Result<String> = withContext(Dispatchers.IO) {
+        if (clientId.isBlank() || clientSecret.isBlank()) {
+            return@withContext Result.failure(IllegalStateException("Discord OAuth credentials are not configured."))
+        }
         try {
             val formBody = FormBody.Builder()
                 .add("client_id", clientId)
@@ -121,6 +124,9 @@ object DiscordAuthManager {
      * Fetches authenticated user's Discord profile.
      */
     suspend fun fetchUserProfile(accessToken: String): Result<DiscordUser> = withContext(Dispatchers.IO) {
+        if (accessToken.isBlank()) {
+            return@withContext Result.failure(IllegalArgumentException("Access token is blank"))
+        }
         try {
             val request = Request.Builder()
                 .url(DISCORD_USER_URL)

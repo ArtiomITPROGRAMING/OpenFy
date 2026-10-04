@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App & General -->
+    <string name="app_name">OpenFy</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_save">Сохранить</string>
+    <string name="action_close">Закрыть</string>
+    <string name="action_share">Поделиться</string>
+    <string name="action_equalizer">Эквалайзер</string>
+    <string name="action_themes">Темы оформления</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_search">Поиск</string>
+    <string name="nav_library">Медиатека</string>
+    <string name="nav_settings">Настройки</string>
+    <string name="nav_tracks">Треки</string>
+    <string name="nav_albums">Альбомы</string>
+    <string name="nav_artists">Артисты</string>
+    <string name="nav_folders">Папки</string>
+    <string name="nav_playlists">Плейлисты</string>
+
+    <!-- Settings Hub -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_subtitle">Персонализация и управление OpenFy</string>
+    <string name="settings_profile_title">Профиль автора</string>
+    <string name="settings_profile_subtitle">Локальный профиль и настройки автора тем</string>
+    <string name="settings_profile_badge">Офлайн</string>
+
+    <string name="settings_appearance_title">Внешний вид и интерфейс</string>
+    <string name="settings_appearance_subtitle">Темы оформления (5 стилей), наборы векторных SVG-иконок, компактность</string>
+    <string name="settings_appearance_badge">Темы и иконки</string>
+
+    <string name="settings_playback_title">Воспроизведение и звук</string>
+    <string name="settings_playback_subtitle">Скорость, таймер сна, пауза при отключении, Gapless, затухание, перемотка</string>
+    <string name="settings_playback_badge">Аудио и таймер</string>
+
+    <string name="settings_audio_engine_title">Звуковой движок и система</string>
+    <string name="settings_audio_engine_subtitle">10-полосный DSP эквалайзер, фильтр коротких файлов, очистка клонов и кэша</string>
+    <string name="settings_audio_engine_badge">DSP и система</string>
+
+    <string name="settings_about_title">Об авторе и поддержка</string>
+    <string name="settings_about_subtitle">Разработчик: Артём (Artiom Crudu), Roadmap, Buy Me a Coffee, PayPal и прямая связь</string>
+    <string name="settings_about_badge">Автор и поддержка</string>
+
+    <!-- Dialogs & Messages -->
+    <string name="dialog_delete_track_title">Удаление трека</string>
+    <string name="dialog_delete_track_msg">Вы действительно хотите удалить этот трек с устройства?</string>
+    <string name="stream_playback_msg">Воспроизведение потока «%1$s»</string>
+
+    <!-- Author Profile -->
+    <string name="profile_welcome_title">Локальный профиль автора</string>
+    <string name="profile_welcome_desc">Приложение OpenFy работает полностью в офлайн-режиме без подключения к сети. Задайте имя или псевдоним автора для создания и экспорта тем оформления.</string>
+    <string name="profile_setup_author">Настроить имя автора (Офлайн)</string>
+    <string name="profile_export_title">Экспорт профиля автора</string>
+    <string name="profile_export_subtitle">Поделиться файлом</string>
+    <string name="profile_author_name_dialog_title">Имя автора</string>
+    <string name="profile_author_name_dialog_desc">Введите имя пользователя для локального профиля и экспорта тем оформления:</string>
+    <string name="profile_author_name_placeholder">Например: Автор тем</string>
+    <string name="profile_privacy_title">Приватность аккаунта</string>
+    <string name="profile_privacy_value">100% Offline Encrypted</string>
+    <string name="profile_stat_themes">Создано / Импортировано тем</string>
+    <string name="profile_stat_themes_value">Локально</string>
+    <string name="profile_logout">Выйти из аккаунта</string>
+    <string name="profile_logout_confirm">Вы уверены, что хотите выйти? Локальные ключи будут очищены.</string>
+</resources>

@@ -40,8 +40,8 @@ object GitHubAuthManager {
     private const val GITHUB_API_EMAILS_URL = "https://api.github.com/user/emails"
 
     const val DEFAULT_REDIRECT_URI = "openfy://oauth-callback"
-    const val DEFAULT_CLIENT_ID = "Ov23lif8OuBmLgF8UyFb"
-    const val DEFAULT_CLIENT_SECRET = "ddc408461e3a5e37d03f076b85adb06ae893069f"
+    const val DEFAULT_CLIENT_ID = ""
+    const val DEFAULT_CLIENT_SECRET = ""
 
     val json = Json {
         ignoreUnknownKeys = true
@@ -87,6 +87,9 @@ object GitHubAuthManager {
         code: String,
         redirectUri: String = DEFAULT_REDIRECT_URI
     ): Result<String> = withContext(Dispatchers.IO) {
+        if (clientId.isBlank() || clientSecret.isBlank()) {
+            return@withContext Result.failure(IllegalStateException("OAuth client credentials are not configured."))
+        }
         try {
             val formBody = FormBody.Builder()
                 .add("client_id", clientId)
@@ -142,6 +145,9 @@ object GitHubAuthManager {
         clientId: String,
         scopes: List<String> = listOf("read:user", "user:email", "gist")
     ): Result<GitHubDeviceCodeResponse> = withContext(Dispatchers.IO) {
+        if (clientId.isBlank()) {
+            return@withContext Result.failure(IllegalStateException("OAuth client ID is not configured."))
+        }
         try {
             val formBody = FormBody.Builder()
                 .add("client_id", clientId)
@@ -183,6 +189,9 @@ object GitHubAuthManager {
         clientId: String,
         deviceCode: String
     ): Result<String> = withContext(Dispatchers.IO) {
+        if (clientId.isBlank() || deviceCode.isBlank()) {
+            return@withContext Result.failure(IllegalStateException("OAuth client ID or device code is not configured."))
+        }
         try {
             val formBody = FormBody.Builder()
                 .add("client_id", clientId)
@@ -220,6 +229,9 @@ object GitHubAuthManager {
      * If user's public email is null, attempts to query private emails via `/user/emails`.
      */
     suspend fun fetchUserProfile(token: String): Result<GitHubUser> = withContext(Dispatchers.IO) {
+        if (token.isBlank()) {
+            return@withContext Result.failure(IllegalArgumentException("Access token is blank"))
+        }
         try {
             val request = Request.Builder()
                 .url(GITHUB_API_USER_URL)

@@ -114,12 +114,9 @@ fun CommunityProfileScreen(
     val currentThemeStyle by settingsRepository.themeStyle.collectAsState()
 
     var showLogoutDialog by remember { mutableStateOf(false) }
-    var showP2pActionDialog by remember { mutableStateOf(false) }
     var showShareProfileSheet by remember { mutableStateOf(false) }
     var guestNickname by remember { mutableStateOf("") }
     var showGuestDialog by remember { mutableStateOf(false) }
-    var showPatDialog by remember { mutableStateOf(false) }
-    var patTokenInput by remember { mutableStateOf("") }
 
     val primaryAccent = MaterialTheme.colorScheme.primary
     val cardBg = if (currentThemeStyle == AppThemeStyle.SERIOUS_DARK) AmoledDarkSurface else GlassDarkSurface
@@ -148,22 +145,15 @@ fun CommunityProfileScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Профиль & Сообщество",
+                        text = "Профиль автора",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "P2P Синхронизация, обмен темами и плейлистами",
+                        text = "Локальный профиль и настройки автора тем",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                IconButton(onClick = onNavigateToQrScanner) {
-                    Icon(
-                        imageVector = Icons.Default.QrCodeScanner,
-                        contentDescription = "Сканер QR-кода",
-                        tint = primaryAccent
                     )
                 }
             }
@@ -323,9 +313,9 @@ fun CommunityProfileScreen(
                                     )
                                     ProfileStatRow(
                                         icon = Icons.Default.Share,
-                                        title = "P2P Передача треков & плейлистов",
-                                        value = "Открыть сканер / Обмен",
-                                        onClick = { showP2pActionDialog = true }
+                                        title = "Экспорт профиля автора",
+                                        value = "Поделиться файлом",
+                                        onClick = { showShareProfileSheet = true }
                                     )
                                     ProfileStatRow(
                                         icon = Icons.Default.Lock,
@@ -378,7 +368,7 @@ fun CommunityProfileScreen(
                             }
                         }
 
-                        // Welcome Hero Card
+                        // Offline Author Profile Card
                         item {
                             GlassCard(
                                 modifier = Modifier.fillMaxWidth(),
@@ -389,173 +379,36 @@ fun CommunityProfileScreen(
                             ) {
                                 Column(modifier = Modifier.padding(20.dp)) {
                                     Text(
-                                        text = "Добро пожаловать в OpenFy Community!",
+                                        text = "Локальный профиль автора",
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = "Авторизуйтесь через GitHub или Discord, чтобы обмениваться темами оформления, делиться плейлистами без интернета и участвовать в развитии плеера.",
+                                        text = "Приложение OpenFy работает полностью в офлайн-режиме без подключения к сети. Задайте имя или псевдоним автора для создания и экспорта тем оформления.",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
-                                }
-                            }
-                        }
-
-                        // OAuth Buttons Section
-                        item {
-                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                // GitHub Login Button
-                                Button(
-                                    onClick = { viewModel.loginWithGitHub(context) },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(52.dp),
-                                    shape = RoundedCornerShape(14.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = GitHubDark,
-                                        contentColor = Color.White
-                                    )
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Code,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Text(
-                                        text = "Войти через GitHub",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-
-                                // Discord Login Button
-                                Button(
-                                    onClick = { viewModel.loginWithDiscord(context) },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(52.dp),
-                                    shape = RoundedCornerShape(14.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = DiscordBlurple,
-                                        contentColor = Color.White
-                                    )
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Group,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Text(
-                                        text = "Войти через Discord",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-
-                                // GitHub Personal Access Token (PAT) Login Button
-                                TextButton(
-                                    onClick = { showPatDialog = true },
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Lock,
-                                        contentDescription = null,
-                                        tint = primaryAccent,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = "Войти по Personal Access Token (PAT)",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = primaryAccent
-                                    )
-                                }
-
-                                // Continue as Guest Button
-                                OutlinedButton(
-                                    onClick = { showGuestDialog = true },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(52.dp),
-                                    shape = RoundedCornerShape(14.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.AccountCircle,
-                                        contentDescription = null,
-                                        tint = primaryAccent,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Text(
-                                        text = "Продолжить как Гость (Офлайн)",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                }
-                            }
-                        }
-
-                        // P2P Quick Actions Card
-                        item {
-                            GlassCard(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(18.dp),
-                                backgroundColor = cardBg,
-                                hasGlowBorder = currentThemeStyle.hasNeonGlow,
-                                glowColor = primaryAccent
-                            ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    Text(
-                                        text = "P2P ПЕРЕДАЧА ТРЕКОВ & ПЛЕЙЛИСТОВ",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = primaryAccent,
-                                        letterSpacing = 1.sp
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        text = "Мгновенный офлайн-обмен плейлистами, темами оформления (.thm) и треками через QR-код или локальный Wi-Fi.",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Spacer(modifier = Modifier.height(12.dp))
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    Spacer(modifier = Modifier.height(20.dp))
+                                    Button(
+                                        onClick = { showGuestDialog = true },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(52.dp),
+                                        shape = RoundedCornerShape(14.dp)
                                     ) {
-                                        Button(
-                                            onClick = onNavigateToQrScanner,
-                                            modifier = Modifier.weight(1f),
-                                            shape = RoundedCornerShape(12.dp)
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.QrCodeScanner,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(18.dp)
-                                            )
-                                            Spacer(modifier = Modifier.width(6.dp))
-                                            Text("Сканер QR", fontSize = 13.sp, maxLines = 1)
-                                        }
-
-                                        OutlinedButton(
-                                            onClick = { showShareProfileSheet = true },
-                                            modifier = Modifier.weight(1f),
-                                            shape = RoundedCornerShape(12.dp)
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Share,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(18.dp)
-                                            )
-                                            Spacer(modifier = Modifier.width(6.dp))
-                                            Text("Поделиться", fontSize = 13.sp, maxLines = 1)
-                                        }
+                                        Icon(
+                                            imageVector = Icons.Default.AccountCircle,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Text(
+                                            text = "Настроить имя автора (Офлайн)",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            fontWeight = FontWeight.Bold
+                                        )
                                     }
                                 }
                             }
@@ -566,55 +419,15 @@ fun CommunityProfileScreen(
         }
     }
 
-    // GitHub PAT Dialog
-    if (showPatDialog) {
-        AlertDialog(
-            onDismissRequest = { showPatDialog = false },
-            title = { Text("Вход по токену GitHub") },
-            text = {
-                Column {
-                    Text(
-                        text = "Вставьте GitHub Personal Access Token (Classic или Fine-grained с правом read:user). 100% локально и безопасно.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    OutlinedTextField(
-                        value = patTokenInput,
-                        onValueChange = { patTokenInput = it },
-                        placeholder = { Text("ghp_... или github_pat_...") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.loginWithGitHubPAT(patTokenInput)
-                        showPatDialog = false
-                    }
-                ) {
-                    Text("Войти")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showPatDialog = false }) {
-                    Text("Отмена")
-                }
-            }
-        )
-    }
-
-    // Guest Nickname Dialog
+    // Author Profile Dialog
     if (showGuestDialog) {
         AlertDialog(
             onDismissRequest = { showGuestDialog = false },
-            title = { Text("Имя гостя") },
+            title = { Text("Имя автора") },
             text = {
                 Column {
                     Text(
-                        text = "Введите имя пользователя для локального профиля и P2P-обмена:",
+                        text = "Введите имя пользователя для локального профиля и экспорта тем оформления:",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -622,7 +435,7 @@ fun CommunityProfileScreen(
                     OutlinedTextField(
                         value = guestNickname,
                         onValueChange = { guestNickname = it },
-                        placeholder = { Text("Например: Меломан") },
+                        placeholder = { Text("Например: Автор тем") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -641,35 +454,6 @@ fun CommunityProfileScreen(
             dismissButton = {
                 TextButton(onClick = { showGuestDialog = false }) {
                     Text("Отмена")
-                }
-            }
-        )
-    }
-
-    // P2P Action Selection Dialog
-    if (showP2pActionDialog) {
-        AlertDialog(
-            onDismissRequest = { showP2pActionDialog = false },
-            title = { Text("P2P Синхронизация") },
-            text = { Text("Выберите действие для обмена данными: запустить сканер QR-кода для импорта или поделиться своим профилем.") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showP2pActionDialog = false
-                        onNavigateToQrScanner()
-                    }
-                ) {
-                    Text("Сканировать QR")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        showP2pActionDialog = false
-                        showShareProfileSheet = true
-                    }
-                ) {
-                    Text("Поделиться профилем")
                 }
             }
         )

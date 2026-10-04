@@ -92,7 +92,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.annotation.StringRes
+import androidx.compose.ui.res.stringResource
 import coil.Coil
+import com.example.openfy.R
 import com.example.openfy.core.audio.data.AppThemeStyle
 import com.example.openfy.core.audio.data.IconPackStyle
 import com.example.openfy.core.audio.model.Quadruple
@@ -112,30 +115,42 @@ import com.example.openfy.core.ui.theme.RetroDarkBg
 import com.example.openfy.core.ui.theme.RetroPhosphorGreen
 
 enum class SettingsSection(
-    val title: String,
-    val subtitle: String,
-    val badge: String
+    @param:StringRes val titleRes: Int,
+    @param:StringRes val subtitleRes: Int,
+    @param:StringRes val badgeRes: Int
 ) {
     APPEARANCE(
-        "Внешний вид и интерфейс",
-        "Темы оформления (5 стилей), наборы векторных SVG-иконок, компактность",
-        "Темы и иконки"
+        R.string.settings_appearance_title,
+        R.string.settings_appearance_subtitle,
+        R.string.settings_appearance_badge
     ),
     PLAYBACK(
-        "Воспроизведение и звук",
-        "Скорость, таймер сна, пауза при отключении, Gapless, затухание, перемотка",
-        "Аудио и таймер"
+        R.string.settings_playback_title,
+        R.string.settings_playback_subtitle,
+        R.string.settings_playback_badge
     ),
     AUDIO_ENGINE(
-        "Звуковой движок и система",
-        "10-полосный DSP эквалайзер, фильтр коротких файлов, очистка клонов и кэша",
-        "DSP и система"
+        R.string.settings_audio_engine_title,
+        R.string.settings_audio_engine_subtitle,
+        R.string.settings_audio_engine_badge
     ),
     ABOUT_AUTHOR(
-        "Об авторе и поддержка",
-        "Разработчик: Артём (Artiom Crudu), Roadmap, Buy Me a Coffee, PayPal и прямая связь",
-        "Автор и поддержка"
-    )
+        R.string.settings_about_title,
+        R.string.settings_about_subtitle,
+        R.string.settings_about_badge
+    );
+
+    val title: String
+        @Composable
+        get() = stringResource(titleRes)
+
+    val subtitle: String
+        @Composable
+        get() = stringResource(subtitleRes)
+
+    val badge: String
+        @Composable
+        get() = stringResource(badgeRes)
 }
 
 @Composable
@@ -246,14 +261,14 @@ fun SettingsScreen(
                 item {
                     Column {
                         Text(
-                            text = "Настройки",
+                            text = stringResource(R.string.settings_title),
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onBackground
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Персонализация и управление OpenFy",
+                            text = stringResource(R.string.settings_subtitle),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -261,7 +276,7 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(6.dp))
                 }
 
-                // 0. Профиль и Сообщество Card
+                // 0. Профиль автора Card
                 item {
                     val commGrad = if (currentTheme == AppThemeStyle.SERIOUS_DARK) {
                         listOf(Color(0xFF383944), Color(0xFF1E1F28))
@@ -269,35 +284,15 @@ fun SettingsScreen(
                         listOf(Color(0xFF5865F2), Color(0xFF24292F))
                     }
                     SettingsSectionHubCard(
-                        title = "Профиль & Сообщество",
-                        subtitle = "GitHub / Discord авторизация, P2P обмен темами и плейлистами",
-                        badge = "OAuth 2.0 • P2P",
+                        title = stringResource(R.string.settings_profile_title),
+                        subtitle = stringResource(R.string.settings_profile_subtitle),
+                        badge = stringResource(R.string.settings_profile_badge),
                         icon = AppIcons.author,
                         gradientColors = commGrad,
                         cardBg = cardBg,
                         hasGlow = sectionGlow,
                         glowColor = Color(0xFF5865F2),
                         onClick = onNavigateToProfile
-                    )
-                }
-
-                // 0.1 Сканер QR-кода Card
-                item {
-                    val qrGrad = if (currentTheme == AppThemeStyle.SERIOUS_DARK) {
-                        listOf(Color(0xFF2A2B35), Color(0xFF14141A))
-                    } else {
-                        listOf(Color(0xFF00E5FF), Color(0xFF005A64))
-                    }
-                    SettingsSectionHubCard(
-                        title = "Сканер QR-кода",
-                        subtitle = "Импорт плейлистов и тем с другого устройства",
-                        badge = "CameraX • P2P Sync",
-                        icon = Icons.Default.QrCodeScanner,
-                        gradientColors = qrGrad,
-                        cardBg = cardBg,
-                        hasGlow = sectionGlow,
-                        glowColor = Color(0xFF00E5FF),
-                        onClick = onNavigateToQrScanner
                     )
                 }
 
