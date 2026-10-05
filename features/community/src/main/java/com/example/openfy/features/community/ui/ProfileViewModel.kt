@@ -64,7 +64,7 @@ class ProfileViewModel(
             return
         }
         val profile = authStorage.getProfile()
-        if (profile != null && profile !is UserProfile.Guest) {
+        if (profile != null) {
             _uiState.value = ProfileUiState.Authorized(profile)
         } else {
             _uiState.value = ProfileUiState.Unauthenticated
@@ -114,10 +114,10 @@ class ProfileViewModel(
 
     fun continueAsGuest(nickname: String) {
         val guestProfile = UserProfile.Guest(
-            guestId = "guest_${System.currentTimeMillis()}",
+            guestId = "author_${System.currentTimeMillis()}",
             nickname = nickname.ifBlank { "Автор OpenFy" }
         )
-        // Temporary session only - not saved to permanent auth storage
+        authStorage.saveProfile(guestProfile)
         _uiState.value = ProfileUiState.Authorized(guestProfile)
     }
 

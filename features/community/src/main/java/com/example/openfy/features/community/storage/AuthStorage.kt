@@ -81,9 +81,9 @@ class AuthStorage(context: Context) {
 
     fun isAuthorized(): Boolean {
         val profile = getProfile()
-        if (profile is UserProfile.Guest) return false
+        if (profile != null) return true
         val token = getToken()
-        return !token.isNullOrBlank() || (profile != null && profile !is UserProfile.Guest)
+        return !token.isNullOrBlank()
     }
 
     // --- Profile Handling ---

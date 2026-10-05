@@ -45,6 +45,7 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Language
@@ -74,6 +75,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -117,6 +119,12 @@ fun CommunityProfileScreen(
     var showShareProfileSheet by remember { mutableStateOf(false) }
     var guestNickname by remember { mutableStateOf("") }
     var showGuestDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState) {
+        if (uiState is ProfileUiState.Authorized && guestNickname.isBlank()) {
+            guestNickname = (uiState as ProfileUiState.Authorized).profile.displayName
+        }
+    }
 
     val primaryAccent = MaterialTheme.colorScheme.primary
     val cardBg = if (currentThemeStyle == AppThemeStyle.SERIOUS_DARK) AmoledDarkSurface else GlassDarkSurface
@@ -234,12 +242,31 @@ fun CommunityProfileScreen(
 
                                     Spacer(modifier = Modifier.height(14.dp))
 
-                                    Text(
-                                        text = profile.displayName,
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = profile.displayName,
+                                            style = MaterialTheme.typography.titleLarge,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        IconButton(
+                                            onClick = {
+                                                guestNickname = profile.displayName
+                                                showGuestDialog = true
+                                            },
+                                            modifier = Modifier.size(32.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Edit,
+                                                contentDescription = "Изменить имя автора",
+                                                tint = primaryAccent,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+                                    }
 
                                     Spacer(modifier = Modifier.height(6.dp))
 
@@ -386,26 +413,38 @@ fun CommunityProfileScreen(
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = "Приложение OpenFy работает полностью в офлайн-режиме без подключения к сети. Задайте имя или псевдоним автора для создания и экспорта тем оформления.",
+                                        text = "Приложение OpenFy работает полностью автономно без подключения к интернету. Укажите ваше имя или псевдоним автора для создания, подписи и экспорта тем оформления.",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
-                                    Spacer(modifier = Modifier.height(20.dp))
+                                    Spacer(modifier = Modifier.height(18.dp))
+                                    OutlinedTextField(
+                                        value = guestNickname,
+                                        onValueChange = { guestNickname = it },
+                                        label = { Text("Имя автора / Псевдоним") },
+                                        placeholder = { Text("Например: Автор тем OpenFy") },
+                                        singleLine = true,
+                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(14.dp))
                                     Button(
-                                        onClick = { showGuestDialog = true },
+                                        onClick = {
+                                            viewModel.continueAsGuest(guestNickname.ifBlank { "Автор OpenFy" })
+                                        },
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(52.dp),
+                                            .height(50.dp),
                                         shape = RoundedCornerShape(14.dp)
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.AccountCircle,
                                             contentDescription = null,
-                                            modifier = Modifier.size(22.dp)
+                                            modifier = Modifier.size(20.dp)
                                         )
-                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Spacer(modifier = Modifier.width(10.dp))
                                         Text(
-                                            text = "Настроить имя автора (Офлайн)",
+                                            text = "Войти в профиль автора",
                                             style = MaterialTheme.typography.bodyLarge,
                                             fontWeight = FontWeight.Bold
                                         )
@@ -444,7 +483,7 @@ fun CommunityProfileScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        viewModel.continueAsGuest(guestNickname)
+                        viewModel.continueAsGuest(guestNickname.ifBlank { "Автор OpenFy" })
                         showGuestDialog = false
                     }
                 ) {

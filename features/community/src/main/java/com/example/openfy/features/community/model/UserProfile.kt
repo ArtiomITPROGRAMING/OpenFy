@@ -58,11 +58,11 @@ sealed interface UserProfile {
     @Serializable
     data class Guest(
         val guestId: String,
-        val nickname: String = "Гость OpenFy"
+        val nickname: String = "Автор OpenFy"
     ) : UserProfile {
         override val id: String get() = guestId
         override val displayName: String get() = nickname
         override val avatarUrl: String get() = ""
-        override val providerName: String get() = "Guest"
+        override val providerName: String get() = "Офлайн Автор"
     }
 }
