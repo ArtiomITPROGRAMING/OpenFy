@@ -75,6 +75,8 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
+import com.example.openfy.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -113,29 +115,29 @@ import com.example.openfy.core.ui.theme.RetroDarkBg
 import com.example.openfy.core.ui.theme.RetroPhosphorGreen
 
 enum class SettingsSection(
-    val title: String,
-    val subtitle: String,
-    val badge: String
+    val titleRes: Int,
+    val subtitleRes: Int,
+    val badgeRes: Int
 ) {
     APPEARANCE(
-        "Внешний вид и интерфейс",
-        "Темы оформления (5 стилей), наборы векторных SVG-иконок, компактность",
-        "Темы и иконки"
+        R.string.settings_appearance_title,
+        R.string.settings_appearance_subtitle,
+        R.string.settings_appearance_badge
     ),
     PLAYBACK(
-        "Воспроизведение и звук",
-        "Скорость, таймер сна, пауза при отключении, Gapless, затухание, перемотка",
-        "Аудио и таймер"
+        R.string.settings_playback_title,
+        R.string.settings_playback_subtitle,
+        R.string.settings_playback_badge
     ),
     AUDIO_ENGINE(
-        "Звуковой движок и система",
-        "10-полосный DSP эквалайзер, фильтр коротких файлов, очистка клонов и кэша",
-        "DSP и система"
+        R.string.settings_audio_engine_title,
+        R.string.settings_audio_engine_subtitle,
+        R.string.settings_audio_engine_badge
     ),
     ABOUT_AUTHOR(
-        "Об авторе и поддержка",
-        "Разработчик: Артём (Artiom Crudu), Roadmap, Buy Me a Coffee, PayPal и прямая связь",
-        "Автор и поддержка"
+        R.string.settings_about_title,
+        R.string.settings_about_subtitle,
+        R.string.settings_about_badge
     )
 }
 
@@ -181,7 +183,7 @@ fun SettingsScreen(
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText(label, text)
         clipboard.setPrimaryClip(clip)
-        Toast.makeText(context, "Скопировано: $text", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, context.getString(R.string.toast_copied, text), Toast.LENGTH_SHORT).show()
     }
 
     val sectionGlow = currentTheme.hasNeonGlow
@@ -247,14 +249,14 @@ fun SettingsScreen(
                 item {
                     Column {
                         Text(
-                            text = "Настройки",
+                            text = stringResource(R.string.settings_title),
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onBackground
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Персонализация и управление OpenFy",
+                            text = stringResource(R.string.settings_subtitle),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -270,9 +272,9 @@ fun SettingsScreen(
                         listOf(Color(0xFF5865F2), Color(0xFF24292F))
                     }
                     SettingsSectionHubCard(
-                        title = "Профиль & Сообщество",
-                        subtitle = "GitHub / Discord авторизация, P2P обмен темами и плейлистами",
-                        badge = "OAuth 2.0 • P2P",
+                        title = stringResource(R.string.settings_profile_title),
+                        subtitle = stringResource(R.string.settings_profile_subtitle),
+                        badge = stringResource(R.string.settings_profile_badge),
                         icon = AppIcons.author,
                         gradientColors = commGrad,
                         cardBg = cardBg,
@@ -290,9 +292,9 @@ fun SettingsScreen(
                         listOf(Color(0xFF00E5FF), Color(0xFF005A64))
                     }
                     SettingsSectionHubCard(
-                        title = "Сканер QR-кода",
-                        subtitle = "Импорт плейлистов и тем с другого устройства",
-                        badge = "CameraX • P2P Sync",
+                        title = stringResource(R.string.settings_scanner_title),
+                        subtitle = stringResource(R.string.settings_scanner_subtitle),
+                        badge = stringResource(R.string.settings_scanner_badge),
                         icon = Icons.Default.QrCodeScanner,
                         gradientColors = qrGrad,
                         cardBg = cardBg,
@@ -305,8 +307,8 @@ fun SettingsScreen(
                 // 1. Внешний вид и интерфейс Card
                 item {
                     SettingsSectionHubCard(
-                        title = SettingsSection.APPEARANCE.title,
-                        subtitle = SettingsSection.APPEARANCE.subtitle,
+                        title = stringResource(SettingsSection.APPEARANCE.titleRes),
+                        subtitle = stringResource(SettingsSection.APPEARANCE.subtitleRes),
                         badge = currentTheme.displayName,
                         icon = AppIcons.album(currentIconPack),
                         gradientColors = appGrad,
@@ -320,9 +322,9 @@ fun SettingsScreen(
                 // 2. Воспроизведение и звук Card
                 item {
                     SettingsSectionHubCard(
-                        title = SettingsSection.PLAYBACK.title,
-                        subtitle = SettingsSection.PLAYBACK.subtitle,
-                        badge = "${"%.2f".format(currentSpeed)}x" + if (sleepTimerSeconds != null) " • Таймер активен" else "",
+                        title = stringResource(SettingsSection.PLAYBACK.titleRes),
+                        subtitle = stringResource(SettingsSection.PLAYBACK.subtitleRes),
+                        badge = "${"%.2f".format(currentSpeed)}x" + if (sleepTimerSeconds != null) " • " + stringResource(R.string.settings_timer_active) else "",
                         icon = AppIcons.play(currentIconPack),
                         gradientColors = playGrad,
                         cardBg = cardBg,
@@ -335,9 +337,9 @@ fun SettingsScreen(
                 // 3. Звуковой движок и система Card
                 item {
                     SettingsSectionHubCard(
-                        title = SettingsSection.AUDIO_ENGINE.title,
-                        subtitle = SettingsSection.AUDIO_ENGINE.subtitle,
-                        badge = "10-полосный DSP • Клоны",
+                        title = stringResource(SettingsSection.AUDIO_ENGINE.titleRes),
+                        subtitle = stringResource(SettingsSection.AUDIO_ENGINE.subtitleRes),
+                        badge = stringResource(R.string.settings_dsp_badge),
                         icon = AppIcons.equalizer(currentIconPack),
                         gradientColors = dspGrad,
                         cardBg = cardBg,
@@ -358,9 +360,9 @@ fun SettingsScreen(
                     val isIgnored = com.example.openfy.core.ui.components.BatteryOptimizationHelper.isIgnoringBatteryOptimizations(context)
 
                     SettingsSectionHubCard(
-                        title = "Фоновая работа и батарея",
-                        subtitle = "Настройка автозапуска и снятие ограничений питания (${brand.displayName})",
-                        badge = if (isIgnored) "Без ограничений ✓" else "Требует настройки ⚠️",
+                        title = stringResource(R.string.settings_battery_title),
+                        subtitle = stringResource(R.string.settings_battery_subtitle, brand.displayName),
+                        badge = if (isIgnored) stringResource(R.string.settings_battery_badge_ok) else stringResource(R.string.settings_battery_badge_warn),
                         icon = androidx.compose.material.icons.Icons.Default.VerifiedUser,
                         gradientColors = batteryGrad,
                         cardBg = cardBg,
@@ -373,9 +375,9 @@ fun SettingsScreen(
                 // 4. Об авторе и поддержка Card
                 item {
                     SettingsSectionHubCard(
-                        title = SettingsSection.ABOUT_AUTHOR.title,
-                        subtitle = SettingsSection.ABOUT_AUTHOR.subtitle,
-                        badge = "Артём • Донаты & Связь",
+                        title = stringResource(SettingsSection.ABOUT_AUTHOR.titleRes),
+                        subtitle = stringResource(SettingsSection.ABOUT_AUTHOR.subtitleRes),
+                        badge = stringResource(R.string.settings_about_badge_text),
                         icon = AppIcons.author,
                         gradientColors = authorGrad,
                         cardBg = cardBg,
@@ -391,7 +393,7 @@ fun SettingsScreen(
                 item {
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = "О ПРИЛОЖЕНИИ",
+                        text = stringResource(R.string.settings_about_app_header),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = primaryAccent,
@@ -443,7 +445,7 @@ fun SettingsScreen(
                                             color = Color.White
                                         )
                                         Text(
-                                            text = "Версия 1.0.0 (F-Droid FOSS Edition)",
+                                            text = stringResource(R.string.settings_version_title),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = primaryAccent
                                         )
@@ -462,11 +464,11 @@ fun SettingsScreen(
 
                             // Specs Grid
                             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                SpecInfoRow("Архитектура", "100% Offline & Open-Source (Без облаков)")
-                                SpecInfoRow("Лицензия", "GNU General Public License v3.0 (FOSS)")
-                                SpecInfoRow("Приватность", "0 Трекеров • 0 Рекламы • 0 Телеметрии")
-                                SpecInfoRow("Аудиоядро", "AndroidX Media3 (ExoPlayer) + 10-Band DSP")
-                                SpecInfoRow("Совместимость", "Android 8.0 - 15 (Target SDK 35)")
+                                SpecInfoRow(stringResource(R.string.settings_spec_arch), stringResource(R.string.settings_spec_arch_val))
+                                SpecInfoRow(stringResource(R.string.settings_spec_license), stringResource(R.string.settings_spec_license_val))
+                                SpecInfoRow(stringResource(R.string.settings_spec_privacy), stringResource(R.string.settings_spec_privacy_val))
+                                SpecInfoRow(stringResource(R.string.settings_spec_engine), stringResource(R.string.settings_spec_engine_val))
+                                SpecInfoRow(stringResource(R.string.settings_spec_compat), stringResource(R.string.settings_spec_compat_val))
                             }
 
                             Spacer(modifier = Modifier.height(14.dp))
@@ -483,7 +485,7 @@ fun SettingsScreen(
                                         Icon Pack: ${currentIconPack.name}
                                         Privacy: 100% Offline / Zero Trackers
                                     """.trimIndent()
-                                    copyToClipboard("Сведения OpenFy", buildInfo)
+                                    copyToClipboard(context.getString(R.string.settings_build_info_label), buildInfo)
                                 },
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp)
@@ -496,7 +498,7 @@ fun SettingsScreen(
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Скопировать сведения о сборке",
+                                    text = stringResource(R.string.settings_copy_build_info),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = Color.White
                                 )
@@ -528,7 +530,7 @@ fun SettingsScreen(
                     IconButton(onClick = { activeSection = null }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Назад",
+                            contentDescription = stringResource(R.string.action_back),
                             tint = primaryAccent
                         )
                     }
@@ -537,13 +539,13 @@ fun SettingsScreen(
 
                     Column {
                         Text(
-                            text = section.title,
+                            text = stringResource(section.titleRes),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                         Text(
-                            text = "Настройки OpenFy",
+                            text = stringResource(R.string.settings_openfy_title),
                             style = MaterialTheme.typography.labelSmall,
                             color = primaryAccent
                         )
@@ -591,13 +593,13 @@ fun SettingsScreen(
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Column(modifier = Modifier.weight(1f)) {
                                             Text(
-                                                text = "Менеджер и импорт тем (.thm)",
+                                                text = stringResource(R.string.settings_theme_manager_title),
                                                 style = MaterialTheme.typography.titleMedium,
                                                 fontWeight = FontWeight.Bold,
                                                 color = Color.White
                                             )
                                             Text(
-                                                text = "Установка сторонних тем, предпросмотр палитр и онлайн-каталог",
+                                                text = stringResource(R.string.settings_theme_manager_subtitle),
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = Color.White.copy(alpha = 0.7f)
                                             )

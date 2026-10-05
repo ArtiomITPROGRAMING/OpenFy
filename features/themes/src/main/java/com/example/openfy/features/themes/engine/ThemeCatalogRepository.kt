@@ -316,29 +316,10 @@ object ThemeCatalogRepository {
     )
 
     /**
-     * Fetches catalog themes from GitHub if online, or immediately falls back to [BUILT_IN_CATALOG].
+     * Returns built-in catalog themes.
+     * Guarantees 100% offline availability and instant 1-click installation without network calls.
      */
-    suspend fun getCatalogThemes(): List<CatalogThemeItem> = withContext(Dispatchers.IO) {
-        try {
-            val url = URL(GITHUB_CATALOG_RAW_URL)
-            val connection = (url.openConnection() as HttpURLConnection).apply {
-                connectTimeout = 3000
-                readTimeout = 4000
-                requestMethod = "GET"
-                instanceFollowRedirects = true
-            }
-
-            if (connection.responseCode == 200) {
-                val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
-                val parsed = json.decodeFromString<List<CatalogThemeItem>>(jsonString)
-                if (parsed.isNotEmpty()) return@withContext parsed
-            }
-        } catch (_: Exception) {
-            // Offline or timeout, safely fall back to built-in catalog
-        }
-
-        BUILT_IN_CATALOG
-    }
+    suspend fun getCatalogThemes(): List<CatalogThemeItem> = BUILT_IN_CATALOG
 
     /**
      * Installs a catalog theme onto the phone, saves it in private app storage,
@@ -395,40 +376,13 @@ object ThemeCatalogRepository {
 
     /**
      * Downloads and installs a theme (.thm or .json) from any direct URL.
+     * In F-Droid offline build, network downloads are disabled.
      */
     suspend fun downloadAndInstallThemeFromUrl(
         context: Context,
         settingsRepository: SettingsRepository,
         urlStr: String
     ): Result<ThemeMetadata> = withContext(Dispatchers.IO) {
-        try {
-            val url = URL(urlStr.trim())
-            val connection = (url.openConnection() as HttpURLConnection).apply {
-                connectTimeout = 8000
-                readTimeout = 15000
-                requestMethod = "GET"
-                instanceFollowRedirects = true
-            }
-
-            if (connection.responseCode !in 200..299) {
-                return@withContext Result.failure(IllegalStateException("HTTP ${connection.responseCode}: ${connection.responseMessage}"))
-            }
-
-            val bytes = connection.inputStream.use { it.readBytes() }
-            if (bytes.isEmpty()) {
-                return@withContext Result.failure(IllegalStateException("Получен пустой файл темы"))
-            }
-
-            val targetDir = ThemeEngine.getThemesDirectory(context)
-            val parseResult = ThemeParser.parseAndExtractThm(ByteArrayInputStream(bytes), targetDir)
-
-            parseResult.onSuccess { metadata ->
-                settingsRepository.setCustomThemeId(metadata.id)
-            }
-
-            parseResult
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        Result.failure(IllegalStateException("Работает в автономном режиме без подключения к сети"))
     }
 }

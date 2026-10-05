@@ -60,6 +60,8 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
+import com.example.openfy.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -133,7 +135,7 @@ fun StudioFxScreen(
                 IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Назад",
+                        contentDescription = stringResource(R.string.action_back),
                         tint = Color.White
                     )
                 }
@@ -144,13 +146,13 @@ fun StudioFxScreen(
                         .padding(horizontal = 8.dp)
                 ) {
                     Text(
-                        text = "Студия FX & Караоке",
+                        text = stringResource(R.string.studio_fx_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
                     Text(
-                        text = currentSong?.title ?: "Трек не выбран",
+                        text = currentSong?.title ?: stringResource(R.string.studio_fx_no_track),
                         style = MaterialTheme.typography.bodySmall,
                         color = NeonCyan,
                         maxLines = 1,
@@ -168,7 +170,7 @@ fun StudioFxScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Refresh,
-                        contentDescription = "Сброс всех эффектов",
+                        contentDescription = stringResource(R.string.studio_fx_reset_desc),
                         tint = Color.White.copy(alpha = 0.8f)
                     )
                 }
@@ -220,16 +222,16 @@ fun StudioFxScreen(
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
                                     Text(
-                                        text = "Караоке (Apple Music Sing)",
+                                        text = stringResource(R.string.studio_karaoke_title),
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White
                                     )
                                     Text(
                                         text = if (isKaraokeEnabled) {
-                                            if (vocalLevel <= 0.05f) "Минусовка (вокал убран)"
-                                            else "Уровень голоса: ${(vocalLevel * 100).toInt()}%"
-                                        } else "Подавление вокала в реальном времени",
+                                            if (vocalLevel <= 0.05f) stringResource(R.string.studio_karaoke_on_desc)
+                                            else stringResource(R.string.studio_karaoke_vocal_level, (vocalLevel * 100).toInt())
+                                        } else stringResource(R.string.studio_karaoke_desc),
                                         style = MaterialTheme.typography.bodySmall,
                                         fontSize = 11.sp,
                                         color = if (isKaraokeEnabled) NeonCyan else Color.White.copy(alpha = 0.5f)
@@ -247,7 +249,7 @@ fun StudioFxScreen(
                                 contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
                             ) {
                                 Text(
-                                    text = if (isKaraokeEnabled) "ВКЛ" else "ВЫКЛ",
+                                    text = if (isKaraokeEnabled) stringResource(R.string.action_on) else stringResource(R.string.action_off),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 12.sp
                                 )
@@ -266,12 +268,12 @@ fun StudioFxScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "Чистый минус",
+                                        text = stringResource(R.string.studio_karaoke_pure_minus),
                                         fontSize = 11.sp,
                                         color = Color.White.copy(alpha = 0.7f)
                                     )
                                     Text(
-                                        text = "Оригинал",
+                                        text = stringResource(R.string.studio_karaoke_original),
                                         fontSize = 11.sp,
                                         color = Color.White.copy(alpha = 0.7f)
                                     )
@@ -327,15 +329,15 @@ fun StudioFxScreen(
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
                                     Text(
-                                        text = "Тональность (Pitch)",
+                                        text = stringResource(R.string.studio_pitch_title),
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White
                                     )
                                     Text(
-                                        text = if (currentSemitones == 0) "Исходная тональность"
-                                        else if (currentSemitones > 0) "+$currentSemitones полутонов"
-                                        else "$currentSemitones полутонов",
+                                        text = if (currentSemitones == 0) stringResource(R.string.studio_pitch_original)
+                                        else if (currentSemitones > 0) stringResource(R.string.studio_pitch_semitones, "+$currentSemitones")
+                                        else stringResource(R.string.studio_pitch_semitones, "$currentSemitones"),
                                         style = MaterialTheme.typography.bodySmall,
                                         fontSize = 11.sp,
                                         color = if (currentSemitones != 0) AmberGlow else Color.White.copy(alpha = 0.5f)
@@ -356,7 +358,7 @@ fun StudioFxScreen(
                                     ),
                                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                                 ) {
-                                    Text("Сброс", fontSize = 11.sp)
+                                    Text(stringResource(R.string.action_reset), fontSize = 11.sp)
                                 }
                             }
                         }
@@ -443,7 +445,7 @@ fun StudioFxScreen(
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
                                     Text(
-                                        text = "Скорость воспроизведения",
+                                        text = stringResource(R.string.studio_speed_title),
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White
@@ -489,7 +491,7 @@ fun StudioFxScreen(
 
                         // Quick Presets
                         Text(
-                            text = "Фирменные пресеты",
+                            text = stringResource(R.string.studio_speed_presets),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.SemiBold,
                             color = Color.White.copy(alpha = 0.7f),
@@ -585,7 +587,7 @@ fun StudioFxScreen(
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
                                     Text(
-                                        text = "A-B Зацикливание (Looper)",
+                                        text = stringResource(R.string.studio_ab_loop_title),
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White
@@ -597,9 +599,9 @@ fun StudioFxScreen(
                                             String.format(Locale.ROOT, "%02d:%02d ➔ %02d:%02d", s / 60, s % 60, e / 60, e % 60)
                                         } else if (abLoopStartMs != null) {
                                             val s = abLoopStartMs!! / 1000
-                                            String.format(Locale.ROOT, "Точка A: %02d:%02d (выберите B)", s / 60, s % 60)
+                                            stringResource(R.string.studio_ab_loop_point_a, String.format(Locale.ROOT, "%02d:%02d", s / 60, s % 60))
                                         } else {
-                                            "Зацикливание соло или припева"
+                                            stringResource(R.string.studio_ab_loop_desc)
                                         },
                                         style = MaterialTheme.typography.bodySmall,
                                         fontSize = 11.sp,
@@ -618,7 +620,7 @@ fun StudioFxScreen(
                                     ),
                                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                                 ) {
-                                    Text("Сброс", fontSize = 11.sp)
+                                    Text(stringResource(R.string.action_reset), fontSize = 11.sp)
                                 }
                             }
                         }
@@ -637,7 +639,7 @@ fun StudioFxScreen(
                                     containerColor = if (abLoopStartMs != null) NeonPink.copy(alpha = 0.35f) else Color.White.copy(alpha = 0.12f)
                                 )
                             ) {
-                                Text("Точка [A]", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.studio_ab_point_a_btn), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                             }
 
                             Button(
@@ -648,7 +650,7 @@ fun StudioFxScreen(
                                     containerColor = if (abLoopEndMs != null) NeonCyan.copy(alpha = 0.35f) else Color.White.copy(alpha = 0.12f)
                                 )
                             ) {
-                                Text("Точка [B]", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.studio_ab_point_b_btn), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }

@@ -53,6 +53,7 @@ import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -122,9 +123,6 @@ fun ThemesScreen(
     var themeToDelete by remember { mutableStateOf<ThemeManifest?>(null) }
 
     var catalogThemes by remember { mutableStateOf(ThemeCatalogRepository.BUILT_IN_CATALOG) }
-    var showUrlDialog by remember { mutableStateOf(false) }
-    var inputUrl by remember { mutableStateOf("") }
-    var isDownloadingUrl by remember { mutableStateOf(false) }
     var installingThemeId by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
@@ -272,18 +270,24 @@ fun ThemesScreen(
                                 }
 
                                 OutlinedButton(
-                                    onClick = { showUrlDialog = true },
+                                    onClick = {
+                                        if (customThemeId != null) {
+                                            ThemeEngine.shareThemeFile(context, customThemeId!!)
+                                        } else {
+                                            Toast.makeText(context, "Выберите тему из установленных для экспорта", Toast.LENGTH_SHORT).show()
+                                        }
+                                    },
                                     modifier = Modifier.weight(1f),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.Link,
+                                        imageVector = Icons.Default.Share,
                                         contentDescription = null,
                                         modifier = Modifier.size(18.dp)
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
-                                        text = "По ссылке (URL)",
+                                        text = "Экспорт (.thm)",
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -293,7 +297,7 @@ fun ThemesScreen(
                     }
                 }
 
-                // Online Catalog Header
+                // Offline Catalog Header
                 item {
                     Spacer(modifier = Modifier.height(6.dp))
                     Row(
@@ -302,36 +306,23 @@ fun ThemesScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "КАТАЛОГ ТЕМ OPENFY (GITHUB)",
+                            text = "КАТАЛОГ ТЕМ OPENFY (ОФЛАЙН)",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = primaryAccent,
                             letterSpacing = 1.sp
                         )
 
-                        TextButton(
-                            onClick = {
-                                val syncUrl = ThemeCatalogRepository.getWebShowcaseSyncUrl(context)
-                                val secCode = context.getSharedPreferences("openfy_security_pairing", Context.MODE_PRIVATE).getString("active_sec_code", null)
-                                if (!secCode.isNullOrBlank()) {
-                                    Toast.makeText(context, "Код безопасности OpenFy 2FA: $secCode", Toast.LENGTH_LONG).show()
-                                }
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(syncUrl))
-                                try {
-                                    context.startActivity(intent)
-                                } catch (_: Exception) {
-                                    Toast.makeText(context, "Ссылка: $syncUrl", Toast.LENGTH_LONG).show()
-                                }
-                            },
-                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = primaryAccent.copy(alpha = 0.15f)
                         ) {
-                            Text("Веб-витрина (GitHub Pages)", fontSize = 12.sp, color = primaryAccent)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp),
-                                tint = primaryAccent
+                            Text(
+                                text = "100% Offline",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = primaryAccent,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                             )
                         }
                     }
@@ -445,6 +436,9 @@ fun ThemesScreen(
                             },
                             onDelete = {
                                 themeToDelete = theme
+                            },
+                            onExport = {
+                                ThemeEngine.shareThemeFile(context, theme.id)
                             }
                         )
                     }
@@ -486,64 +480,6 @@ fun ThemesScreen(
         )
     }
 
-    if (showUrlDialog) {
-        AlertDialog(
-            onDismissRequest = { if (!isDownloadingUrl) showUrlDialog = false },
-            title = { Text("Скачать тему по ссылке", fontWeight = FontWeight.Bold) },
-            text = {
-                Column {
-                    Text(
-                        text = "Вставьте прямую ссылку на .thm архив или theme.json (например, из GitHub):",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = inputUrl,
-                        onValueChange = { inputUrl = it },
-                        placeholder = { Text("https://.../theme.json") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        if (inputUrl.isNotBlank()) {
-                            isDownloadingUrl = true
-                            scope.launch {
-                                val res = ThemeCatalogRepository.downloadAndInstallThemeFromUrl(context, settingsRepository, inputUrl)
-                                isDownloadingUrl = false
-                                showUrlDialog = false
-                                res.onSuccess {
-                                    refreshInstalledThemes()
-                                    Toast.makeText(context, "Тема «${it.name}» успешно скачана и установлена!", Toast.LENGTH_SHORT).show()
-                                }.onFailure { err ->
-                                    Toast.makeText(context, "Ошибка загрузки темы: ${err.localizedMessage}", Toast.LENGTH_LONG).show()
-                                }
-                            }
-                        }
-                    },
-                    enabled = !isDownloadingUrl && inputUrl.isNotBlank()
-                ) {
-                    if (isDownloadingUrl) {
-                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
-                    } else {
-                        Text("Скачать и применить")
-                    }
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showUrlDialog = false },
-                    enabled = !isDownloadingUrl
-                ) {
-                    Text("Отмена")
-                }
-            }
-        )
-    }
 }
 
 @Composable
@@ -647,7 +583,8 @@ private fun CustomThemeCard(
     accentColor: Color,
     isActive: Boolean,
     onClick: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onExport: () -> Unit = {}
 ) {
     val primaryAccent = MaterialTheme.colorScheme.primary
 
@@ -726,6 +663,14 @@ private fun CustomThemeCard(
                         )
                     }
                 }
+            }
+
+            IconButton(onClick = onExport) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = "Экспортировать тему (.thm)",
+                    tint = primaryAccent
+                )
             }
 
             IconButton(onClick = onDelete) {

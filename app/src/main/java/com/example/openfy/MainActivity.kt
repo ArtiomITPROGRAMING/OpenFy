@@ -46,8 +46,6 @@ import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-import com.example.openfy.ui.components.NetworkConsentBottomSheet
-
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 
@@ -84,32 +82,6 @@ class MainActivity : ComponentActivity() {
             val networkConsentGranted by playbackManager.settingsRepository.networkConsentGranted.collectAsState()
             val context = LocalContext.current
 
-            LaunchedEffect(networkConsentGranted) {
-                if (networkConsentGranted) {
-                    com.example.openfy.features.community.sync.LocalShareServer.startWifiSyncServer(8888) { themeJson ->
-                        try {
-                            val meta = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }.decodeFromString<com.example.openfy.features.themes.model.ThemeMetadata>(themeJson)
-                            val targetDir = ThemeEngine.getThemesDirectory(this@MainActivity)
-                            val themeFolder = java.io.File(targetDir, meta.id).apply { mkdirs() }
-                            java.io.File(themeFolder, com.example.openfy.features.themes.engine.ThemeParser.THEME_CONFIG_FILE).writeText(themeJson)
-                            lifecycleScope.launch(Dispatchers.Main) {
-                                playbackManager.settingsRepository.setCustomThemeId(meta.id)
-                                android.widget.Toast.makeText(
-                                    this@MainActivity,
-                                    "Тема «${meta.name}» успешно установлена и применена по Wi-Fi!",
-                                    android.widget.Toast.LENGTH_LONG
-                                ).show()
-                            }
-                            true
-                        } catch (_: Exception) {
-                            false
-                        }
-                    }
-                } else {
-                    com.example.openfy.features.community.sync.LocalShareServer.stopServer()
-                }
-            }
-
             val customColorScheme = remember(customThemeId) {
                 if (customThemeId != null) {
                     ThemeEngine.loadThemeColors(context, customThemeId!!)
@@ -144,20 +116,6 @@ class MainActivity : ComponentActivity() {
                             },
                             onDismiss = {
                                 com.example.openfy.features.community.sync.LocalShareServer.dismissChallenge()
-                            }
-                        )
-                    }
-
-                    if (!networkConsentPromptShown) {
-                        NetworkConsentBottomSheet(
-                            onAccept = {
-                                playbackManager.settingsRepository.setNetworkConsent(true)
-                            },
-                            onDecline = {
-                                playbackManager.settingsRepository.setNetworkConsent(false)
-                            },
-                            onDismissRequest = {
-                                playbackManager.settingsRepository.setNetworkConsent(false)
                             }
                         )
                     }

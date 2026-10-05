@@ -103,6 +103,8 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.foundation.layout.displayCutoutPadding
+import androidx.compose.ui.res.stringResource
+import com.example.openfy.R
 import androidx.compose.foundation.layout.imePadding
 import com.example.openfy.ui.components.ExpandedSidePlayerPane
 
@@ -170,7 +172,7 @@ fun MainScreenWithBottomNav(
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             lastDeletedSong?.let { playbackManager.onSongDeleted(it.id) }
-            Toast.makeText(context, "Трек успешно удален", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.toast_track_deleted), Toast.LENGTH_SHORT).show()
             loadAudio()
         }
     }
@@ -208,10 +210,10 @@ fun MainScreenWithBottomNav(
 
         if (deleted) {
             playbackManager.onSongDeleted(song.id)
-            Toast.makeText(context, "Трек успешно удален", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.toast_track_deleted), Toast.LENGTH_SHORT).show()
             loadAudio()
         } else {
-            Toast.makeText(context, "Не удалось удалить файл", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.toast_track_delete_failed), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -281,10 +283,10 @@ fun MainScreenWithBottomNav(
                     modifier = Modifier.fillMaxHeight()
                 ) {
                     val tabs = listOf(
-                        Triple(0, "Главная", AppIcons.home(iconPackStyle)),
-                        Triple(1, "Поиск", AppIcons.search(iconPackStyle)),
-                        Triple(2, "Медиатека", AppIcons.library(iconPackStyle)),
-                        Triple(3, "Настройки", AppIcons.settings(iconPackStyle))
+                        Triple(0, stringResource(R.string.nav_home), AppIcons.home(iconPackStyle)),
+                        Triple(1, stringResource(R.string.nav_search), AppIcons.search(iconPackStyle)),
+                        Triple(2, stringResource(R.string.nav_library), AppIcons.library(iconPackStyle)),
+                        Triple(3, stringResource(R.string.nav_settings), AppIcons.settings(iconPackStyle))
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -317,7 +319,7 @@ fun MainScreenWithBottomNav(
                     IconButton(onClick = onNavigateToEqualizer) {
                         Icon(
                             imageVector = AppIcons.equalizer(iconPackStyle),
-                            contentDescription = "Эквалайзер",
+                            contentDescription = stringResource(R.string.action_equalizer),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -325,7 +327,7 @@ fun MainScreenWithBottomNav(
                     IconButton(onClick = onNavigateToThemes) {
                         Icon(
                             imageVector = AppIcons.palette(iconPackStyle),
-                            contentDescription = "Темы оформления",
+                            contentDescription = stringResource(R.string.action_themes),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -509,10 +511,10 @@ fun MainScreenWithBottomNav(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 val tabs = listOf(
-                                    Triple(0, "Главная", AppIcons.home(iconPackStyle)),
-                                    Triple(1, "Поиск", AppIcons.search(iconPackStyle)),
-                                    Triple(2, "Медиатека", AppIcons.library(iconPackStyle)),
-                                    Triple(3, "Настройки", AppIcons.settings(iconPackStyle))
+                                    Triple(0, stringResource(R.string.nav_home), AppIcons.home(iconPackStyle)),
+                                    Triple(1, stringResource(R.string.nav_search), AppIcons.search(iconPackStyle)),
+                                    Triple(2, stringResource(R.string.nav_library), AppIcons.library(iconPackStyle)),
+                                    Triple(3, stringResource(R.string.nav_settings), AppIcons.settings(iconPackStyle))
                                 )
 
                                 tabs.forEach { (index, title, icon) ->
@@ -575,8 +577,8 @@ fun MainScreenWithBottomNav(
         songPendingDeletion?.let { song ->
             AlertDialog(
                 onDismissRequest = { songPendingDeletion = null },
-                title = { Text("Удаление трека") },
-                text = { Text("Вы действительно хотите удалить «${song.title}» с устройства?") },
+                title = { Text(stringResource(R.string.dialog_delete_track_title)) },
+                text = { Text(stringResource(R.string.dialog_delete_track_msg_format, song.title)) },
                 confirmButton = {
                     TextButton(
                         onClick = {
@@ -585,12 +587,12 @@ fun MainScreenWithBottomNav(
                             executeSingleSongDelete(s)
                         }
                     ) {
-                        Text("Удалить", color = NeonPink, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.action_delete), color = NeonPink, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { songPendingDeletion = null }) {
-                        Text("Отмена")
+                        Text(stringResource(R.string.action_cancel))
                     }
                 }
             )

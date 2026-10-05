@@ -162,8 +162,8 @@ object LocalShareServer {
 
             val serverUrl = "http://$ip:$port/"
             Result.success(serverUrl)
-        } catch (e: Exception) {
-            Result.failure(e)
+        } catch (t: Throwable) {
+            Result.failure(t)
         }
     }
 
@@ -177,7 +177,7 @@ object LocalShareServer {
             serverSocket?.close()
             serverSocket = null
             currentPayload = null
-        } catch (_: Exception) {}
+        } catch (_: Throwable) {}
     }
 
     fun isRunning(): Boolean = serverSocket?.isClosed == false && serverJob?.isActive == true
@@ -419,7 +419,7 @@ object LocalShareServer {
                 os.write(headers.toByteArray(Charsets.UTF_8))
                 os.write(bytes)
                 os.flush()
-            } catch (_: Exception) {}
+            } catch (_: Throwable) {}
         }
     }
 
@@ -437,7 +437,7 @@ object LocalShareServer {
                     }
                 }
             }
-        } catch (_: Exception) {}
+        } catch (_: Throwable) {}
         return null
     }
 }

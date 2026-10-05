@@ -196,8 +196,6 @@ fun MainNavigation(
                     onNavigateToQrScanner = { backStack.add(QrScannerKey) },
                     onLogout = {
                         profileViewModel.logout()
-                        backStack.clear()
-                        backStack.add(AuthOnboardingKey)
                     }
                 )
             }

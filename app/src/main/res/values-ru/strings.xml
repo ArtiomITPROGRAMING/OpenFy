@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App & General -->
+    <string name="app_name">OpenFy</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_save">Сохранить</string>
+    <string name="action_close">Закрыть</string>
+    <string name="action_share">Поделиться</string>
+    <string name="action_equalizer">Эквалайзер</string>
+    <string name="action_themes">Темы оформления</string>
+    <string name="action_back">Назад</string>
+    <string name="action_on">ВКЛ</string>
+    <string name="action_off">ВЫКЛ</string>
+    <string name="action_edit">Изменить</string>
+    <string name="action_reset">Сброс</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_search">Поиск</string>
+    <string name="nav_library">Медиатека</string>
+    <string name="nav_settings">Настройки</string>
+    <string name="nav_tracks">Треки</string>
+    <string name="nav_albums">Альбомы</string>
+    <string name="nav_artists">Артисты</string>
+    <string name="nav_folders">Папки</string>
+    <string name="nav_playlists">Плейлисты</string>
+
+    <!-- Settings Hub -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_subtitle">Персонализация и управление OpenFy</string>
+    <string name="settings_profile_title">Профиль автора</string>
+    <string name="settings_profile_subtitle">Локальный профиль и настройки автора тем</string>
+    <string name="settings_profile_badge">Офлайн</string>
+
+    <string name="settings_scanner_title">Сканер QR-кода</string>
+    <string name="settings_scanner_subtitle">Импорт плейлистов и тем с другого устройства</string>
+    <string name="settings_scanner_badge">CameraX • Офлайн</string>
+
+    <string name="settings_appearance_title">Внешний вид и интерфейс</string>
+    <string name="settings_appearance_subtitle">Темы оформления (5 стилей), наборы векторных SVG-иконок, компактность</string>
+    <string name="settings_appearance_badge">Темы и иконки</string>
+
+    <string name="settings_playback_title">Воспроизведение и звук</string>
+    <string name="settings_playback_subtitle">Скорость, таймер сна, пауза при отключении, Gapless, затухание, перемотка</string>
+    <string name="settings_playback_badge">Аудио и таймер</string>
+
+    <string name="settings_audio_engine_title">Звуковой движок и система</string>
+    <string name="settings_audio_engine_subtitle">10-полосный DSP эквалайзер, фильтр коротких файлов, очистка клонов и кэша</string>
+    <string name="settings_audio_engine_badge">DSP и система</string>
+
+    <string name="settings_battery_title">Фоновая работа и батарея</string>
+    <string name="settings_battery_subtitle">Настройка автозапуска и снятие ограничений питания (%1$s)</string>
+    <string name="settings_battery_badge_ok">Без ограничений ✓</string>
+    <string name="settings_battery_badge_warn">Требует настройки ⚠️</string>
+
+    <string name="settings_about_title">Об авторе и поддержка</string>
+    <string name="settings_about_subtitle">Разработчик: Артём (Artiom Crudu), Roadmap, Buy Me a Coffee, PayPal и прямая связь</string>
+    <string name="settings_about_badge">Автор и поддержка</string>
+    <string name="settings_about_app_header">О ПРИЛОЖЕНИИ</string>
+
+    <!-- Dialogs & Messages -->
+    <string name="dialog_delete_track_title">Удаление трека</string>
+    <string name="dialog_delete_track_msg">Вы действительно хотите удалить этот трек с устройства?</string>
+    <string name="dialog_delete_track_msg_format">Вы действительно хотите удалить «%1$s» с устройства?</string>
+    <string name="toast_track_deleted">Трек успешно удален</string>
+    <string name="toast_track_delete_failed">Не удалось удалить файл</string>
+    <string name="toast_copied">Скопировано: %1$s</string>
+    <string name="stream_playback_msg">Воспроизведение потока «%1$s»</string>
+
+    <!-- Additional Settings Strings -->
+    <string name="settings_timer_active">Таймер активен</string>
+    <string name="settings_dsp_badge">10-полосный DSP • Клоны</string>
+    <string name="settings_about_badge_text">Артём • Донаты &amp; Связь</string>
+    <string name="settings_version_title">Версия 1.0.0 (F-Droid FOSS Edition)</string>
+    <string name="settings_spec_arch">Архитектура</string>
+    <string name="settings_spec_arch_val">100% Offline &amp; Open-Source (Без облаков)</string>
+    <string name="settings_spec_license">Лицензия</string>
+    <string name="settings_spec_license_val">GNU General Public License v3.0 (FOSS)</string>
+    <string name="settings_spec_privacy">Приватность</string>
+    <string name="settings_spec_privacy_val">0 Трекеров • 0 Рекламы • 0 Телеметрии</string>
+    <string name="settings_spec_engine">Аудиоядро</string>
+    <string name="settings_spec_engine_val">AndroidX Media3 (ExoPlayer) + 10-Band DSP</string>
+    <string name="settings_spec_compat">Совместимость</string>
+    <string name="settings_spec_compat_val">Android 8.0 - 15 (Target SDK 35)</string>
+    <string name="settings_copy_build_info">Скопировать сведения о сборке</string>
+    <string name="settings_build_info_label">Сведения OpenFy</string>
+    <string name="settings_openfy_title">Настройки OpenFy</string>
+    <string name="settings_theme_manager_title">Менеджер и импорт тем (.thm)</string>
+    <string name="settings_theme_manager_subtitle">Установка сторонних тем, предпросмотр палитр и офлайн-каталог</string>
+
+    <!-- Author Profile -->
+    <string name="profile_welcome_title">Локальный профиль автора</string>
+    <string name="profile_welcome_desc">Приложение OpenFy работает полностью автономно без подключения к интернету. Укажите ваше имя или псевдоним автора для создания, подписи и экспорта тем оформления.</string>
+    <string name="profile_author_name_label">Имя автора / Псевдоним</string>
+    <string name="profile_author_name_placeholder">Например: Автор тем OpenFy</string>
+    <string name="profile_enter_author_btn">Войти в профиль автора</string>
+    <string name="profile_setup_author">Настроить имя автора (Офлайн)</string>
+    <string name="profile_export_title">Экспорт профиля автора</string>
+    <string name="profile_export_subtitle">Поделиться файлом</string>
+    <string name="profile_author_name_dialog_title">Имя автора</string>
+    <string name="profile_author_name_dialog_desc">Введите имя пользователя для локального профиля и экспорта тем оформления:</string>
+    <string name="profile_privacy_title">Приватность аккаунта</string>
+    <string name="profile_privacy_value">100% Offline Encrypted</string>
+    <string name="profile_stat_themes">Создано / Импортировано тем</string>
+    <string name="profile_stat_themes_value">Локально</string>
+    <string name="profile_logout">Выйти из аккаунта</string>
+    <string name="profile_logout_confirm">Вы уверены, что хотите выйти? Локальные ключи будут очищены.</string>
+
+    <!-- Studio FX & Karaoke -->
+    <string name="studio_fx_title">Студия FX &amp; Караоке</string>
+    <string name="studio_fx_no_track">Трек не выбран</string>
+    <string name="studio_fx_reset_desc">Сброс всех эффектов</string>
+    <string name="studio_karaoke_title">Караоке (Apple Music Sing)</string>
+    <string name="studio_karaoke_desc">Подавление вокала в реальном времени</string>
+    <string name="studio_karaoke_on_desc">Минусовка (вокал убран)</string>
+    <string name="studio_karaoke_vocal_level">Уровень голоса: %1$d%%</string>
+    <string name="studio_karaoke_pure_minus">Чистый минус</string>
+    <string name="studio_karaoke_original">Оригинал</string>
+    <string name="studio_pitch_title">Тональность / Pitch (Полутона)</string>
+    <string name="studio_pitch_original">Исходная тональность</string>
+    <string name="studio_pitch_semitones">%1$s полутонов</string>
+    <string name="studio_speed_title">Скорость воспроизведения</string>
+    <string name="studio_speed_presets">Фирменные пресеты</string>
+    <string name="studio_ab_loop_title">A-B Зацикливание (Loop)</string>
+    <string name="studio_ab_loop_desc">Зацикливание соло или припева</string>
+    <string name="studio_ab_loop_point_a">Точка A: %1$s (выберите B)</string>
+    <string name="studio_ab_point_a_btn">Точка [A]</string>
+    <string name="studio_ab_point_b_btn">Точка [B]</string>
+</resources>

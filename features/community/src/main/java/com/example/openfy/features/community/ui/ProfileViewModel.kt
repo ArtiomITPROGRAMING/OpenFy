@@ -64,7 +64,7 @@ class ProfileViewModel(
             return
         }
         val profile = authStorage.getProfile()
-        if (profile != null && profile !is UserProfile.Guest) {
+        if (profile != null) {
             _uiState.value = ProfileUiState.Authorized(profile)
         } else {
             _uiState.value = ProfileUiState.Unauthenticated
@@ -75,6 +75,10 @@ class ProfileViewModel(
         context: Context,
         clientId: String = GITHUB_CLIENT_ID
     ) {
+        if (clientId.isBlank()) {
+            _uiState.value = ProfileUiState.Error("Сетевая авторизация через GitHub недоступна в офлайн-версии F-Droid.")
+            return
+        }
         pendingAuthProvider = "github"
         val authUri = GitHubAuthManager.getOAuthUrl(clientId)
         launchCustomTab(context, authUri)
@@ -84,6 +88,10 @@ class ProfileViewModel(
         context: Context,
         clientId: String = DISCORD_CLIENT_ID
     ) {
+        if (clientId.isBlank()) {
+            _uiState.value = ProfileUiState.Error("Сетевая авторизация через Discord недоступна в офлайн-версии F-Droid.")
+            return
+        }
         pendingAuthProvider = "discord"
         val authUri = DiscordAuthManager.getOAuthUrl(clientId)
         launchCustomTab(context, authUri)
@@ -106,10 +114,10 @@ class ProfileViewModel(
 
     fun continueAsGuest(nickname: String) {
         val guestProfile = UserProfile.Guest(
-            guestId = "guest_${System.currentTimeMillis()}",
-            nickname = nickname.ifBlank { "Гость OpenFy" }
+            guestId = "author_${System.currentTimeMillis()}",
+            nickname = nickname.ifBlank { "Автор OpenFy" }
         )
-        // Temporary session only - not saved to permanent auth storage
+        authStorage.saveProfile(guestProfile)
         _uiState.value = ProfileUiState.Authorized(guestProfile)
     }
 
@@ -118,19 +126,7 @@ class ProfileViewModel(
             _uiState.value = ProfileUiState.Error("Токен не может быть пустым")
             return
         }
-
-        viewModelScope.launch {
-            _uiState.value = ProfileUiState.Loading
-            val userResult = GitHubAuthManager.fetchUserProfile(token)
-            userResult.onSuccess { githubUser ->
-                val profile = UserProfile.GitHub(githubUser)
-                authStorage.saveToken(token, provider = "github")
-                authStorage.saveProfile(profile)
-                _uiState.value = ProfileUiState.Authorized(profile)
-            }.onFailure { err ->
-                _uiState.value = ProfileUiState.Error("Ошибка получения профиля GitHub: ${err.localizedMessage}")
-            }
-        }
+        _uiState.value = ProfileUiState.Error("Сетевая авторизация недоступна в офлайн-версии F-Droid.")
     }
 
     fun loginWithGitHubPAT(token: String) = loginWithGitHubPersonalToken(token)
@@ -210,6 +206,10 @@ class ProfileViewModel(
             _uiState.value = ProfileUiState.Loading
 
             if (provider == "discord") {
+                if (DISCORD_CLIENT_ID.isBlank() || discordClientSecret.isBlank()) {
+                    _uiState.value = ProfileUiState.Error("Сетевая авторизация Discord недоступна в офлайн-версии F-Droid.")
+                    return@launch
+                }
                 val tokenResult = DiscordAuthManager.exchangeCodeForToken(
                     clientId = DISCORD_CLIENT_ID,
                     clientSecret = discordClientSecret,
@@ -231,6 +231,10 @@ class ProfileViewModel(
                     _uiState.value = ProfileUiState.Error("Ошибка авторизации Discord: ${err.localizedMessage}")
                 }
             } else {
+                if (GITHUB_CLIENT_ID.isBlank() || githubClientSecret.isBlank()) {
+                    _uiState.value = ProfileUiState.Error("Сетевая авторизация GitHub недоступна в офлайн-версии F-Droid.")
+                    return@launch
+                }
                 val tokenResult = GitHubAuthManager.exchangeCodeForToken(
                     clientId = GITHUB_CLIENT_ID,
                     clientSecret = githubClientSecret,
@@ -256,26 +260,8 @@ class ProfileViewModel(
 
     fun autoRestoreCredentials(context: Context, onComplete: (Boolean) -> Unit = {}) {
         viewModelScope.launch {
-            val result = com.example.openfy.features.community.auth.OpenFyCredentialManager.restoreGitHubCredential(context)
-            result.onSuccess { pair ->
-                if (pair != null) {
-                    val (_, token) = pair
-                    val userResult = GitHubAuthManager.fetchUserProfile(token)
-                    userResult.onSuccess { githubUser ->
-                        val profile = UserProfile.GitHub(githubUser)
-                        authStorage.saveToken(token, provider = "github")
-                        authStorage.saveProfile(profile)
-                        _uiState.value = ProfileUiState.Authorized(profile)
-                        onComplete(true)
-                    }.onFailure {
-                        onComplete(false)
-                    }
-                } else {
-                    onComplete(false)
-                }
-            }.onFailure {
-                onComplete(false)
-            }
+            // Strictly offline in F-Droid build: no network socket requests
+            onComplete(false)
         }
     }
 
@@ -291,12 +277,12 @@ class ProfileViewModel(
     }
 
     companion object {
-        // Community GitHub OAuth Credentials
-        const val GITHUB_CLIENT_ID = "Ov23lif8OuBmLgF8UyFb"
-        const val GITHUB_CLIENT_SECRET = "ddc408461e3a5e37d03f076b85adb06ae893069f"
+        // Community GitHub OAuth Credentials (offline placeholders)
+        const val GITHUB_CLIENT_ID = ""
+        const val GITHUB_CLIENT_SECRET = ""
 
-        // Community Discord OAuth Credentials
-        const val DISCORD_CLIENT_ID = "1543312561355620352"
-        const val DISCORD_CLIENT_SECRET = "6250b76a96eb072ea226ebe822c144459184d380a538b7b1806f03d6a6e09848"
+        // Community Discord OAuth Credentials (offline placeholders)
+        const val DISCORD_CLIENT_ID = ""
+        const val DISCORD_CLIENT_SECRET = ""
     }
 }

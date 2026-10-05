@@ -246,4 +246,45 @@ object ThemeEngine {
             Result.failure(e)
         }
     }
+
+    /**
+     * Shares an installed theme package via Android system share sheet (ACTION_SEND).
+     */
+    fun shareThemeFile(context: Context, themeId: String) {
+        try {
+            val themesDir = getThemesDirectory(context)
+            val themeFolder = File(themesDir, themeId)
+            val manifest = getManifest(context, themeId)
+            val colors = loadThemeColorsRaw(context, themeId)
+            if (manifest == null || colors == null) {
+                android.widget.Toast.makeText(context, "Файлы темы не найдены", android.widget.Toast.LENGTH_SHORT).show()
+                return
+            }
+            val sharesDir = File(context.cacheDir, "shares").apply { mkdirs() }
+            val outputFile = File(sharesDir, "${themeId}.thm")
+            val preview = File(themeFolder, PREVIEW_FILE_NAME).takeIf { it.exists() }
+            val exported = exportThemeToZip(manifest, colors, outputFile, preview)
+            exported.onSuccess { file ->
+                val uri = androidx.core.content.FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.fileprovider",
+                    file
+                )
+                val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                    type = "application/zip"
+                    putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                    putExtra(android.content.Intent.EXTRA_SUBJECT, "Тема OpenFy: ${manifest.name}")
+                    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                val chooser = android.content.Intent.createChooser(intent, "Экспорт темы «${manifest.name}»").apply {
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(chooser)
+            }.onFailure { e ->
+                android.widget.Toast.makeText(context, "Ошибка экспорта: ${e.localizedMessage}", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            android.widget.Toast.makeText(context, "Ошибка экспорта: ${e.localizedMessage}", android.widget.Toast.LENGTH_SHORT).show()
+        }
+    }
 }
