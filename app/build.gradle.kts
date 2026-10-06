@@ -11,8 +11,8 @@ android {
         applicationId = "io.github.artiomitprograming.openfy"
         minSdk = 24
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.0.0-beta02"
+        versionCode = 1
+        versionName = "1.0.0-beta01"
     }
 
     signingConfigs {
