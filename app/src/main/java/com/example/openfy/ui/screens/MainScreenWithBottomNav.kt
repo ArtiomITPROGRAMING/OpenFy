@@ -105,8 +105,6 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.foundation.layout.displayCutoutPadding
-import androidx.compose.ui.res.stringResource
-import com.example.openfy.R
 import androidx.compose.foundation.layout.imePadding
 import com.example.openfy.ui.components.ExpandedSidePlayerPane
 

@@ -265,128 +265,7 @@ fun QrScannerScreen(
                 }
             }
 
-<<<<<<< HEAD
-    // CameraX Active Scanning UI
-    Box(modifier = Modifier.fillMaxSize()) {
-        // CameraX Preview View
-        AndroidView(
-            factory = { ctx ->
-                val previewView = PreviewView(ctx).apply {
-                    scaleType = PreviewView.ScaleType.FILL_CENTER
-                }
-
-                val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
-                cameraProviderFuture.addListener({
-                    val cameraProvider = cameraProviderFuture.get()
-
-                    val preview = Preview.Builder().build().also {
-                        it.setSurfaceProvider(previewView.surfaceProvider)
-                    }
-
-                    val analyzer = QrCodeAnalyzer { scannedData ->
-                        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                        scope.launch {
-                            isImporting = true
-                            val result = UniversalImportHandler.handleImport(
-                                context = context,
-                                rawInput = scannedData,
-                                playlistRepository = playlistRepository,
-                                themeManager = themeManager,
-                                settingsRepository = settingsRepository
-                            )
-                            result.onSuccess { res ->
-                                importResult = res
-                            }.onFailure { err ->
-                                errorMessage = err.localizedMessage ?: "Неизвестная ошибка импорта"
-                            }
-                            isImporting = false
-                        }
-                    }
-                    analyzerInstance = analyzer
-
-                    val imageAnalysis = ImageAnalysis.Builder()
-                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                        .build()
-                        .also {
-                            it.setAnalyzer(Dispatchers.Default.asExecutor(), analyzer)
-                        }
-
-                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-                    try {
-                        cameraProvider.unbindAll()
-                        camera = cameraProvider.bindToLifecycle(
-                            lifecycleOwner,
-                            cameraSelector,
-                            preview,
-                            imageAnalysis
-                        )
-                    } catch (_: Exception) {}
-                }, ContextCompat.getMainExecutor(ctx))
-
-                previewView
-            },
-            modifier = Modifier.fillMaxSize()
-        )
-
-        // Viewfinder Cutout & Laser Overlay
-        ViewfinderOverlay(
-            laserColor = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.fillMaxSize()
-        )
-
-        // Top Navigation & Flash Control Bar
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.5f))
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Назад",
-                    tint = Color.White
-                )
-            }
-
-            Text(
-                text = "Сканирование QR",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-
-            IconButton(
-                onClick = {
-                    val cam = camera
-                    if (cam != null && cam.cameraInfo.hasFlashUnit()) {
-                        isTorchOn = !isTorchOn
-                        cam.cameraControl.enableTorch(isTorchOn)
-                    }
-                },
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.5f))
-            ) {
-                Icon(
-                    imageVector = if (isTorchOn) Icons.Default.FlashOn else Icons.Default.FlashOff,
-                    contentDescription = "Фонарик",
-                    tint = if (isTorchOn) MaterialTheme.colorScheme.primary else Color.White
-                )
-            }
-=======
             Spacer(modifier = Modifier.weight(1f))
->>>>>>> fdroid-fix
         }
 
         // Import Confirmation Sheet
@@ -422,6 +301,7 @@ fun QrScannerScreen(
                             is ImportResult.ThemeImported -> "«${result.themeName}»"
                             is ImportResult.PlaylistImported -> "«${result.playlistName}»"
                             is ImportResult.TrackMetaImported -> "«${result.title} — ${result.artist}»"
+                            is ImportResult.AuthChallengeReceived -> "«${result.username}»"
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center

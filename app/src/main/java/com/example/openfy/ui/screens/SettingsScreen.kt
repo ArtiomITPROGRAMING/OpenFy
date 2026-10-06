@@ -96,9 +96,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.annotation.StringRes
-import androidx.compose.ui.res.stringResource
 import coil.Coil
-import com.example.openfy.R
 import com.example.openfy.core.audio.data.AppThemeStyle
 import com.example.openfy.core.audio.data.IconPackStyle
 import com.example.openfy.core.audio.model.Quadruple
