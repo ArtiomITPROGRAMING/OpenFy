@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="car_mode_badge">CAR MODE</string>
+    <string name="car_mode_exit">Exit car mode</string>
+    <string name="car_mode_empty_title">Select a track or choose a quick preset</string>
+    <string name="car_mode_preset_road">On the road</string>
+    <string name="car_mode_preset_favorites">Favorites</string>
+    <string name="car_mode_preset_mix">Mix</string>
+    <string name="car_mode_preset_recent">Recent</string>
+    <string name="car_mode_shuffle">Shuffle</string>
+    <string name="car_mode_prev">Previous track</string>
+    <string name="car_mode_next">Next track</string>
+    <string name="car_mode_play">Play</string>
+    <string name="car_mode_pause">Pause</string>
+    <string name="car_mode_favorite">Favorite</string>
+</resources>

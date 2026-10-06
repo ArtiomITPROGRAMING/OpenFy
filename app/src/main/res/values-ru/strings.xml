@@ -127,4 +127,53 @@
     <string name="studio_ab_loop_point_a">Точка A: %1$s (выберите B)</string>
     <string name="studio_ab_point_a_btn">Точка [A]</string>
     <string name="studio_ab_point_b_btn">Точка [B]</string>
+
+    <!-- Library & Sorting -->
+    <string name="library_title">Медиатека</string>
+    <string name="tracks_on_device_count">%1$d треков на устройстве</string>
+    <string name="sort_menu_desc">Сортировка</string>
+    <string name="sort_title_asc">По названию (А-Я)</string>
+    <string name="sort_title_desc">По названию (Я-А)</string>
+    <string name="sort_artist_asc">По исполнителю (А-Я)</string>
+    <string name="sort_artist_desc">По исполнителю (Я-А)</string>
+    <string name="sort_date_desc">Сначала новые</string>
+    <string name="sort_date_asc">Сначала старые</string>
+    <string name="sort_duration_desc">По длительности (длинные)</string>
+    <string name="sort_duration_asc">По длительности (короткие)</string>
+    <string name="search_library_placeholder">Поиск по медиатеке...</string>
+    <string name="search_clear_desc">Очистить</string>
+    <string name="tab_all_tracks">Все треки</string>
+    <string name="tab_albums">Альбомы</string>
+    <string name="tab_artists">Исполнители</string>
+    <string name="tab_folders">Папки</string>
+    <string name="tab_playlists">Плейлисты</string>
+    <string name="create_playlist_button">Создать новый плейлист</string>
+    <string name="empty_playlists_message">Плейлистов пока нет.\nНажмите «Создать новый плейлист» выше!</string>
+    <string name="new_playlist_title">Новый плейлист</string>
+    <string name="playlist_name_placeholder">Название плейлиста</string>
+    <string name="action_create">Создать</string>
+
+    <!-- Home Screen -->
+    <string name="favorite_tracks">Любимые треки</string>
+    <string name="favorite_tracks_count">%1$d треков</string>
+    <string name="favorite_tracks_in_collection">%1$d треков в коллекции</string>
+    <string name="frequently_played">Часто слушаете</string>
+    <string name="tracks_count">%1$d треков</string>
+    <string name="action_play">Слушать</string>
+    <string name="play_all">Слушать всё</string>
+    <string name="frequently_played_subtitle">Топ прослушиваний медиатеки</string>
+    <string name="empty_library_title">Медиатека пуста</string>
+    <string name="empty_library_desc">Добавьте аудиофайлы на устройство или запустите сканирование памяти.</string>
+    <string name="empty_library_scan_btn">Сканировать устройство</string>
+    <string name="offline_library_subtitle">%1$d треков • Офлайн-медиатека</string>
+    <string name="sound_compass">Звуковой компас</string>
+    <string name="refresh_library">Обновить медиатеку</string>
+    <string name="filter_all">Все</string>
+    <string name="filter_favorites">Любимые</string>
+    <string name="filter_popular">Часто слушаете</string>
+    <string name="greeting_morning">Доброе утро</string>
+    <string name="greeting_afternoon">Добрый день</string>
+    <string name="greeting_evening">Добрый вечер</string>
+    <string name="greeting_night">Доброй ночи</string>
+    <string name="car_mode_title">Режим авто</string>
 </resources>

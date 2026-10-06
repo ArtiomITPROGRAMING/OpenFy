@@ -38,7 +38,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -70,11 +69,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.openfy.features.community.sync.LocalShareServer
 import com.example.openfy.features.community.sync.QrCodeGenerator
 import com.example.openfy.features.community.sync.ShareIntentHelper
 import com.example.openfy.features.community.sync.SharePayload
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,12 +80,9 @@ fun ShareBottomSheet(
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var selectedTab by remember { mutableIntStateOf(0) }
-    var localServerUrl by remember { mutableStateOf<String?>(null) }
-    var isServerStarting by remember { mutableStateOf(false) }
 
     val compressedString = remember(payload) { payload.toCompressedString() }
     val qrBitmap = remember(compressedString) {
@@ -98,12 +92,6 @@ fun ShareBottomSheet(
             foregroundColor = android.graphics.Color.WHITE,
             backgroundColor = android.graphics.Color.BLACK
         )
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            LocalShareServer.stopServer()
-        }
     }
 
     ModalBottomSheet(
@@ -183,12 +171,6 @@ fun ShareBottomSheet(
                     onClick = { selectedTab = 1 },
                     text = { Text("Файл") },
                     icon = { Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp)) }
-                )
-                Tab(
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
-                    text = { Text("Wi-Fi Direct") },
-                    icon = { Icon(Icons.Default.Wifi, contentDescription = null, modifier = Modifier.size(18.dp)) }
                 )
             }
 
@@ -285,97 +267,6 @@ fun ShareBottomSheet(
                             Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(10.dp))
                             Text("Скопировать ссылку / JSON", fontWeight = FontWeight.Bold)
-                        }
-                    }
-                }
-
-                // Tab 2: Local Wi-Fi Direct Server
-                2 -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Раздача файла внутри локальной сети Wi-Fi или точки доступа. Любое устройство в сети сможет скачать его через браузер без интернета.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        if (localServerUrl == null) {
-                            Button(
-                                onClick = {
-                                    scope.launch {
-                                        isServerStarting = true
-                                        val result = LocalShareServer.startServer(payload)
-                                        result.onSuccess { url ->
-                                            localServerUrl = url
-                                        }
-                                        isServerStarting = false
-                                    }
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(52.dp),
-                                shape = RoundedCornerShape(14.dp)
-                            ) {
-                                Icon(Icons.Default.Wifi, contentDescription = null, modifier = Modifier.size(20.dp))
-                                Spacer(modifier = Modifier.width(10.dp))
-                                Text(if (isServerStarting) "Запуск сервера..." else "Запустить локальную раздачу", fontWeight = FontWeight.Bold)
-                            }
-                        } else {
-                            Surface(
-                                shape = RoundedCornerShape(16.dp),
-                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        ShareIntentHelper.copyToClipboard(context, localServerUrl!!, "Local Share URL")
-                                    }
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(16.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = "СЕРВЕР АКТИВЕН",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    Spacer(modifier = Modifier.height(6.dp))
-                                    Text(
-                                        text = localServerUrl!!,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text(
-                                        text = "Нажмите, чтобы скопировать ссылку",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            OutlinedButton(
-                                onClick = {
-                                    LocalShareServer.stopServer()
-                                    localServerUrl = null
-                                },
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    contentColor = MaterialTheme.colorScheme.error
-                                )
-                            ) {
-                                Text("Остановить сервер")
-                            }
                         }
                     }
                 }

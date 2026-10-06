@@ -102,13 +102,6 @@ fun AuthOnboardingScreen(
     var emailError by remember { mutableStateOf<String?>(null) }
     var isSendingEmail by remember { mutableStateOf(false) }
 
-    // Attempt Credential Manager restoration upon opening onboarding
-    LaunchedEffect(Unit) {
-        if (!viewModel.isAuthenticated) {
-            viewModel.autoRestoreCredentials(context)
-        }
-    }
-
     // Automatically navigate on successful authentication
     LaunchedEffect(uiState) {
         if (uiState is ProfileUiState.Authorized && viewModel.isAuthenticated) {
@@ -358,88 +351,7 @@ fun AuthOnboardingScreen(
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(18.dp))
 
-                        // Divider with text
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.weight(1f),
-                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
-                            )
-                            Text(
-                                text = "или войти через",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(horizontal = 12.dp)
-                            )
-                            HorizontalDivider(
-                                modifier = Modifier.weight(1f),
-                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(18.dp))
-
-                        // OAuth Provider Buttons (Discord & GitHub)
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            // 1. Discord OAuth2
-                            Button(
-                                onClick = { viewModel.loginWithDiscord(context) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp),
-                                shape = RoundedCornerShape(14.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = DiscordBlurple,
-                                    contentColor = Color.White
-                                )
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Group,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Text(
-                                    text = "Войти через Discord",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-
-                            // 2. GitHub OAuth2
-                            Button(
-                                onClick = { viewModel.loginWithGitHub(context) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp),
-                                shape = RoundedCornerShape(14.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = GitHubDark,
-                                    contentColor = Color.White
-                                )
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Code,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Text(
-                                    text = "Войти через GitHub",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
 
                         // Loading & Error States
                         if (uiState is ProfileUiState.Loading) {

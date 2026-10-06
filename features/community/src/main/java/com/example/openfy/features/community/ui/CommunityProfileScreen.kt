@@ -45,6 +45,7 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Language
@@ -74,6 +75,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -88,6 +90,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.example.openfy.features.community.R
 import coil.compose.AsyncImage
 import com.example.openfy.core.audio.data.AppThemeStyle
 import com.example.openfy.core.audio.data.SettingsRepository
@@ -114,13 +118,19 @@ fun CommunityProfileScreen(
     val currentThemeStyle by settingsRepository.themeStyle.collectAsState()
 
     var showLogoutDialog by remember { mutableStateOf(false) }
-    var showP2pActionDialog by remember { mutableStateOf(false) }
     var showShareProfileSheet by remember { mutableStateOf(false) }
     var guestNickname by remember { mutableStateOf("") }
     var showGuestDialog by remember { mutableStateOf(false) }
+    LaunchedEffect(uiState) {
+        if (uiState is ProfileUiState.Authorized && guestNickname.isBlank()) {
+            guestNickname = (uiState as ProfileUiState.Authorized).profile.displayName
+        }
+    }
 
     val primaryAccent = MaterialTheme.colorScheme.primary
     val cardBg = if (currentThemeStyle == AppThemeStyle.SERIOUS_DARK) AmoledDarkSurface else GlassDarkSurface
+    val defaultAuthorName = stringResource(R.string.profile_default_author)
+    val profileP2pDesc = stringResource(R.string.profile_share_p2p_desc)
 
     DynamicBackground(themeStyle = currentThemeStyle) {
         Column(
@@ -139,29 +149,22 @@ fun CommunityProfileScreen(
                 IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Назад",
+                        contentDescription = stringResource(R.string.profile_action_back),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Профиль & Сообщество",
+                        text = stringResource(R.string.profile_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "P2P Синхронизация, обмен темами и плейлистами",
+                        text = stringResource(R.string.profile_subtitle),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                IconButton(onClick = onNavigateToQrScanner) {
-                    Icon(
-                        imageVector = Icons.Default.QrCodeScanner,
-                        contentDescription = "Сканер QR-кода",
-                        tint = primaryAccent
                     )
                 }
             }
@@ -184,7 +187,7 @@ fun CommunityProfileScreen(
                                     CircularProgressIndicator(color = primaryAccent)
                                     Spacer(modifier = Modifier.height(16.dp))
                                     Text(
-                                        text = "Авторизация и синхронизация...",
+                                        text = stringResource(R.string.profile_syncing),
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -215,7 +218,7 @@ fun CommunityProfileScreen(
                                     if (profile.avatarUrl.isNotBlank()) {
                                         AsyncImage(
                                             model = profile.avatarUrl,
-                                            contentDescription = "Аватар пользователя",
+                                            contentDescription = stringResource(R.string.profile_avatar_desc),
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier
                                                 .size(80.dp)
@@ -251,17 +254,17 @@ fun CommunityProfileScreen(
                                             fontWeight = FontWeight.Bold,
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
-                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Spacer(modifier = Modifier.width(8.dp))
                                         IconButton(
                                             onClick = {
                                                 guestNickname = profile.displayName
                                                 showGuestDialog = true
                                             },
-                                            modifier = Modifier.size(28.dp)
+                                            modifier = Modifier.size(32.dp)
                                         ) {
                                             Icon(
-                                                imageVector = Icons.Default.AccountCircle,
-                                                contentDescription = "Изменить имя автора",
+                                                imageVector = Icons.Default.Edit,
+                                                contentDescription = stringResource(R.string.profile_edit_name),
                                                 tint = primaryAccent,
                                                 modifier = Modifier.size(18.dp)
                                             )
@@ -325,7 +328,7 @@ fun CommunityProfileScreen(
                             ) {
                                 Column(modifier = Modifier.padding(18.dp)) {
                                     Text(
-                                        text = "СТАТИСТИКА СООБЩЕСТВА",
+                                        text = stringResource(R.string.profile_stats_title),
                                         style = MaterialTheme.typography.labelMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = primaryAccent,
@@ -335,19 +338,19 @@ fun CommunityProfileScreen(
 
                                     ProfileStatRow(
                                         icon = Icons.Default.Palette,
-                                        title = "Создано / Импортировано тем",
-                                        value = "Локально"
+                                        title = stringResource(R.string.profile_stat_themes),
+                                        value = stringResource(R.string.profile_stat_themes_val)
                                     )
                                     ProfileStatRow(
                                         icon = Icons.Default.Share,
-                                        title = "P2P Передача треков & плейлистов",
-                                        value = "Открыть сканер / Обмен",
-                                        onClick = { showP2pActionDialog = true }
+                                        title = stringResource(R.string.profile_stat_export),
+                                        value = stringResource(R.string.profile_stat_export_val),
+                                        onClick = { showShareProfileSheet = true }
                                     )
                                     ProfileStatRow(
                                         icon = Icons.Default.Lock,
-                                        title = "Приватность аккаунта",
-                                        value = "100% Offline Encrypted"
+                                        title = stringResource(R.string.profile_stat_privacy),
+                                        value = stringResource(R.string.profile_stat_privacy_val)
                                     )
                                 }
                             }
@@ -370,7 +373,7 @@ fun CommunityProfileScreen(
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Выйти из аккаунта",
+                                    text = stringResource(R.string.profile_logout),
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -395,7 +398,7 @@ fun CommunityProfileScreen(
                             }
                         }
 
-                        // Welcome Hero Card
+                        // Offline Author Profile Card
                         item {
                             GlassCard(
                                 modifier = Modifier.fillMaxWidth(),
@@ -406,14 +409,14 @@ fun CommunityProfileScreen(
                             ) {
                                 Column(modifier = Modifier.padding(20.dp)) {
                                     Text(
-                                        text = "Локальный профиль автора",
+                                        text = stringResource(R.string.profile_offline_card_title),
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = "Приложение OpenFy работает полностью автономно без подключения к интернету. Укажите ваше имя или псевдоним автора для создания, подписи и экспорта тем оформления.",
+                                        text = stringResource(R.string.profile_offline_card_desc),
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -421,8 +424,8 @@ fun CommunityProfileScreen(
                                     OutlinedTextField(
                                         value = guestNickname,
                                         onValueChange = { guestNickname = it },
-                                        label = { Text("Имя автора / Псевдоним") },
-                                        placeholder = { Text("Например: Автор тем OpenFy") },
+                                        label = { Text(stringResource(R.string.profile_nickname_label)) },
+                                        placeholder = { Text(stringResource(R.string.profile_nickname_placeholder)) },
                                         singleLine = true,
                                         shape = RoundedCornerShape(12.dp),
                                         modifier = Modifier.fillMaxWidth()
@@ -430,7 +433,7 @@ fun CommunityProfileScreen(
                                     Spacer(modifier = Modifier.height(14.dp))
                                     Button(
                                         onClick = {
-                                            viewModel.continueAsGuest(guestNickname.ifBlank { "Автор OpenFy" })
+                                            viewModel.continueAsGuest(guestNickname.ifBlank { defaultAuthorName })
                                         },
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -444,7 +447,7 @@ fun CommunityProfileScreen(
                                         )
                                         Spacer(modifier = Modifier.width(10.dp))
                                         Text(
-                                            text = "Войти в профиль автора",
+                                            text = stringResource(R.string.profile_login_btn),
                                             style = MaterialTheme.typography.bodyLarge,
                                             fontWeight = FontWeight.Bold
                                         )
@@ -462,11 +465,11 @@ fun CommunityProfileScreen(
     if (showGuestDialog) {
         AlertDialog(
             onDismissRequest = { showGuestDialog = false },
-            title = { Text("Имя автора") },
+            title = { Text(stringResource(R.string.profile_dialog_title)) },
             text = {
                 Column {
                     Text(
-                        text = "Введите имя пользователя для локального профиля и экспорта тем оформления:",
+                        text = stringResource(R.string.profile_dialog_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -474,7 +477,7 @@ fun CommunityProfileScreen(
                     OutlinedTextField(
                         value = guestNickname,
                         onValueChange = { guestNickname = it },
-                        placeholder = { Text("Например: Автор тем") },
+                        placeholder = { Text(stringResource(R.string.profile_dialog_hint)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -483,45 +486,16 @@ fun CommunityProfileScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        viewModel.continueAsGuest(guestNickname.ifBlank { "Автор OpenFy" })
+                        viewModel.continueAsGuest(guestNickname.ifBlank { defaultAuthorName })
                         showGuestDialog = false
                     }
                 ) {
-                    Text("Сохранить")
+                    Text(stringResource(R.string.profile_dialog_save))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showGuestDialog = false }) {
-                    Text("Отмена")
-                }
-            }
-        )
-    }
-
-    // P2P Action Selection Dialog
-    if (showP2pActionDialog) {
-        AlertDialog(
-            onDismissRequest = { showP2pActionDialog = false },
-            title = { Text("P2P Синхронизация") },
-            text = { Text("Выберите действие для обмена данными: запустить сканер QR-кода для импорта или поделиться своим профилем.") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showP2pActionDialog = false
-                        onNavigateToQrScanner()
-                    }
-                ) {
-                    Text("Сканировать QR")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        showP2pActionDialog = false
-                        showShareProfileSheet = true
-                    }
-                ) {
-                    Text("Поделиться профилем")
+                    Text(stringResource(R.string.profile_dialog_cancel))
                 }
             }
         )
@@ -541,7 +515,7 @@ fun CommunityProfileScreen(
             SharePayload(
                 type = ShareType.TRACK_META,
                 title = "OpenFy Profile - $nickname",
-                description = "Профиль OpenFy P2P Community",
+                description = profileP2pDesc,
                 jsonData = jsonObject.toString(),
                 author = nickname
             )
@@ -556,8 +530,8 @@ fun CommunityProfileScreen(
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Выйти из аккаунта?") },
-            text = { Text("Вы уверены, что хотите выйти? Локальные сохраненные ключи будут очищены.") },
+            title = { Text(stringResource(R.string.profile_logout_confirm_title)) },
+            text = { Text(stringResource(R.string.profile_logout_confirm_desc)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -566,12 +540,12 @@ fun CommunityProfileScreen(
                         onLogout()
                     }
                 ) {
-                    Text("Выйти", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.profile_action_logout), color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showLogoutDialog = false }) {
-                    Text("Отмена")
+                    Text(stringResource(R.string.profile_dialog_cancel))
                 }
             }
         )

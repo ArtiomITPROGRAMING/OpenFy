@@ -95,7 +95,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.annotation.StringRes
+import androidx.compose.ui.res.stringResource
 import coil.Coil
+import com.example.openfy.R
 import com.example.openfy.core.audio.data.AppThemeStyle
 import com.example.openfy.core.audio.data.IconPackStyle
 import com.example.openfy.core.audio.model.Quadruple
@@ -115,9 +118,9 @@ import com.example.openfy.core.ui.theme.RetroDarkBg
 import com.example.openfy.core.ui.theme.RetroPhosphorGreen
 
 enum class SettingsSection(
-    val titleRes: Int,
-    val subtitleRes: Int,
-    val badgeRes: Int
+    @param:StringRes val titleRes: Int,
+    @param:StringRes val subtitleRes: Int,
+    @param:StringRes val badgeRes: Int
 ) {
     APPEARANCE(
         R.string.settings_appearance_title,
@@ -138,7 +141,19 @@ enum class SettingsSection(
         R.string.settings_about_title,
         R.string.settings_about_subtitle,
         R.string.settings_about_badge
-    )
+    );
+
+    val title: String
+        @Composable
+        get() = stringResource(titleRes)
+
+    val subtitle: String
+        @Composable
+        get() = stringResource(subtitleRes)
+
+    val badge: String
+        @Composable
+        get() = stringResource(badgeRes)
 }
 
 @Composable
@@ -264,7 +279,7 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(6.dp))
                 }
 
-                // 0. Профиль и Сообщество Card
+                // 0. Профиль автора Card
                 item {
                     val commGrad = if (currentTheme == AppThemeStyle.SERIOUS_DARK) {
                         listOf(Color(0xFF383944), Color(0xFF1E1F28))
@@ -284,25 +299,6 @@ fun SettingsScreen(
                     )
                 }
 
-                // 0.1 Сканер QR-кода Card
-                item {
-                    val qrGrad = if (currentTheme == AppThemeStyle.SERIOUS_DARK) {
-                        listOf(Color(0xFF2A2B35), Color(0xFF14141A))
-                    } else {
-                        listOf(Color(0xFF00E5FF), Color(0xFF005A64))
-                    }
-                    SettingsSectionHubCard(
-                        title = stringResource(R.string.settings_scanner_title),
-                        subtitle = stringResource(R.string.settings_scanner_subtitle),
-                        badge = stringResource(R.string.settings_scanner_badge),
-                        icon = Icons.Default.QrCodeScanner,
-                        gradientColors = qrGrad,
-                        cardBg = cardBg,
-                        hasGlow = sectionGlow,
-                        glowColor = Color(0xFF00E5FF),
-                        onClick = onNavigateToQrScanner
-                    )
-                }
 
                 // 1. Внешний вид и интерфейс Card
                 item {
