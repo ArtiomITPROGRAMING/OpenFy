@@ -30,7 +30,14 @@ Builds:
       - yes
     output: app/build/outputs/apk/release/app-release-unsigned.apk
 
+  - versionName: 1.0.0-beta02
+    versionCode: 2
+    commit: v1.0.0-beta02
+    gradle:
+      - yes
+    output: app/build/outputs/apk/release/app-release.apk
+
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 1.0.0-beta01
-CurrentVersionCode: 1
+CurrentVersion: 1.0.0-beta02
+CurrentVersionCode: 2
