@@ -21,10 +21,7 @@
 
     <!-- Strictly offline: prevent library-injected network permissions (e.g. Media3 ACCESS_NETWORK_STATE) -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
-    
-    <!-- Camera for QR Code Scanner (CameraX / KScan) -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
 
     <application
         android:name=".OpenFyApp"

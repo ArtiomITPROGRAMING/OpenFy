@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_title">Профиль автора</string>
+    <string name="profile_subtitle">Локальный профиль и настройки автора тем</string>
+    <string name="profile_syncing">Авторизация и синхронизация...</string>
+    <string name="profile_avatar_desc">Аватар пользователя</string>
+    <string name="profile_edit_name">Изменить имя автора</string>
+    <string name="profile_stats_title">СТАТИСТИКА СООБЩЕСТВА</string>
+    <string name="profile_stat_themes">Создано / Импортировано тем</string>
+    <string name="profile_stat_themes_val">Локально</string>
+    <string name="profile_stat_export">Экспорт профиля автора</string>
+    <string name="profile_stat_export_val">Поделиться файлом</string>
+    <string name="profile_stat_privacy">Приватность аккаунта</string>
+    <string name="profile_stat_privacy_val">100% Offline Encrypted</string>
+    <string name="profile_logout">Выйти из аккаунта</string>
+    <string name="profile_offline_card_title">Локальный профиль автора</string>
+    <string name="profile_offline_card_desc">Приложение OpenFy работает полностью автономно без подключения к интернету. Укажите ваше имя или псевдоним автора для создания, подписи и экспорта тем оформления.</string>
+    <string name="profile_nickname_label">Имя автора / Псевдоним</string>
+    <string name="profile_nickname_placeholder">Например: Автор тем OpenFy</string>
+    <string name="profile_login_btn">Войти в профиль автора</string>
+    <string name="profile_dialog_title">Имя автора</string>
+    <string name="profile_dialog_desc">Введите имя пользователя для локального профиля и экспорта тем оформления:</string>
+    <string name="profile_dialog_hint">Например: Автор тем</string>
+    <string name="profile_dialog_save">Сохранить</string>
+    <string name="profile_dialog_cancel">Отмена</string>
+    <string name="profile_logout_confirm_title">Выйти из аккаунта?</string>
+    <string name="profile_logout_confirm_desc">Вы уверены, что хотите выйти? Локальные сохраненные ключи будут очищены.</string>
+    <string name="profile_action_logout">Выйти</string>
+    <string name="profile_action_back">Назад</string>
+
+    <string name="qr_import_title">Импорт QR-кода</string>
+    <string name="qr_import_headline">Офлайн импорт из изображения</string>
+    <string name="qr_import_desc">Для обеспечения 100% приватности и требований F-Droid разрешение на камеру удалено. Вы можете импортировать темы или плейлисты, выбрав скриншот или фото QR-кода из галереи.</string>
+    <string name="qr_import_btn_select">Выбрать изображение с QR-кодом</string>
+    <string name="qr_import_decoding">Распознавание QR-кода...</string>
+    <string name="qr_import_error_not_found">Не удалось распознать QR-код на выбранном изображении</string>
+    <string name="qr_import_success_title">Импорт завершен!</string>
+    <string name="qr_import_done">Готово</string>
+    <string name="profile_default_author">Автор OpenFy</string>
+    <string name="profile_share_p2p_desc">Профиль OpenFy P2P Community</string>
+</resources>

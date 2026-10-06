@@ -45,14 +45,10 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
-    // Image loading, QR Code, CameraX & Custom Tabs Browser
+    // Image loading, QR Code & Custom Tabs Browser
     implementation(libs.coil.compose)
     implementation(libs.androidx.browser)
     implementation(libs.zxing.core)
-    implementation(libs.androidx.camera.core)
-    implementation(libs.androidx.camera.camera2)
-    implementation(libs.androidx.camera.lifecycle)
-    implementation(libs.androidx.camera.view)
 
     // Security & Encrypted SharedPreferences & Android Credential Manager
     implementation(libs.androidx.security.crypto)

@@ -78,8 +78,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.openfy.R
 import com.example.openfy.core.audio.data.AppThemeStyle
 import com.example.openfy.core.audio.data.IconPackStyle
 import com.example.openfy.core.audio.model.Album
@@ -136,7 +138,13 @@ fun LibraryScreen(
     val cardBg = if (themeStyle == AppThemeStyle.SERIOUS_DARK) AmoledDarkSurface else GlassDarkSurface
     val listState = rememberLazyListState()
 
-    val tabs = listOf("Все треки", "Альбомы", "Исполнители", "Папки", "Плейлисты")
+    val tabs = listOf(
+        stringResource(R.string.tab_all_tracks),
+        stringResource(R.string.tab_albums),
+        stringResource(R.string.tab_artists),
+        stringResource(R.string.tab_folders),
+        stringResource(R.string.tab_playlists)
+    )
 
     // Filter & Sort Songs
     val filteredSongs = remember(songs, searchQuery, currentSort) {
@@ -186,13 +194,13 @@ fun LibraryScreen(
         ) {
             Column {
                 Text(
-                    text = "Медиатека",
+                    text = stringResource(R.string.library_title),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = "${songs.size} треков на устройстве",
+                    text = stringResource(R.string.tracks_on_device_count, songs.size),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -204,7 +212,7 @@ fun LibraryScreen(
                     IconButton(onClick = { showSortMenu = true }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Sort,
-                            contentDescription = "Сортировка",
+                            contentDescription = stringResource(R.string.sort_menu_desc),
                             tint = primaryAccent
                         )
                     }
@@ -214,35 +222,35 @@ fun LibraryScreen(
                         onDismissRequest = { showSortMenu = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("По названию (А-Я)") },
+                            text = { Text(stringResource(R.string.sort_title_asc)) },
                             onClick = { currentSort = SortOption.TITLE_ASC; showSortMenu = false }
                         )
                         DropdownMenuItem(
-                            text = { Text("По названию (Я-А)") },
+                            text = { Text(stringResource(R.string.sort_title_desc)) },
                             onClick = { currentSort = SortOption.TITLE_DESC; showSortMenu = false }
                         )
                         DropdownMenuItem(
-                            text = { Text("По исполнителю (А-Я)") },
+                            text = { Text(stringResource(R.string.sort_artist_asc)) },
                             onClick = { currentSort = SortOption.ARTIST_ASC; showSortMenu = false }
                         )
                         DropdownMenuItem(
-                            text = { Text("По исполнителю (Я-А)") },
+                            text = { Text(stringResource(R.string.sort_artist_desc)) },
                             onClick = { currentSort = SortOption.ARTIST_DESC; showSortMenu = false }
                         )
                         DropdownMenuItem(
-                            text = { Text("Сначала новые") },
+                            text = { Text(stringResource(R.string.sort_date_desc)) },
                             onClick = { currentSort = SortOption.DATE_ADDED_DESC; showSortMenu = false }
                         )
                         DropdownMenuItem(
-                            text = { Text("Сначала старые") },
+                            text = { Text(stringResource(R.string.sort_date_asc)) },
                             onClick = { currentSort = SortOption.DATE_ADDED_ASC; showSortMenu = false }
                         )
                         DropdownMenuItem(
-                            text = { Text("По длительности (длинные)") },
+                            text = { Text(stringResource(R.string.sort_duration_desc)) },
                             onClick = { currentSort = SortOption.DURATION_DESC; showSortMenu = false }
                         )
                         DropdownMenuItem(
-                            text = { Text("По длительности (короткие)") },
+                            text = { Text(stringResource(R.string.sort_duration_asc)) },
                             onClick = { currentSort = SortOption.DURATION_ASC; showSortMenu = false }
                         )
                     }
@@ -257,7 +265,7 @@ fun LibraryScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 4.dp),
-            placeholder = { Text("Поиск по медиатеке...", fontSize = 14.sp) },
+            placeholder = { Text(stringResource(R.string.search_library_placeholder), fontSize = 14.sp) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
@@ -270,7 +278,7 @@ fun LibraryScreen(
                     IconButton(onClick = { searchQuery = "" }) {
                         Icon(
                             imageVector = Icons.Default.Clear,
-                            contentDescription = "Clear",
+                            contentDescription = stringResource(R.string.search_clear_desc),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -423,7 +431,7 @@ fun LibraryScreen(
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Создать новый плейлист", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.create_playlist_button), fontWeight = FontWeight.Bold)
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -436,7 +444,7 @@ fun LibraryScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "Плейлистов пока нет.\nНажмите «Создать новый плейлист» выше!",
+                                text = stringResource(R.string.empty_playlists_message),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color.White.copy(alpha = 0.6f),
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -479,12 +487,12 @@ fun LibraryScreen(
     if (showCreatePlaylistDialog) {
         AlertDialog(
             onDismissRequest = { showCreatePlaylistDialog = false },
-            title = { Text("Новый плейлист") },
+            title = { Text(stringResource(R.string.new_playlist_title)) },
             text = {
                 OutlinedTextField(
                     value = newPlaylistName,
                     onValueChange = { newPlaylistName = it },
-                    placeholder = { Text("Название плейлиста") },
+                    placeholder = { Text(stringResource(R.string.playlist_name_placeholder)) },
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = primaryAccent,
@@ -504,12 +512,12 @@ fun LibraryScreen(
                         }
                     }
                 ) {
-                    Text("Создать", color = primaryAccent, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.action_create), color = primaryAccent, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showCreatePlaylistDialog = false }) {
-                    Text("Отмена")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )

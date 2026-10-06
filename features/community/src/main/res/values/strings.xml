@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_title">Author Profile</string>
+    <string name="profile_subtitle">Local author profile and theme studio settings</string>
+    <string name="profile_syncing">Authorizing and syncing...</string>
+    <string name="profile_avatar_desc">User avatar</string>
+    <string name="profile_edit_name">Edit author name</string>
+    <string name="profile_stats_title">COMMUNITY STATS</string>
+    <string name="profile_stat_themes">Created / Imported themes</string>
+    <string name="profile_stat_themes_val">Local</string>
+    <string name="profile_stat_export">Export author profile</string>
+    <string name="profile_stat_export_val">Share file</string>
+    <string name="profile_stat_privacy">Account privacy</string>
+    <string name="profile_stat_privacy_val">100% Offline Encrypted</string>
+    <string name="profile_logout">Log out</string>
+    <string name="profile_offline_card_title">Local author profile</string>
+    <string name="profile_offline_card_desc">OpenFy works 100% offline without internet. Specify your author nickname for creating, signing, and exporting themes.</string>
+    <string name="profile_nickname_label">Author name / Nickname</string>
+    <string name="profile_nickname_placeholder">e.g., OpenFy Theme Author</string>
+    <string name="profile_login_btn">Sign in as author</string>
+    <string name="profile_dialog_title">Author name</string>
+    <string name="profile_dialog_desc">Enter a nickname for your local profile and theme export:</string>
+    <string name="profile_dialog_hint">e.g., Theme Author</string>
+    <string name="profile_dialog_save">Save</string>
+    <string name="profile_dialog_cancel">Cancel</string>
+    <string name="profile_logout_confirm_title">Log out?</string>
+    <string name="profile_logout_confirm_desc">Are you sure you want to log out? Local keys will be cleared.</string>
+    <string name="profile_action_logout">Log out</string>
+    <string name="profile_action_back">Back</string>
+
+    <string name="qr_import_title">QR Code Import</string>
+    <string name="qr_import_headline">Offline import from image</string>
+    <string name="qr_import_desc">Camera permission was removed for 100% privacy and F-Droid compliance. You can import themes and playlists by choosing a QR code screenshot or photo from your gallery.</string>
+    <string name="qr_import_btn_select">Select QR code image</string>
+    <string name="qr_import_decoding">Decoding QR code...</string>
+    <string name="qr_import_error_not_found">Could not recognize QR code in the selected image</string>
+    <string name="qr_import_success_title">Import finished!</string>
+    <string name="qr_import_done">Done</string>
+    <string name="profile_default_author">OpenFy Author</string>
+    <string name="profile_share_p2p_desc">OpenFy P2P Community Profile</string>
+</resources>

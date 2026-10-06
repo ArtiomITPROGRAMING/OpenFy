@@ -64,4 +64,53 @@
     <string name="profile_stat_themes_value">Local</string>
     <string name="profile_logout">Sign Out</string>
     <string name="profile_logout_confirm">Are you sure you want to sign out? Local session keys will be cleared.</string>
+
+    <!-- Library & Sorting -->
+    <string name="library_title">Library</string>
+    <string name="tracks_on_device_count">%1$d tracks on device</string>
+    <string name="sort_menu_desc">Sort</string>
+    <string name="sort_title_asc">By title (A-Z)</string>
+    <string name="sort_title_desc">By title (Z-A)</string>
+    <string name="sort_artist_asc">By artist (A-Z)</string>
+    <string name="sort_artist_desc">By artist (Z-A)</string>
+    <string name="sort_date_desc">Newest first</string>
+    <string name="sort_date_asc">Oldest first</string>
+    <string name="sort_duration_desc">By duration (longest)</string>
+    <string name="sort_duration_asc">By duration (shortest)</string>
+    <string name="search_library_placeholder">Search library...</string>
+    <string name="search_clear_desc">Clear</string>
+    <string name="tab_all_tracks">All Tracks</string>
+    <string name="tab_albums">Albums</string>
+    <string name="tab_artists">Artists</string>
+    <string name="tab_folders">Folders</string>
+    <string name="tab_playlists">Playlists</string>
+    <string name="create_playlist_button">Create new playlist</string>
+    <string name="empty_playlists_message">No playlists yet.\nTap \'Create new playlist\' above!</string>
+    <string name="new_playlist_title">New playlist</string>
+    <string name="playlist_name_placeholder">Playlist name</string>
+    <string name="action_create">Create</string>
+
+    <!-- Home Screen -->
+    <string name="favorite_tracks">Favorite tracks</string>
+    <string name="favorite_tracks_count">%1$d tracks</string>
+    <string name="favorite_tracks_in_collection">%1$d tracks in collection</string>
+    <string name="frequently_played">Frequently played</string>
+    <string name="tracks_count">%1$d tracks</string>
+    <string name="action_play">Play</string>
+    <string name="play_all">Play all</string>
+    <string name="frequently_played_subtitle">Top played tracks in library</string>
+    <string name="empty_library_title">Library is empty</string>
+    <string name="empty_library_desc">Add audio files to your device or start a media scan.</string>
+    <string name="empty_library_scan_btn">Scan device</string>
+    <string name="offline_library_subtitle">%1$d tracks • Offline library</string>
+    <string name="sound_compass">Sound Compass</string>
+    <string name="refresh_library">Refresh library</string>
+    <string name="filter_all">All</string>
+    <string name="filter_favorites">Favorites</string>
+    <string name="filter_popular">Frequently played</string>
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_afternoon">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+    <string name="greeting_night">Good night</string>
+    <string name="car_mode_title">Car mode</string>
 </resources>

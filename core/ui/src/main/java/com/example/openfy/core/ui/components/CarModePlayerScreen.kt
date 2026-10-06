@@ -18,6 +18,7 @@
 package com.example.openfy.core.ui.components
 
 import android.app.Activity
+import android.content.res.Configuration
 import android.text.format.DateFormat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -37,6 +38,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.displayCutoutPadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -48,25 +50,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.GraphicEq
-import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -87,11 +83,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -101,10 +100,9 @@ import com.example.openfy.core.audio.data.AppThemeStyle
 import com.example.openfy.core.audio.model.Song
 import com.example.openfy.core.audio.service.CarModeManager
 import com.example.openfy.core.audio.service.PlaybackManager
-import com.example.openfy.core.ui.theme.AmoledDarkSurface
+import com.example.openfy.core.ui.R
 import com.example.openfy.core.ui.theme.AppIcons
 import com.example.openfy.core.ui.theme.CyberpunkRubyRed
-import com.example.openfy.core.ui.theme.ElectricPurple
 import com.example.openfy.core.ui.theme.NeonCyan
 import com.example.openfy.core.ui.theme.NeonPink
 import com.example.openfy.core.ui.theme.RetroPhosphorGreen
@@ -126,6 +124,9 @@ fun CarModePlayerScreen(
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
+    val haptic = LocalHapticFeedback.current
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     val currentSong by playbackManager.currentSong.collectAsState()
     val isPlaying by playbackManager.isPlaying.collectAsState()
@@ -181,6 +182,7 @@ fun CarModePlayerScreen(
             .pointerInput(Unit) {
                 detectTapGestures(
                     onDoubleTap = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         playbackManager.playPause()
                     }
                 )
@@ -188,9 +190,11 @@ fun CarModePlayerScreen(
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(
                     onDragEnd = {
-                        if (dragOffsetAccumulator > 120f) {
+                        if (dragOffsetAccumulator > 80f) {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             playbackManager.skipPrev()
-                        } else if (dragOffsetAccumulator < -120f) {
+                        } else if (dragOffsetAccumulator < -80f) {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             playbackManager.skipNext()
                         }
                         dragOffsetAccumulator = 0f
@@ -201,362 +205,791 @@ fun CarModePlayerScreen(
                 )
             }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            // 1. DRIVE-SAFE TOP HEADER (Exit, Car Badge, Live Clock)
+        if (isLandscape) {
+            // =========================================================================
+            // LANDSCAPE CAR DASHBOARD LAYOUT (Horizontal car phone mounts)
+            // =========================================================================
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Surface(
-                    onClick = onBack,
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color.White.copy(alpha = 0.12f),
-                    modifier = Modifier.size(52.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Выход из авто-режима",
-                            tint = Color.White,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-                }
-
-                Surface(
-                    shape = RoundedCornerShape(20.dp),
-                    color = accentColor.copy(alpha = 0.2f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, accentColor.copy(alpha = 0.4f))
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.DirectionsCar,
-                            contentDescription = null,
-                            tint = accentColor,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "CAR MODE",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = accentColor,
-                            letterSpacing = 1.sp
-                        )
-                    }
-                }
-
-                Text(
-                    text = currentTimeString,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White.copy(alpha = 0.9f)
-                )
-            }
-
-            // 2. CENTER TRACK INFO & VISUALIZER
-            if (currentSong != null) {
-                val song = currentSong!!
-                val isFavorite = favorites.contains(song.id)
-
+                // Left Column: Artwork + Marquee Track Info + Visualizer
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Artwork Thumbnail with Glow
-                    Box(
-                        modifier = Modifier
-                            .size(160.dp)
-                            .shadow(24.dp, RoundedCornerShape(24.dp), spotColor = accentColor.copy(alpha = 0.5f))
-                            .clip(RoundedCornerShape(24.dp))
-                            .background(Color(0xFF1E1F28)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (song.albumArtUri != null || song.albumArtUriString != null) {
-                            AsyncImage(
-                                model = song.albumArtUri ?: song.albumArtUriString,
-                                contentDescription = song.title,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-                        } else {
-                            Icon(
-                                imageVector = AppIcons.album(iconPackStyle),
-                                contentDescription = null,
-                                tint = accentColor,
-                                modifier = Modifier.size(80.dp)
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = song.title,
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Black,
-                        color = Color.White,
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .basicMarquee(iterations = Int.MAX_VALUE)
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = song.artist,
-                        fontSize = 19.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White.copy(alpha = 0.7f),
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .basicMarquee(iterations = Int.MAX_VALUE)
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    if (isPlaying) {
-                        VisualizerCanvas(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(32.dp),
-                            isPlaying = true,
-                            barCount = 18,
-                            primaryColor = accentColor,
-                            secondaryColor = accentColor.copy(alpha = 0.4f)
-                        )
-                    }
-                }
-
-                // 3. SEEKBAR WITH HIGH CONTRAST
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    val progress = if (durationMs > 0) (currentPositionMs.toFloat() / durationMs).coerceIn(0f, 1f) else 0f
-                    Slider(
-                        value = progress,
-                        onValueChange = { frac ->
-                            if (durationMs > 0) {
-                                playbackManager.seekTo((frac * durationMs).toLong())
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = SliderDefaults.colors(
-                            thumbColor = accentColor,
-                            activeTrackColor = accentColor,
-                            inactiveTrackColor = Color.White.copy(alpha = 0.2f)
-                        )
-                    )
+                    // Top header: Back button & Car Mode Badge
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Surface(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                onBack()
+                            },
+                            shape = RoundedCornerShape(16.dp),
+                            color = Color.White.copy(alpha = 0.12f),
+                            modifier = Modifier.size(52.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = stringResource(R.string.car_mode_exit),
+                                    tint = Color.White,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                        }
+
+                        Surface(
+                            shape = RoundedCornerShape(20.dp),
+                            color = accentColor.copy(alpha = 0.2f),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, accentColor.copy(alpha = 0.4f))
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.DirectionsCar,
+                                    contentDescription = null,
+                                    tint = accentColor,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = stringResource(R.string.car_mode_badge),
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = accentColor,
+                                    letterSpacing = 1.sp
+                                )
+                            }
+                        }
+
                         Text(
-                            text = formatCarDuration(currentPositionMs),
-                            fontSize = 14.sp,
+                            text = currentTimeString,
+                            fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White.copy(alpha = 0.6f)
+                            color = Color.White.copy(alpha = 0.9f)
                         )
-                        Text(
-                            text = if (song.isStream) "LIVE" else formatCarDuration(durationMs),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White.copy(alpha = 0.6f)
+                    }
+
+                    // Cover Art & Title
+                    if (currentSong != null) {
+                        val song = currentSong!!
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .shadow(20.dp, RoundedCornerShape(20.dp), spotColor = accentColor.copy(alpha = 0.5f))
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(Color(0xFF1E1F28))
+                                    .clickable {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        playbackManager.playPause()
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (song.albumArtUri != null || song.albumArtUriString != null) {
+                                    AsyncImage(
+                                        model = song.albumArtUri ?: song.albumArtUriString,
+                                        contentDescription = song.title,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = AppIcons.album(iconPackStyle),
+                                        contentDescription = null,
+                                        tint = accentColor,
+                                        modifier = Modifier.size(64.dp)
+                                    )
+                                }
+                            }
+
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = song.title,
+                                    fontSize = 26.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = Color.White,
+                                    maxLines = 1,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .basicMarquee(iterations = Int.MAX_VALUE)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = song.artist,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    maxLines = 1,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .basicMarquee(iterations = Int.MAX_VALUE)
+                                )
+                            }
+                        }
+
+                        if (isPlaying) {
+                            VisualizerCanvas(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(26.dp),
+                                isPlaying = true,
+                                barCount = 18,
+                                primaryColor = accentColor,
+                                secondaryColor = accentColor.copy(alpha = 0.4f)
+                            )
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(R.string.car_mode_empty_title),
+                                fontSize = 16.sp,
+                                color = Color.White.copy(alpha = 0.6f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+
+                // Right Column: Scrub Bar + Giant Transport Controls + Presets
+                Column(
+                    modifier = Modifier
+                        .weight(1.1f)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // 1. High contrast scrubber
+                    if (currentSong != null) {
+                        val song = currentSong!!
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            val progress = if (durationMs > 0) (currentPositionMs.toFloat() / durationMs).coerceIn(0f, 1f) else 0f
+                            Slider(
+                                value = progress,
+                                onValueChange = { frac ->
+                                    if (durationMs > 0) {
+                                        playbackManager.seekTo((frac * durationMs).toLong())
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = accentColor,
+                                    activeTrackColor = accentColor,
+                                    inactiveTrackColor = Color.White.copy(alpha = 0.2f)
+                                )
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = formatCarDuration(currentPositionMs),
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White.copy(alpha = 0.6f)
+                                )
+                                Text(
+                                    text = if (song.isStream) "LIVE" else formatCarDuration(durationMs),
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White.copy(alpha = 0.6f)
+                                )
+                            }
+                        }
+                    } else {
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
+
+                    // 2. Transport Buttons (Landscape: 88dp Play button, 68dp Prev/Next)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Surface(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                playbackManager.toggleShuffle()
+                            },
+                            shape = CircleShape,
+                            color = if (isShuffle) accentColor.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.1f),
+                            modifier = Modifier.size(54.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = AppIcons.shuffle(iconPackStyle),
+                                    contentDescription = stringResource(R.string.car_mode_shuffle),
+                                    tint = if (isShuffle) accentColor else Color.White.copy(alpha = 0.6f),
+                                    modifier = Modifier.size(26.dp)
+                                )
+                            }
+                        }
+
+                        Surface(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                playbackManager.skipPrev()
+                            },
+                            shape = CircleShape,
+                            color = Color.White.copy(alpha = 0.15f),
+                            modifier = Modifier.size(68.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Default.SkipPrevious,
+                                    contentDescription = stringResource(R.string.car_mode_prev),
+                                    tint = Color.White,
+                                    modifier = Modifier.size(36.dp)
+                                )
+                            }
+                        }
+
+                        FilledIconButton(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                playbackManager.playPause()
+                            },
+                            modifier = Modifier
+                                .size(88.dp)
+                                .scale(playButtonScale),
+                            shape = CircleShape,
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = accentColor,
+                                contentColor = Color.Black
+                            )
+                        ) {
+                            Icon(
+                                imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                contentDescription = if (isPlaying) stringResource(R.string.car_mode_pause) else stringResource(R.string.car_mode_play),
+                                modifier = Modifier.size(46.dp)
+                            )
+                        }
+
+                        Surface(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                playbackManager.skipNext()
+                            },
+                            shape = CircleShape,
+                            color = Color.White.copy(alpha = 0.15f),
+                            modifier = Modifier.size(68.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Default.SkipNext,
+                                    contentDescription = stringResource(R.string.car_mode_next),
+                                    tint = Color.White,
+                                    modifier = Modifier.size(36.dp)
+                                )
+                            }
+                        }
+
+                        val isFav = currentSong?.let { favorites.contains(it.id) } == true
+                        Surface(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                currentSong?.let { playbackManager.playlistRepository.toggleFavorite(it.id) }
+                            },
+                            shape = CircleShape,
+                            color = if (isFav) NeonPink.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.1f),
+                            modifier = Modifier.size(54.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                    contentDescription = stringResource(R.string.car_mode_favorite),
+                                    tint = if (isFav) NeonPink else Color.White.copy(alpha = 0.6f),
+                                    modifier = Modifier.size(26.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    // 3. Quick Presets Bar
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CarPresetButton(
+                            icon = Icons.Default.Explore,
+                            title = stringResource(R.string.car_mode_preset_road),
+                            modifier = Modifier.weight(1f),
+                            accentColor = accentColor,
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                val queue = playbackManager.queue.value
+                                val tracks = if (queue.isNotEmpty()) queue else listOfNotNull(playbackManager.currentSong.value)
+                                if (tracks.isNotEmpty()) {
+                                    playbackManager.playSongs(tracks.shuffled(), 0)
+                                }
+                            }
+                        )
+
+                        CarPresetButton(
+                            icon = Icons.Default.Favorite,
+                            title = stringResource(R.string.car_mode_preset_favorites),
+                            modifier = Modifier.weight(1f),
+                            accentColor = accentColor,
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                val favIds = playbackManager.playlistRepository.favorites.value
+                                val allSongs = playbackManager.queue.value.ifEmpty { listOfNotNull(playbackManager.currentSong.value) }
+                                val favSongs = allSongs.filter { favIds.contains(it.id) }
+                                if (favSongs.isNotEmpty()) {
+                                    playbackManager.playSongs(favSongs, 0)
+                                }
+                            }
+                        )
+
+                        CarPresetButton(
+                            icon = Icons.Default.Shuffle,
+                            title = stringResource(R.string.car_mode_preset_mix),
+                            modifier = Modifier.weight(1f),
+                            accentColor = accentColor,
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                if (!playbackManager.isShuffle.value) {
+                                    playbackManager.toggleShuffle()
+                                }
+                                playbackManager.skipNext()
+                            }
+                        )
+
+                        CarPresetButton(
+                            icon = Icons.Default.History,
+                            title = stringResource(R.string.car_mode_preset_recent),
+                            modifier = Modifier.weight(1f),
+                            accentColor = accentColor,
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                val recentIds = playbackManager.playlistRepository.recentlyPlayed.value
+                                val allSongs = playbackManager.queue.value.ifEmpty { listOfNotNull(playbackManager.currentSong.value) }
+                                val recentSongs = allSongs.filter { recentIds.contains(it.id) }
+                                if (recentSongs.isNotEmpty()) {
+                                    playbackManager.playSongs(recentSongs, 0)
+                                }
+                            }
                         )
                     }
                 }
-            } else {
-                Box(
+            }
+        } else {
+            // =========================================================================
+            // PORTRAIT CAR DASHBOARD LAYOUT (Standard vertical phone mounts)
+            // =========================================================================
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                // 1. DRIVE-SAFE TOP HEADER (Exit, Car Badge, Live Clock)
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center
+                        .height(56.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Surface(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onBack()
+                        },
+                        shape = RoundedCornerShape(16.dp),
+                        color = Color.White.copy(alpha = 0.12f),
+                        modifier = Modifier.size(52.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = stringResource(R.string.car_mode_exit),
+                                tint = Color.White,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = accentColor.copy(alpha = 0.2f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, accentColor.copy(alpha = 0.4f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.DirectionsCar,
+                                contentDescription = null,
+                                tint = accentColor,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(R.string.car_mode_badge),
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = accentColor,
+                                letterSpacing = 1.sp
+                            )
+                        }
+                    }
+
                     Text(
-                        text = "Выберите трек или нажмите быстрый пресет",
-                        fontSize = 18.sp,
-                        color = Color.White.copy(alpha = 0.6f)
+                        text = currentTimeString,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White.copy(alpha = 0.9f)
                     )
                 }
-            }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                // 2. CENTER TRACK INFO & VISUALIZER
+                if (currentSong != null) {
+                    val song = currentSong!!
 
-            // 4. DRIVE-SAFE GIANT CONTROLS ROW
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Shuffle Button
-                Surface(
-                    onClick = { playbackManager.toggleShuffle() },
-                    shape = CircleShape,
-                    color = if (isShuffle) accentColor.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.1f),
-                    modifier = Modifier.size(56.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = AppIcons.shuffle(iconPackStyle),
-                            contentDescription = "Shuffle",
-                            tint = if (isShuffle) accentColor else Color.White.copy(alpha = 0.6f),
-                            modifier = Modifier.size(28.dp)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        // Artwork Thumbnail with Glow
+                        Box(
+                            modifier = Modifier
+                                .size(170.dp)
+                                .shadow(24.dp, RoundedCornerShape(26.dp), spotColor = accentColor.copy(alpha = 0.5f))
+                                .clip(RoundedCornerShape(26.dp))
+                                .background(Color(0xFF1E1F28))
+                                .clickable {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    playbackManager.playPause()
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (song.albumArtUri != null || song.albumArtUriString != null) {
+                                AsyncImage(
+                                    model = song.albumArtUri ?: song.albumArtUriString,
+                                    contentDescription = song.title,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = AppIcons.album(iconPackStyle),
+                                    contentDescription = null,
+                                    tint = accentColor,
+                                    modifier = Modifier.size(80.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(18.dp))
+
+                        Text(
+                            text = song.title,
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color.White,
+                            textAlign = TextAlign.Center,
+                            maxLines = 1,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .basicMarquee(iterations = Int.MAX_VALUE)
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = song.artist,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Center,
+                            maxLines = 1,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .basicMarquee(iterations = Int.MAX_VALUE)
+                        )
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        if (isPlaying) {
+                            VisualizerCanvas(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(32.dp),
+                                isPlaying = true,
+                                barCount = 20,
+                                primaryColor = accentColor,
+                                secondaryColor = accentColor.copy(alpha = 0.4f)
+                            )
+                        }
+                    }
+
+                    // 3. SEEKBAR WITH HIGH CONTRAST
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        val progress = if (durationMs > 0) (currentPositionMs.toFloat() / durationMs).coerceIn(0f, 1f) else 0f
+                        Slider(
+                            value = progress,
+                            onValueChange = { frac ->
+                                if (durationMs > 0) {
+                                    playbackManager.seekTo((frac * durationMs).toLong())
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = SliderDefaults.colors(
+                                thumbColor = accentColor,
+                                activeTrackColor = accentColor,
+                                inactiveTrackColor = Color.White.copy(alpha = 0.2f)
+                            )
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = formatCarDuration(currentPositionMs),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White.copy(alpha = 0.6f)
+                            )
+                            Text(
+                                text = if (song.isStream) "LIVE" else formatCarDuration(durationMs),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White.copy(alpha = 0.6f)
+                            )
+                        }
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.car_mode_empty_title),
+                            fontSize = 18.sp,
+                            color = Color.White.copy(alpha = 0.6f),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
 
-                // Previous Track Button (Large 72dp)
-                Surface(
-                    onClick = { playbackManager.skipPrev() },
-                    shape = CircleShape,
-                    color = Color.White.copy(alpha = 0.15f),
-                    modifier = Modifier.size(72.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Default.SkipPrevious,
-                            contentDescription = "Предыдущий трек",
-                            tint = Color.White,
-                            modifier = Modifier.size(38.dp)
-                        )
-                    }
-                }
+                Spacer(modifier = Modifier.height(8.dp))
 
-                // Play / Pause Giant Button (92dp)
-                FilledIconButton(
-                    onClick = { playbackManager.playPause() },
+                // 4. DRIVE-SAFE GIANT CONTROLS ROW
+                Row(
                     modifier = Modifier
-                        .size(92.dp)
-                        .scale(playButtonScale),
-                    shape = CircleShape,
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = accentColor,
-                        contentColor = Color.Black
-                    )
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = if (isPlaying) "Пауза" else "Играть",
-                        modifier = Modifier.size(48.dp)
-                    )
-                }
-
-                // Next Track Button (Large 72dp)
-                Surface(
-                    onClick = { playbackManager.skipNext() },
-                    shape = CircleShape,
-                    color = Color.White.copy(alpha = 0.15f),
-                    modifier = Modifier.size(72.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Default.SkipNext,
-                            contentDescription = "Следующий трек",
-                            tint = Color.White,
-                            modifier = Modifier.size(38.dp)
-                        )
-                    }
-                }
-
-                // Favorite Button
-                val isFav = currentSong?.let { favorites.contains(it.id) } == true
-                Surface(
-                    onClick = { currentSong?.let { playbackManager.playlistRepository.toggleFavorite(it.id) } },
-                    shape = CircleShape,
-                    color = if (isFav) NeonPink.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.1f),
-                    modifier = Modifier.size(56.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = "Избранное",
-                            tint = if (isFav) NeonPink else Color.White.copy(alpha = 0.6f),
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // 5. QUICK CAR PRESETS BAR (Grid of 4 Drive-Safe Buttons)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                CarPresetButton(
-                    icon = Icons.Default.Explore,
-                    title = "В дорогу",
-                    modifier = Modifier.weight(1f),
-                    accentColor = accentColor,
-                    onClick = {
-                        val all = playbackManager.queue.value
-                        if (all.isNotEmpty()) {
-                            playbackManager.playSongs(all.shuffled(), 0)
-                        }
-                    }
-                )
-
-                CarPresetButton(
-                    icon = Icons.Default.Favorite,
-                    title = "Избранное",
-                    modifier = Modifier.weight(1f),
-                    accentColor = accentColor,
-                    onClick = {
-                        val favIds = playbackManager.playlistRepository.favorites.value
-                        val favSongs = playbackManager.queue.value.filter { favIds.contains(it.id) }
-                        if (favSongs.isNotEmpty()) {
-                            playbackManager.playSongs(favSongs, 0)
-                        }
-                    }
-                )
-
-                CarPresetButton(
-                    icon = Icons.Default.Shuffle,
-                    title = "Микс",
-                    modifier = Modifier.weight(1f),
-                    accentColor = accentColor,
-                    onClick = {
-                        if (!playbackManager.isShuffle.value) {
+                    // Shuffle Button
+                    Surface(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             playbackManager.toggleShuffle()
+                        },
+                        shape = CircleShape,
+                        color = if (isShuffle) accentColor.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.1f),
+                        modifier = Modifier.size(56.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = AppIcons.shuffle(iconPackStyle),
+                                contentDescription = stringResource(R.string.car_mode_shuffle),
+                                tint = if (isShuffle) accentColor else Color.White.copy(alpha = 0.6f),
+                                modifier = Modifier.size(28.dp)
+                            )
                         }
-                        playbackManager.skipNext()
                     }
-                )
 
-                CarPresetButton(
-                    icon = Icons.Default.History,
-                    title = "Недавние",
-                    modifier = Modifier.weight(1f),
-                    accentColor = accentColor,
-                    onClick = {
-                        val recentIds = playbackManager.playlistRepository.recentlyPlayed.value
-                        val allSongs = playbackManager.queue.value
-                        val recentSongs = allSongs.filter { recentIds.contains(it.id) }
-                        if (recentSongs.isNotEmpty()) {
-                            playbackManager.playSongs(recentSongs, 0)
+                    // Previous Track Button (Large 72dp)
+                    Surface(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            playbackManager.skipPrev()
+                        },
+                        shape = CircleShape,
+                        color = Color.White.copy(alpha = 0.15f),
+                        modifier = Modifier.size(72.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Default.SkipPrevious,
+                                contentDescription = stringResource(R.string.car_mode_prev),
+                                tint = Color.White,
+                                modifier = Modifier.size(38.dp)
+                            )
                         }
                     }
-                )
+
+                    // Play / Pause Giant Button (92dp)
+                    FilledIconButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            playbackManager.playPause()
+                        },
+                        modifier = Modifier
+                            .size(92.dp)
+                            .scale(playButtonScale),
+                        shape = CircleShape,
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = accentColor,
+                            contentColor = Color.Black
+                        )
+                    ) {
+                        Icon(
+                            imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                            contentDescription = if (isPlaying) stringResource(R.string.car_mode_pause) else stringResource(R.string.car_mode_play),
+                            modifier = Modifier.size(48.dp)
+                        )
+                    }
+
+                    // Next Track Button (Large 72dp)
+                    Surface(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            playbackManager.skipNext()
+                        },
+                        shape = CircleShape,
+                        color = Color.White.copy(alpha = 0.15f),
+                        modifier = Modifier.size(72.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Default.SkipNext,
+                                contentDescription = stringResource(R.string.car_mode_next),
+                                tint = Color.White,
+                                modifier = Modifier.size(38.dp)
+                            )
+                        }
+                    }
+
+                    // Favorite Button
+                    val isFav = currentSong?.let { favorites.contains(it.id) } == true
+                    Surface(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            currentSong?.let { playbackManager.playlistRepository.toggleFavorite(it.id) }
+                        },
+                        shape = CircleShape,
+                        color = if (isFav) NeonPink.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.1f),
+                        modifier = Modifier.size(56.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                contentDescription = stringResource(R.string.car_mode_favorite),
+                                tint = if (isFav) NeonPink else Color.White.copy(alpha = 0.6f),
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // 5. QUICK CAR PRESETS BAR (Grid of 4 Drive-Safe Buttons)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    CarPresetButton(
+                        icon = Icons.Default.Explore,
+                        title = stringResource(R.string.car_mode_preset_road),
+                        modifier = Modifier.weight(1f),
+                        accentColor = accentColor,
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            val queue = playbackManager.queue.value
+                            val tracks = if (queue.isNotEmpty()) queue else listOfNotNull(playbackManager.currentSong.value)
+                            if (tracks.isNotEmpty()) {
+                                playbackManager.playSongs(tracks.shuffled(), 0)
+                            }
+                        }
+                    )
+
+                    CarPresetButton(
+                        icon = Icons.Default.Favorite,
+                        title = stringResource(R.string.car_mode_preset_favorites),
+                        modifier = Modifier.weight(1f),
+                        accentColor = accentColor,
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            val favIds = playbackManager.playlistRepository.favorites.value
+                            val allSongs = playbackManager.queue.value.ifEmpty { listOfNotNull(playbackManager.currentSong.value) }
+                            val favSongs = allSongs.filter { favIds.contains(it.id) }
+                            if (favSongs.isNotEmpty()) {
+                                playbackManager.playSongs(favSongs, 0)
+                            }
+                        }
+                    )
+
+                    CarPresetButton(
+                        icon = Icons.Default.Shuffle,
+                        title = stringResource(R.string.car_mode_preset_mix),
+                        modifier = Modifier.weight(1f),
+                        accentColor = accentColor,
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            if (!playbackManager.isShuffle.value) {
+                                playbackManager.toggleShuffle()
+                            }
+                            playbackManager.skipNext()
+                        }
+                    )
+
+                    CarPresetButton(
+                        icon = Icons.Default.History,
+                        title = stringResource(R.string.car_mode_preset_recent),
+                        modifier = Modifier.weight(1f),
+                        accentColor = accentColor,
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            val recentIds = playbackManager.playlistRepository.recentlyPlayed.value
+                            val allSongs = playbackManager.queue.value.ifEmpty { listOfNotNull(playbackManager.currentSong.value) }
+                            val recentSongs = allSongs.filter { recentIds.contains(it.id) }
+                            if (recentSongs.isNotEmpty()) {
+                                playbackManager.playSongs(recentSongs, 0)
+                            }
+                        }
+                    )
+                }
             }
         }
     }

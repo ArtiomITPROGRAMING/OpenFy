@@ -63,6 +63,6 @@ sealed interface UserProfile {
         override val id: String get() = guestId
         override val displayName: String get() = nickname
         override val avatarUrl: String get() = ""
-        override val providerName: String get() = "Офлайн Автор"
+        override val providerName: String get() = "Guest"
     }
 }

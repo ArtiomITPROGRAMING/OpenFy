@@ -18,6 +18,7 @@
 package com.example.openfy.ui.screens
 
 import android.net.Uri
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -72,10 +73,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.openfy.R
 import coil.compose.AsyncImage
 import com.example.openfy.core.audio.data.AppThemeStyle
 import com.example.openfy.core.audio.data.IconPackStyle
@@ -100,10 +104,10 @@ import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.sin
 
-enum class HomeFilter(val title: String) {
-    ALL("Все"),
-    FAVORITES("Любимые"),
-    POPULAR("Часто слушаете")
+enum class HomeFilter(@get:StringRes val titleRes: Int) {
+    ALL(R.string.filter_all),
+    FAVORITES(R.string.filter_favorites),
+    POPULAR(R.string.filter_popular)
 }
 
 private data class QuickBlockData(
@@ -168,13 +172,11 @@ fun HomeScreen(
 
     // Dynamic Time-of-Day Greeting
     val currentHour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
-    val greetingText = remember(currentHour) {
-        when (currentHour) {
-            in 5..11 -> "Доброе утро"
-            in 12..17 -> "Добрый день"
-            in 18..22 -> "Добрый вечер"
-            else -> "Доброй ночи"
-        }
+    val greetingText = when (currentHour) {
+        in 5..11 -> stringResource(R.string.greeting_morning)
+        in 12..17 -> stringResource(R.string.greeting_afternoon)
+        in 18..22 -> stringResource(R.string.greeting_evening)
+        else -> stringResource(R.string.greeting_night)
     }
 
     val primaryAccent = MaterialTheme.colorScheme.primary
@@ -193,16 +195,32 @@ fun HomeScreen(
         else -> DarkSurfaceElevated.copy(alpha = 0.75f)
     }
 
+    val favTracksTitle = stringResource(R.string.favorite_tracks)
+    val favTracksSubtitle = stringResource(R.string.favorite_tracks_count, favoriteSongs.size)
+    val freqPlayedTitle = stringResource(R.string.frequently_played)
+    val freqPlayedSubtitle = stringResource(R.string.tracks_count, recommendedSongs.size)
+    val context = LocalContext.current
+
     // Prepare Quick Access Blocks with diverse, rich color palettes
-    val quickBlocks = remember(favoriteSongs.size, recommendedSongs.size, customPlaylists, allSongs, iconPackStyle) {
+    val quickBlocks = remember(
+        favoriteSongs.size,
+        recommendedSongs.size,
+        customPlaylists,
+        allSongs,
+        iconPackStyle,
+        favTracksTitle,
+        favTracksSubtitle,
+        freqPlayedTitle,
+        freqPlayedSubtitle
+    ) {
         val list = mutableListOf<QuickBlockData>()
 
         // 1. Блок Любимые треки (сочный неон-розовый)
         list.add(
             QuickBlockData(
                 id = "favorites",
-                title = "Любимые треки",
-                subtitle = "${favoriteSongs.size} треков",
+                title = favTracksTitle,
+                subtitle = favTracksSubtitle,
                 icon = AppIcons.favoriteFilled(iconPackStyle),
                 imageUri = null,
                 gradient = Brush.linearGradient(listOf(NeonPink, ElectricPurple)),
@@ -225,8 +243,8 @@ fun HomeScreen(
         list.add(
             QuickBlockData(
                 id = "popular",
-                title = "Часто слушаете",
-                subtitle = "${recommendedSongs.size} треков",
+                title = freqPlayedTitle,
+                subtitle = freqPlayedSubtitle,
                 icon = AppIcons.flame,
                 imageUri = null,
                 gradient = Brush.linearGradient(listOf(CoralOrange, AmberGlow)),
@@ -255,7 +273,7 @@ fun HomeScreen(
                 QuickBlockData(
                     id = "pl_${playlist.id}",
                     title = playlist.name,
-                    subtitle = "${plSongs.size} треков",
+                    subtitle = context.getString(R.string.tracks_count, plSongs.size),
                     icon = AppIcons.playlist,
                     imageUri = playlist.customCoverUri?.let { Uri.parse(it) },
                     gradient = Brush.linearGradient(paletteColors),
@@ -299,7 +317,7 @@ fun HomeScreen(
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
-                        text = "${allSongs.size} треков • Офлайн-медиатека",
+                        text = stringResource(R.string.offline_library_subtitle, allSongs.size),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -309,35 +327,35 @@ fun HomeScreen(
                     IconButton(onClick = { showMoodDialSheet = true }) {
                         Icon(
                             imageVector = AppIcons.compass,
-                            contentDescription = "Звуковой компас",
+                            contentDescription = stringResource(R.string.sound_compass),
                             tint = primaryAccent
                         )
                     }
                     IconButton(onClick = onNavigateToSearch) {
                         Icon(
                             imageVector = AppIcons.search,
-                            contentDescription = "Поиск",
+                            contentDescription = stringResource(R.string.nav_search),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     IconButton(onClick = onNavigateToEqualizer) {
                         Icon(
                             imageVector = AppIcons.equalizer,
-                            contentDescription = "Эквалайзер",
+                            contentDescription = stringResource(R.string.action_equalizer),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     IconButton(onClick = onNavigateToCarMode) {
                         Icon(
                             imageVector = AppIcons.car,
-                            contentDescription = "Режим авто",
+                            contentDescription = stringResource(R.string.car_mode_title),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     IconButton(onClick = onRefreshAudio) {
                         Icon(
                             imageVector = AppIcons.refresh,
-                            contentDescription = "Обновить медиатеку",
+                            contentDescription = stringResource(R.string.refresh_library),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -360,7 +378,7 @@ fun HomeScreen(
                         onClick = { selectedFilter = filter },
                         label = {
                             Text(
-                                text = filter.title,
+                                text = stringResource(filter.titleRes),
                                 fontSize = 13.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
                             )
@@ -454,13 +472,13 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = "Любимые треки",
+                                text = stringResource(R.string.favorite_tracks),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                             Text(
-                                text = "${favoriteSongs.size} треков в коллекции",
+                                text = stringResource(R.string.favorite_tracks_in_collection, favoriteSongs.size),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -481,7 +499,7 @@ fun HomeScreen(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "Слушать всё",
+                            text = stringResource(R.string.play_all),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = primaryAccent
@@ -540,13 +558,13 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = "Часто слушаете",
+                                text = stringResource(R.string.frequently_played),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                             Text(
-                                text = "Топ прослушиваний медиатеки",
+                                text = stringResource(R.string.frequently_played_subtitle),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -601,14 +619,14 @@ fun HomeScreen(
                         )
                         Spacer(modifier = Modifier.height(14.dp))
                         Text(
-                            text = "Медиатека пуста",
+                            text = stringResource(R.string.empty_library_title),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = "Добавьте аудиофайлы на устройство или запустите сканирование памяти.",
+                            text = stringResource(R.string.empty_library_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -621,7 +639,7 @@ fun HomeScreen(
                         ) {
                             Icon(AppIcons.refresh, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Сканировать устройство")
+                            Text(stringResource(R.string.empty_library_scan_btn))
                         }
                     }
                 }
@@ -741,7 +759,7 @@ fun QuickAccessTile(
         ) {
             Icon(
                 imageVector = AppIcons.play,
-                contentDescription = "Воспроизвести",
+                contentDescription = stringResource(R.string.action_play),
                 tint = Color.Black,
                 modifier = Modifier.size(16.dp)
             )
@@ -1099,7 +1117,7 @@ fun TopRankedTrackRow(
             ) {
                 Icon(
                     imageVector = if (isFavorite) AppIcons.favoriteFilled(iconPackStyle) else AppIcons.favoriteOutline(iconPackStyle),
-                    contentDescription = "Избранное",
+                    contentDescription = stringResource(R.string.filter_favorites),
                     tint = if (isFavorite) NeonPink else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                     modifier = Modifier.size(18.dp)
                 )

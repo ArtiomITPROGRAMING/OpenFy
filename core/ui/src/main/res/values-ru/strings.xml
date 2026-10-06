@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="car_mode_badge">РЕЖИМ АВТО</string>
+    <string name="car_mode_exit">Выход из авто-режима</string>
+    <string name="car_mode_empty_title">Выберите трек или нажмите быстрый пресет</string>
+    <string name="car_mode_preset_road">В дорогу</string>
+    <string name="car_mode_preset_favorites">Избранное</string>
+    <string name="car_mode_preset_mix">Микс</string>
+    <string name="car_mode_preset_recent">Недавние</string>
+    <string name="car_mode_shuffle">Случайно</string>
+    <string name="car_mode_prev">Предыдущий трек</string>
+    <string name="car_mode_next">Следующий трек</string>
+    <string name="car_mode_play">Играть</string>
+    <string name="car_mode_pause">Пауза</string>
+    <string name="car_mode_favorite">Избранное</string>
+</resources>
