@@ -183,7 +183,7 @@ fun OtpVerificationScreen(
                     IconButton(onClick = onChangeEmail) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Назад к вводу Email",
+                            contentDescription = "Back to Email input",
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -197,7 +197,7 @@ fun OtpVerificationScreen(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Изменить Email",
+                            text = "Change Email",
                             style = MaterialTheme.typography.labelMedium,
                             color = primaryAccent
                         )
@@ -243,7 +243,7 @@ fun OtpVerificationScreen(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
-                        text = "Код подтверждения",
+                        text = "Verification Code",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -253,7 +253,7 @@ fun OtpVerificationScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Мы отправили 6-значный код на адрес:",
+                        text = "We sent a 6-digit code to:",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
@@ -395,13 +395,13 @@ fun OtpVerificationScreen(
                                     )
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Text(
-                                        text = "Проверка...",
+                                        text = "Verifying...",
                                         style = MaterialTheme.typography.bodyLarge,
                                         fontWeight = FontWeight.Bold
                                     )
                                 } else {
                                     Text(
-                                        text = "Подтвердить и войти",
+                                        text = "Confirm and sign in",
                                         style = MaterialTheme.typography.bodyLarge,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -418,7 +418,7 @@ fun OtpVerificationScreen(
                 ) {
                     if (cooldownSeconds > 0) {
                         Text(
-                            text = "Повторно отправить код через ${String.format("%02d:%02d", cooldownSeconds / 60, cooldownSeconds % 60)}",
+                            text = "Resend code in ${String.format("%02d:%02d", cooldownSeconds / 60, cooldownSeconds % 60)}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                         )
@@ -433,7 +433,7 @@ fun OtpVerificationScreen(
                                     onSuccess = {
                                         isResending = false
                                         cooldownSeconds = 60
-                                        resendFeedback = "Новый код отправлен!"
+                                        resendFeedback = "New code sent!"
                                     },
                                     onError = { err ->
                                         isResending = false
@@ -460,7 +460,7 @@ fun OtpVerificationScreen(
                                 Spacer(modifier = Modifier.width(8.dp))
                             }
                             Text(
-                                text = "Отправить код повторно",
+                                text = "Resend code",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = primaryAccent

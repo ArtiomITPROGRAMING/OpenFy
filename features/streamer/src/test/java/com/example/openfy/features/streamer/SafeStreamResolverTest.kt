@@ -68,7 +68,7 @@ class SafeStreamResolverTest {
 
     @Test
     fun `OpenSourceMusicCatalog provides valid tracks and genre filters`() {
-        val allTracks = OpenSourceMusicCatalog.getTracksByGenre("Все")
+        val allTracks = OpenSourceMusicCatalog.getTracksByGenre("All")
         assertTrue(allTracks.isNotEmpty())
         assertTrue(allTracks.all { it.isStream })
         assertTrue(allTracks.all { it.streamUrl?.startsWith("http") == true })

@@ -32,32 +32,32 @@ enum class AppThemeStyle(
     val hasNeonGlow: Boolean
 ) {
     SERIOUS_DARK(
-        "Мрачный Монолит (AMOLED)",
-        "Истинный глубокий чёрный фон, без неона и блобов, строгие титаново-стальные карточки",
+        "Monolith Dark (AMOLED)",
+        "True deep black background, titanium cards, pure contrast without distractions",
         hasBlobs = false,
         hasNeonGlow = false
     ),
     MIDNIGHT_NEON(
         "Midnight Neon Glass",
-        "Стекломорфизм, анимированные плавающие неоновые блобы (Cyan/Purple/Pink) и светящиеся контуры",
+        "Glassmorphism, animated neon floating blobs (Cyan/Purple/Pink) and glowing borders",
         hasBlobs = true,
         hasNeonGlow = true
     ),
     CYBERPUNK_BLOOD(
         "Cyberpunk Blood & Gold",
-        "Тёмный рубиновый обсидиан, горящие золотые и кроваво-красные огни",
+        "Dark ruby obsidian, glowing gold and crimson accents",
         hasBlobs = true,
         hasNeonGlow = true
     ),
     RETRO_PIXEL(
         "Retro 8-Bit Matrix",
-        "Тёмная кибер-сетка CRT, изумрудный терминал и ретро-игровая эстетика",
+        "Dark CRT cyber-grid, emerald terminal and retro-arcade aesthetics",
         hasBlobs = false,
         hasNeonGlow = true
     ),
     MATERIAL_YOU(
         "Material You Dynamic",
-        "Адаптивные системные цвета Android 12+ без лишней подсветки",
+        "Adaptive Android 12+ system colors without glow effects",
         hasBlobs = false,
         hasNeonGlow = false
     )
@@ -68,24 +68,24 @@ enum class IconPackStyle(
     val description: String
 ) {
     MINIMAL_THIN(
-        "Ультратонкий минимализм",
-        "Строгие тонкие линейные контуры толщиной 1dp, чистая геометрия"
+        "Ultra-thin Minimal",
+        "Crisp 1dp linear outlines and clean geometry"
     ),
     PIXEL_8BIT(
-        "Пиксельный 8-Bit ретро",
-        "Угловатые пиксельные ретро-иконки в стиле олдскульных консолей"
+        "Pixel 8-Bit Retro",
+        "Angular pixelated icons in classic gaming style"
     ),
     BOLD_JUICY(
-        "Жирные и сочные (Filled)",
-        "Массивные, плотно залитые округлые иконки с максимальным акцентом"
+        "Bold & Juicy (Filled)",
+        "Massive, solidly filled rounded icons with maximum emphasis"
     ),
     NEON_GLOW(
-        "Неоновый контур (Cyber Glow)",
-        "Двойной светящийся неоновый стиль с ярким градиентом"
+        "Cyber Glow Outline",
+        "Dual luminous neon outline with bright gradient"
     ),
     MATERIAL_ROUNDED(
         "Material 3 Toned",
-        "Классические скругленные иконки Material You"
+        "Classic rounded Material You icons"
     )
 }
 
@@ -94,20 +94,20 @@ enum class ProgressBarStyle(
     val description: String
 ) {
     CLASSIC_LINE(
-        "Классический тонкий слайдер",
-        "Элегантный лаконичный бегунок с плавным скраббингом"
+        "Classic Thin Slider",
+        "Elegant sleek slider with smooth scrubbing"
     ),
     WAVEFORM_BARS(
-        "Звуковая волна (Sound Waveform)",
-        "Живые анимированные частотные столбики в стиле SoundCloud и Spotify"
+        "Sound Waveform",
+        "Live animated frequency bars inspired by SoundCloud and Spotify"
     ),
     LASER_GLOW(
-        "Неоновый лазерный луч (Laser Pulse)",
-        "Светящийся лазерный трек с бегущим световым импульсом"
+        "Laser Pulse",
+        "Glowing laser track with animated light pulse"
     ),
     CHUNKY_PILL(
-        "Стеклянный Pill-бар (Modern Thick)",
-        "Современный объемный закруглённый брусок с эффектом стекла"
+        "Modern Glass Pill",
+        "Contemporary volumetric rounded bar with glassmorphic depth"
     )
 }
 
@@ -116,24 +116,24 @@ enum class PlayerCoverStyle(
     val description: String
 ) {
     ROUNDED_CARD(
-        "Скругленная карточка (Modern Glass)",
-        "Стильная парящая обложка с мягкими тенями"
+        "Modern Floating Glass",
+        "Stylish elevated album art with soft ambient shadow"
     ),
     DYNAMIC_GLOW(
-        "Глубокое сияние (Ambient Aura)",
-        "Интенсивное неоновое свечение в такт играющей музыке"
+        "Ambient Aura Glow",
+        "Intense reactive neon glow synced to the music"
     ),
     SPINNING_VINYL(
-        "Виниловая пластинка (Retro Vinyl)",
-        "Вращающаяся виниловая пластинка с обложкой по центру при игре"
+        "Retro Vinyl Record",
+        "Spinning vinyl disc with centered artwork during playback"
     ),
     CYBER_CASSETTE(
-        "Кассетный плеер (Retro Cassette)",
-        "Аудиокассета с вращающимися катушками и магнитным окошком"
+        "Retro Audio Cassette",
+        "Vintage audio cassette with rotating spools and magnetic window"
     ),
     REACTIVE_VISUALIZER(
-        "Шейдерный визуал (Milkdrop 2.0)",
-        "Живой реактивный фрактальный шейдер в такт играющей музыке"
+        "Shader Visualizer (Milkdrop)",
+        "Live reactive fractal shader pulsating with the beats"
     )
 }
 
@@ -142,20 +142,20 @@ enum class ScreenOffSkipMode(
     val description: String
 ) {
     DISABLED(
-        "Выключено",
-        "Стандартное поведение экрана"
+        "Disabled",
+        "Default screen behavior"
     ),
     VOLUME_BUTTONS_DOUBLE_CLICK(
-        "Двойное нажатие громкости (+ / -)",
-        "Громкость вверх 2x — следующий трек, Громкость вниз 2x — предыдущий"
+        "Double-Click Volume Keys (+ / -)",
+        "Volume Up 2x: Next track, Volume Down 2x: Previous track"
     ),
     HEADSET_MULTI_CLICK(
-        "Кнопки гарнитуры / наушников",
-        "Двойной клик — следующий трек, Тройной клик — предыдущий"
+        "Headset / Earphone Buttons",
+        "Double click: Next track, Triple click: Previous track"
     ),
     PROXIMITY_HOVER(
-        "Датчик приближения (Поднесение руки)",
-        "Удержание ладони над верхней частью телефона на 1.5 сек переключает трек"
+        "Proximity Sensor (Wave to skip)",
+        "Hover hand over top of device for 1.5s to skip track"
     )
 }
 

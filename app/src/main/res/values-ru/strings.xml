@@ -176,4 +176,226 @@
     <string name="greeting_evening">Добрый вечер</string>
     <string name="greeting_night">Доброй ночи</string>
     <string name="car_mode_title">Режим авто</string>
+
+    <!-- Playlist Detail -->
+    <string name="playlist_title">Плейлист</string>
+    <string name="share_playlist_desc">Поделиться плейлистом</string>
+    <string name="playlist_stats_format">Плейлист • %1$d треков • %2$d мин</string>
+    <string name="empty_playlist_tracks_hint">В этом плейлисте пока нет треков.\nДобавьте их через меню любого трека (3 точки -> В плейлист)</string>
+    <string name="playlist_share_description">Плейлист OpenFy • %1$d треков</string>
+    <string name="dialog_delete_playlist_title">Удалить плейлист</string>
+    <string name="dialog_delete_playlist_msg_format">Вы действительно хотите удалить плейлист «%1$s»?</string>
+    <string name="toast_playlist_deleted">Плейлист удален</string>
+
+    <!-- Search Screen -->
+    <string name="search_placeholder_detailed">Название трека, артист, альбом…</string>
+    <string name="search_empty_prompt">Поиск по трекам, альбомам и исполнителям</string>
+    <string name="search_no_results_format">По запросу «%1$s» ничего не найдено в медиатеке</string>
+    <string name="search_tracks_header">Треки (%1$d)</string>
+    <string name="search_albums_header">Альбомы (%1$d)</string>
+    <string name="search_artists_header">Исполнители (%1$d)</string>
+
+    <!-- Duplicate Cleaner -->
+    <string name="duplicate_cleaner_title">Очистка клонов и дубликатов</string>
+    <string name="duplicate_cleaner_subtitle">Умный поиск похожих и одинаковых треков</string>
+    <string name="duplicate_scanning">Сканирование медиатеки на дубликаты…</string>
+    <string name="duplicate_none_found_title">Дубликатов не найдено!</string>
+    <string name="duplicate_none_found_desc">Ваша медиатека идеальна: все треки уникальны и не занимают лишней памяти.</string>
+    <string name="duplicate_groups_found">Найдено групп дубликатов: %1$d</string>
+    <string name="duplicate_wasted_memory">Занимают лишней памяти: ~%1$s МБ</string>
+    <string name="duplicate_select_copies">Выбрать лишние</string>
+    <string name="duplicate_original_format">★ Оригинал: %1$s</string>
+    <string name="duplicate_clone_format">Клон: %1$s</string>
+    <string name="duplicate_select_at_least_one">Выберите хотя бы один дубликат для удаления</string>
+    <string name="duplicate_delete_selected_btn">Удалить выбранные дубликаты (%1$d)</string>
+    <string name="duplicate_dialog_delete_title">Удаление дубликатов</string>
+    <string name="duplicate_dialog_delete_msg">Удалить %1$d выбранных копий файлов с устройства?</string>
+    <string name="duplicate_files_deleted_success">Файлы успешно удалены</string>
+    <string name="duplicate_deletion_cancelled">Удаление отменено пользователем</string>
+    <string name="duplicate_deleted_count">Успешно удалено %1$d файлов</string>
+    <string name="duplicate_delete_failed">Не удалось удалить файлы. Проверьте разрешения в настройках Android</string>
+
+
+    <!-- Visualizer -->
+    <string name="visualizer_close">Закрыть визуал</string>
+    <string name="visualizer_next_preset">Следующий пресет</string>
+    <string name="visualizer_dj_transition">DJ HARMONIC FLOW: СВЕДЕНИЕ ТРЕКОВ</string>
+    <string name="no_track_selected">Без трека</string>
+    <string name="unknown_artist">Неизвестный исполнитель</string>
+    <string name="action_pause">Пауза</string>
+    <string name="action_forward">Вперед</string>
+    <string name="visualizer_swipe_hint">Свайп влево/вправо для смены пресета</string>
+
+    <!-- Mood Compass -->
+    <string name="mood_drive_euphoria_title">Драйв &amp; Эйфория</string>
+    <string name="mood_drive_euphoria_desc">Танцевальный пульс, позитив и яркая энергия</string>
+    <string name="mood_rebel_aggression_title">Бунт &amp; Агрессия</string>
+    <string name="mood_rebel_aggression_desc">Тяжёлый бас, драйв, ночная тьма и бунт</string>
+    <string name="mood_melancholy_nostalgia_title">Меланхолия &amp; Ностальгия</string>
+    <string name="mood_melancholy_nostalgia_desc">Тихая грусть, акустика, эмбиент и воспоминания</string>
+    <string name="mood_warmth_chill_title">Тепло &amp; Чилл</string>
+    <string name="mood_warmth_chill_desc">Уютный лаунж, мягкий джаз, соул и спокойствие</string>
+    <string name="sound_compass_header">ЗВУКОВОЙ КОМПАС</string>
+    <string name="sound_compass_subtitle">Музыка под ваше настроение</string>
+    <string name="mood_axis_energy">ЭНЕРГИЯ</string>
+    <string name="mood_axis_relax">РЕЛАКС</string>
+    <string name="mood_axis_darkness">ТЬМА</string>
+    <string name="mood_axis_light">СВЕТ</string>
+    <string name="mood_queued_tracks">В очереди: %1$d треков</string>
+    <string name="mood_play_flow">Запустить поток настроения</string>
+
+
+    <!-- Now Playing -->
+    <string name="nothing_playing">Ничего не воспроизводится</string>
+    <string name="now_playing_header">СЕЙЧАС ИГРАЕТ</string>
+    <string name="local_track">Локальный трек</string>
+    <string name="visualizer_milkdrop_desc">Визуализатор Milkdrop 2.0</string>
+    <string name="player_customization_desc">Персонализация плеера</string>
+    <string name="add_to_playlist_desc">Добавить в плейлист</string>
+    <string name="tab_studio">Студия</string>
+    <string name="tab_sleep">Сон</string>
+    <string name="tab_auto">Авто</string>
+    <string name="sleep_timer_title">Таймер сна</string>
+    <string name="sleep_timer_end_of_track_info">Музыка выключится после окончания текущего трека</string>
+    <string name="sleep_timer_remaining_format">Осталось времени: %1$d мин %2$d сек</string>
+    <string name="sleep_timer_disabled">Таймер сна выключен</string>
+    <string name="minutes_format">%1$d мин</string>
+    <string name="seconds_format">%1$d сек</string>
+    <string name="sleep_timer_end_of_track_btn">В конце этого трека</string>
+    <string name="sleep_timer_fade_desc">С плавным затуханием в конце композиции</string>
+    <string name="sleep_timer_turn_off">Отключить таймер</string>
+    <string name="playback_queue_title">Очередь воспроизведения</string>
+    <string name="playback_queue_status">%1$d треков • Сейчас играет %2$d-й</string>
+    <string name="track_share_format">Трек OpenFy • %1$s</string>
+    <string name="single_album">Сингл</string>
+
+    <!-- Equalizer Screen -->
+    <string name="eq_title">DSP Эквалайзер</string>
+    <string name="eq_dsp_active">Аппаратный DSP активен</string>
+    <string name="eq_dsp_disabled">Звуковой движок выключен</string>
+    <string name="eq_frequency_spectrum">АЧХ Частотный спектр</string>
+    <string name="eq_presets_header">ПРЕСЕТЫ</string>
+    <string name="eq_reset_0db">Сброс в 0 dB</string>
+    <string name="eq_frequency_bands">Полосы частот эквалайзера</string>
+    <string name="eq_initializing">Инициализация аудиосессии…</string>
+    <string name="eq_bass_boost">Усилитель баса (Bass Boost)</string>
+    <string name="eq_spatial_audio">3D Пространственный звук</string>
+    <string name="eq_loudness">Усилитель громкости (Loudness)</string>
+    <string name="eq_reverb">Реверберация помещения (Reverb)</string>
+    <string name="reverb_none">Выкл</string>
+    <string name="reverb_small_room">Комната</string>
+    <string name="reverb_medium_room">Большая комната</string>
+    <string name="reverb_large_room">Зал</string>
+    <string name="reverb_medium_hall">Концертный холл</string>
+    <string name="reverb_large_hall">Большой холл</string>
+    <string name="reverb_plate">Пластина</string>
+
+    <!-- Settings Detailed -->
+    <string name="built_in_presets_header">ВСТРОЕННЫЕ ПРЕСЕТЫ</string>
+    <string name="ui_personalization_header">ПЕРСОНАЛИЗАЦИЯ ИНТЕРФЕЙСА</string>
+    <string name="compact_list_title">Компактный вид списков</string>
+    <string name="compact_list_desc">Уменьшает отступы для отображения большего числа треков на экране</string>
+    <string name="playback_speed_title">Скорость воспроизведения</string>
+    <string name="pause_on_headset_title">Пауза при отключении наушников</string>
+    <string name="pause_on_headset_desc">Автоматически ставить на паузу при отсоединении гарнитуры или Bluetooth</string>
+    <string name="gapless_title">Воспроизведение без пауз (Gapless)</string>
+    <string name="gapless_desc">Бесшовный переход между композициями для альбомов и живых записей</string>
+    <string name="fade_title">Плавное затухание (Fade In/Out)</string>
+    <string name="fade_desc">Мягкое уменьшение и нарастание громкости при паузе и старте</string>
+    <string name="seek_interval_title">Интервал быстрой перемотки</string>
+    <string name="seek_interval_desc">Шаг перемотки вперед и назад при двойном касании</string>
+    <string name="car_mode_section_title">Режим «В автомобиле» &amp; Auto</string>
+    <string name="car_mode_section_desc">Drive-Safe интерфейс с крупными элементами, жестами свайпа и удержанием экрана для безопасного вождения.</string>
+    <string name="car_mode_launch_btn">Запустить автомобильный экран (Car Mode)</string>
+    <string name="car_mode_bluetooth_autostart_title">Автозапуск при подключении авто</string>
+    <string name="car_mode_bluetooth_autostart_desc">Автоматически открывать Car Mode при соединении с Bluetooth автомобиля</string>
+    <string name="car_mode_keep_screen_title">Не выключать экран в Car Mode</string>
+    <string name="car_mode_keep_screen_desc">Удерживает экран активным во время поездки без перехода в спящий режим</string>
+    <string name="dsp_effects_title">DSP Эквалайзер и Звуковые эффекты</string>
+    <string name="dsp_effects_desc">10-полосный эквалайзер, Virtualizer, Bass Boost</string>
+    <string name="duplicate_cleaner_settings_title">Очистка клонов и дубликатов</string>
+    <string name="duplicate_cleaner_settings_desc">Поиск похожих треков (Slowed, Sped Up, (1).mp3) и освобождение места</string>
+    <string name="battery_unrestricted_title">Фоновое воспроизведение без выгрузок</string>
+    <string name="battery_unrestricted_desc">Отключение оптимизации батареи Android для непрерывной музыки</string>
+    <string name="filter_short_audio_title">Игнорировать короткие аудио (&lt;30 сек)</string>
+    <string name="filter_short_audio_desc">Скрывает из медиатеки рингтоны, звуки уведомлений и голосовые сообщения</string>
+    <string name="toast_cover_cache_cleared">Кэш обложек успешно очищен</string>
+    <string name="toast_cover_cache_empty">Кэш пуст</string>
+    <string name="clear_cover_cache_title">Очистить кэш обложек альбомов</string>
+    <string name="network_features_title">Сетевые функции и Wi-Fi P2P</string>
+    <string name="network_allowed_desc">Разрешено: P2P, каталог тем, радио</string>
+    <string name="network_restricted_desc">Ограничено: 100% строгий офлайн</string>
+    <string name="network_consent_dialog_why">Зачем офлайн-плееру сеть и Wi-Fi?</string>
+    <string name="developer_name">Артём (Artiom Crudu)</string>
+    <string name="developer_role">Создатель и ведущий разработчик OpenFy</string>
+    <string name="developer_message">«Привет! Я разрабатываю OpenFy как полностью независимый, бескомпромиссно быстрый и эстетичный плеер без рекламы, платных подписок и слежки. Ваша поддержка мотивирует меня уделять проекту максимум времени и реализовывать самые амбициозные идеи!»</string>
+    <string name="roadmap_title">Планы на будущее (Roadmap)</string>
+    <string name="roadmap_subtitle">Что появится в следующих обновлениях OpenFy:</string>
+    <string name="roadmap_item_1_title">Bit-Perfect Hi-Res Audio Engine</string>
+    <string name="roadmap_item_1_desc">Прямой вывод звука в обход системного микшера (24-bit/192kHz, DSD, FLAC, ALAC)</string>
+    <string name="roadmap_item_2_title">Локальный редактор ID3-тегов</string>
+    <string name="roadmap_item_2_desc">Редактирование метаданных и встраивание обложек прямо в аудиофайлы</string>
+    <string name="roadmap_item_3_title">32-полосный параметрический DSP</string>
+    <string name="roadmap_item_3_desc">Студийный эквалайзер с локальными пресетами калибровки под наушники</string>
+    <string name="roadmap_item_4_title">Интерактивные виджеты</string>
+    <string name="roadmap_item_4_desc">Стильные виджеты на рабочий стол с визуализацией волн в стиле Material You</string>
+    <string name="roadmap_item_5_title">Умный локальный кроссфейд</string>
+    <string name="roadmap_item_5_desc">Плавное бесшовное сведение треков с аппаратным анализом BPM</string>
+    <string name="roadmap_item_6_title">100% Офлайн и приватность</string>
+    <string name="roadmap_item_6_desc">Никаких облаков, трекеров и фоновых утечек данных — всё только на устройстве</string>
+    <string name="support_project_header">ПОДДЕРЖАТЬ ПРОЕКТ</string>
+    <string name="support_coffee_desc">Угостите разработчика чашечкой кофе — лучшая поддержка независимого FOSS-плеера!</string>
+    <string name="support_bmac_btn">Угостить кофе (Buy Me a Coffee)</string>
+    <string name="copy_bmac_link">Скопировать ссылку buymeacoffee.com/ArtiomITPROGRAMING</string>
+    <string name="support_paypal_btn">Поддержать через PayPal</string>
+    <string name="open_paypal_transfer">Открыть перевод в PayPal</string>
+    <string name="copy_paypal_link">Скопировать ссылку paypal.me/ArtiomCrudu2010</string>
+    <string name="contact_header">СВЯЗАТЬСЯ НАПРЯМУЮ СО МНОЙ</string>
+    <string name="contact_title">Прямая связь с разработчиком</string>
+    <string name="contact_subtitle">Вопросы, идеи, предложения и багрепорты</string>
+    <string name="contact_text">Я открыт к диалогу с каждым пользователем. Напишите мне на почту или откройте обсуждение на GitHub:</string>
+    <string name="write_email_btn">Написать на artiomcrudu83@gmail.com</string>
+    <string name="copy_email_btn">Скопировать email (artiomcrudu83@gmail.com)</string>
+    <string name="github_profile_btn">Профиль разработчика на GitHub</string>
+    <string name="github_issues_btn">Сообщить об ошибке или предложить фичу</string>
+
+    <!-- Side Player Pane -->
+    <string name="side_select_track">Выберите трек для воспроизведения</string>
+    <string name="side_now_playing">Сейчас играет</string>
+    <string name="side_car_mode">Автомобильный режим</string>
+    <string name="side_lyrics">Текст песни</string>
+    <string name="side_equalizer">Эквалайзер</string>
+    <string name="action_shuffle">Перемешать</string>
+    <string name="action_prev">Предыдущий трек</string>
+    <string name="action_next">Следующий трек</string>
+    <string name="action_favorite">Избранное</string>
+
+    <!-- Network Consent Dialog -->
+    <string name="network_consent_title">Зачем офлайн-плееру Wi-Fi?</string>
+    <string name="network_consent_desc">OpenFy на 100% автономен, но сеть открывает удобные дополнительные возможности:</string>
+    <string name="network_consent_p2p_title">Локальный обмен по Wi-Fi (P2P)</string>
+    <string name="network_consent_p2p_desc">Мгновенная передача треков и плейлистов между устройствами на высокой скорости домашнего роутера без расхода мобильного интернета.</string>
+    <string name="network_consent_theme_title">Каталог тем на GitHub</string>
+    <string name="network_consent_theme_desc">Загрузка официальных скинов, неоновых палитр и визуальных стилей оформления из открытого репозитория сообщества.</string>
+    <string name="network_consent_stream_title">Стриминг и онлайн-радио</string>
+    <string name="network_consent_stream_desc">Воспроизведение внешних аудиопотоков и веб-радиостанций, только когда вы сами отправляете ссылку в плеер.</string>
+    <string name="network_consent_profile_title">Синхронизация профиля автора</string>
+    <string name="network_consent_profile_desc">Авторизация через GitHub или Discord для публикации созданных вами тем в веб-витрине.</string>
+    <string name="network_consent_privacy_badge">0 трекеров • 0 аналитики • 100% приватность</string>
+    <string name="network_consent_privacy_desc">Исходный код полностью открыт (GPL v3). OpenFy никогда не передает вашу личную музыку третьим лицам.</string>
+    <string name="network_consent_btn_allow">Разрешить доступ к сети</string>
+    <string name="network_consent_btn_offline">Оставаться 100% офлайн</string>
+
+    <!-- MainActivity Toasts -->
+    <string name="toast_auth_approved">Вход подтверждён! Код безопасности: %1$s</string>
+    <string name="toast_theme_imported_applied">Тема «%1$s» успешно импортирована и применена!</string>
+    <string name="toast_theme_import_error">Ошибка импорта темы: %1$s</string>
+    <string name="toast_theme_installing_from">Установка темы от @%1$s (ваш профиль: @%2$s)</string>
+    <string name="toast_theme_installed_applied">Тема «%1$s» успешно установлена и применена!</string>
+    <string name="toast_theme_install_error">Ошибка установки темы: %1$s</string>
+    <string name="toast_playlist_imported_format">Плейлист «%1$s» успешно импортирован (%2$d треков)!</string>
+    <string name="toast_theme_imported_format">Тема «%1$s» успешно импортирована!</string>
+    <string name="toast_track_received_format">Трек «%1$s» получен</string>
+    <string name="toast_auth_challenge_format">Запрос на вход в аккаунт для @%1$s</string>
+    <string name="toast_import_error_format">Ошибка импорта: %1$s</string>
 </resources>

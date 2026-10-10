@@ -176,4 +176,226 @@
     <string name="greeting_evening">Good evening</string>
     <string name="greeting_night">Good night</string>
     <string name="car_mode_title">Car mode</string>
+
+    <!-- Playlist Detail -->
+    <string name="playlist_title">Playlist</string>
+    <string name="share_playlist_desc">Share playlist</string>
+    <string name="playlist_stats_format">Playlist • %1$d tracks • %2$d min</string>
+    <string name="empty_playlist_tracks_hint">No tracks in this playlist yet.\nAdd them from any track menu (3 dots -> Add to playlist)</string>
+    <string name="playlist_share_description">OpenFy Playlist • %1$d tracks</string>
+    <string name="dialog_delete_playlist_title">Delete playlist</string>
+    <string name="dialog_delete_playlist_msg_format">Do you really want to delete playlist «%1$s»?</string>
+    <string name="toast_playlist_deleted">Playlist deleted</string>
+
+    <!-- Search Screen -->
+    <string name="search_placeholder_detailed">Track title, artist, album…</string>
+    <string name="search_empty_prompt">Search tracks, albums and artists</string>
+    <string name="search_no_results_format">Nothing found for «%1$s» in library</string>
+    <string name="search_tracks_header">Tracks (%1$d)</string>
+    <string name="search_albums_header">Albums (%1$d)</string>
+    <string name="search_artists_header">Artists (%1$d)</string>
+
+    <!-- Duplicate Cleaner -->
+    <string name="duplicate_cleaner_title">Duplicate Cleaner</string>
+    <string name="duplicate_cleaner_subtitle">Smart search for identical and similar tracks</string>
+    <string name="duplicate_scanning">Scanning library for duplicates…</string>
+    <string name="duplicate_none_found_title">No duplicates found!</string>
+    <string name="duplicate_none_found_desc">Your library is perfect: all tracks are unique and don\'t waste space.</string>
+    <string name="duplicate_groups_found">Duplicate groups found: %1$d</string>
+    <string name="duplicate_wasted_memory">Wasted storage: ~%1$s MB</string>
+    <string name="duplicate_select_copies">Select copies</string>
+    <string name="duplicate_original_format">★ Original: %1$s</string>
+    <string name="duplicate_clone_format">Clone: %1$s</string>
+    <string name="duplicate_select_at_least_one">Select at least one duplicate to delete</string>
+    <string name="duplicate_delete_selected_btn">Delete selected duplicates (%1$d)</string>
+    <string name="duplicate_dialog_delete_title">Delete Duplicates</string>
+    <string name="duplicate_dialog_delete_msg">Delete %1$d selected duplicate files from device?</string>
+    <string name="duplicate_files_deleted_success">Files deleted successfully</string>
+    <string name="duplicate_deletion_cancelled">Deletion cancelled by user</string>
+    <string name="duplicate_deleted_count">Successfully deleted %1$d files</string>
+    <string name="duplicate_delete_failed">Could not delete files. Please check Android storage permissions</string>
+
+
+    <!-- Visualizer -->
+    <string name="visualizer_close">Close visualizer</string>
+    <string name="visualizer_next_preset">Next preset</string>
+    <string name="visualizer_dj_transition">DJ HARMONIC FLOW: BEAT MATCHING</string>
+    <string name="no_track_selected">No track playing</string>
+    <string name="unknown_artist">Unknown Artist</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_forward">Forward</string>
+    <string name="visualizer_swipe_hint">Swipe left/right to change preset</string>
+
+    <!-- Mood Compass -->
+    <string name="mood_drive_euphoria_title">Drive &amp; Euphoria</string>
+    <string name="mood_drive_euphoria_desc">Dance pulse, positive vibes and bright energy</string>
+    <string name="mood_rebel_aggression_title">Rebel &amp; Intensity</string>
+    <string name="mood_rebel_aggression_desc">Heavy bass, driving rhythm, nocturnal intensity</string>
+    <string name="mood_melancholy_nostalgia_title">Melancholy &amp; Nostalgia</string>
+    <string name="mood_melancholy_nostalgia_desc">Quiet sadness, acoustic harmonies, ambient memories</string>
+    <string name="mood_warmth_chill_title">Warmth &amp; Chill</string>
+    <string name="mood_warmth_chill_desc">Cozy lounge, smooth jazz, soul and serenity</string>
+    <string name="sound_compass_header">SOUND COMPASS</string>
+    <string name="sound_compass_subtitle">Music for your mood</string>
+    <string name="mood_axis_energy">ENERGY</string>
+    <string name="mood_axis_relax">RELAX</string>
+    <string name="mood_axis_darkness">DARK</string>
+    <string name="mood_axis_light">LIGHT</string>
+    <string name="mood_queued_tracks">Queued: %1$d tracks</string>
+    <string name="mood_play_flow">Start Mood Stream</string>
+
+
+    <!-- Now Playing -->
+    <string name="nothing_playing">Nothing is playing</string>
+    <string name="now_playing_header">NOW PLAYING</string>
+    <string name="local_track">Local track</string>
+    <string name="visualizer_milkdrop_desc">Milkdrop 2.0 Visualizer</string>
+    <string name="player_customization_desc">Player customization</string>
+    <string name="add_to_playlist_desc">Add to playlist</string>
+    <string name="tab_studio">Studio</string>
+    <string name="tab_sleep">Sleep</string>
+    <string name="tab_auto">Auto</string>
+    <string name="sleep_timer_title">Sleep timer</string>
+    <string name="sleep_timer_end_of_track_info">Music will turn off after current track ends</string>
+    <string name="sleep_timer_remaining_format">Time remaining: %1$d min %2$d sec</string>
+    <string name="sleep_timer_disabled">Sleep timer disabled</string>
+    <string name="minutes_format">%1$d min</string>
+    <string name="seconds_format">%1$d sec</string>
+    <string name="sleep_timer_end_of_track_btn">At the end of this track</string>
+    <string name="sleep_timer_fade_desc">With smooth fade-out at the end</string>
+    <string name="sleep_timer_turn_off">Turn off timer</string>
+    <string name="playback_queue_title">Playback Queue</string>
+    <string name="playback_queue_status">%1$d tracks • Now playing #%2$d</string>
+    <string name="track_share_format">OpenFy Track • %1$s</string>
+    <string name="single_album">Single</string>
+
+    <!-- Equalizer Screen -->
+    <string name="eq_title">DSP Equalizer</string>
+    <string name="eq_dsp_active">Hardware DSP active</string>
+    <string name="eq_dsp_disabled">Audio engine turned off</string>
+    <string name="eq_frequency_spectrum">Frequency Spectrum</string>
+    <string name="eq_presets_header">PRESETS</string>
+    <string name="eq_reset_0db">Reset to 0 dB</string>
+    <string name="eq_frequency_bands">Equalizer Frequency Bands</string>
+    <string name="eq_initializing">Initializing audio session…</string>
+    <string name="eq_bass_boost">Bass Boost</string>
+    <string name="eq_spatial_audio">3D Spatial Sound</string>
+    <string name="eq_loudness">Loudness Enhancer</string>
+    <string name="eq_reverb">Room Reverb</string>
+    <string name="reverb_none">Off</string>
+    <string name="reverb_small_room">Small Room</string>
+    <string name="reverb_medium_room">Medium Room</string>
+    <string name="reverb_large_room">Large Room</string>
+    <string name="reverb_medium_hall">Concert Hall</string>
+    <string name="reverb_large_hall">Large Hall</string>
+    <string name="reverb_plate">Plate</string>
+
+    <!-- Settings Detailed -->
+    <string name="built_in_presets_header">BUILT-IN PRESETS</string>
+    <string name="ui_personalization_header">UI PERSONALIZATION</string>
+    <string name="compact_list_title">Compact list mode</string>
+    <string name="compact_list_desc">Reduces spacing to display more tracks on screen</string>
+    <string name="playback_speed_title">Playback Speed</string>
+    <string name="pause_on_headset_title">Pause on disconnect</string>
+    <string name="pause_on_headset_desc">Automatically pause playback when headphones or Bluetooth disconnect</string>
+    <string name="gapless_title">Gapless Playback</string>
+    <string name="gapless_desc">Seamless transition between tracks for live recordings and albums</string>
+    <string name="fade_title">Smooth Fade (Fade In/Out)</string>
+    <string name="fade_desc">Gentle volume ramp up and down on play and pause</string>
+    <string name="seek_interval_title">Fast Seek Interval</string>
+    <string name="seek_interval_desc">Forward and backward skip step on double tap</string>
+    <string name="car_mode_section_title">Car Mode &amp; Automotive</string>
+    <string name="car_mode_section_desc">Drive-Safe interface with large controls and swipe gestures for safe driving.</string>
+    <string name="car_mode_launch_btn">Launch Car Mode</string>
+    <string name="car_mode_bluetooth_autostart_title">Autostart on car Bluetooth</string>
+    <string name="car_mode_bluetooth_autostart_desc">Automatically open Car Mode when connected to car Bluetooth</string>
+    <string name="car_mode_keep_screen_title">Keep screen on in Car Mode</string>
+    <string name="car_mode_keep_screen_desc">Keeps screen awake while driving without locking</string>
+    <string name="dsp_effects_title">DSP Equalizer &amp; Sound Effects</string>
+    <string name="dsp_effects_desc">10-band EQ, Virtualizer, Bass Boost</string>
+    <string name="duplicate_cleaner_settings_title">Duplicate &amp; Clone Cleaner</string>
+    <string name="duplicate_cleaner_settings_desc">Find duplicate tracks and free up storage space</string>
+    <string name="battery_unrestricted_title">Unrestricted background playback</string>
+    <string name="battery_unrestricted_desc">Disable Android battery optimization for uninterrupted playback</string>
+    <string name="filter_short_audio_title">Ignore short audio (&lt;30 sec)</string>
+    <string name="filter_short_audio_desc">Hides ringtones, notification sounds and voice notes from library</string>
+    <string name="toast_cover_cache_cleared">Cover art cache cleared successfully</string>
+    <string name="toast_cover_cache_empty">Cache is empty</string>
+    <string name="clear_cover_cache_title">Clear album art cache</string>
+    <string name="network_features_title">Network Features &amp; Wi-Fi P2P</string>
+    <string name="network_allowed_desc">Allowed: P2P, theme catalog, radio</string>
+    <string name="network_restricted_desc">Restricted: 100% strictly offline</string>
+    <string name="network_consent_dialog_why">Why does an offline player need Wi-Fi?</string>
+    <string name="developer_name">Artiom (Artiom Crudu)</string>
+    <string name="developer_role">Creator &amp; Lead Developer of OpenFy</string>
+    <string name="developer_message">«Hi! I build OpenFy as a completely independent, uncompromisingly fast, and aesthetic music player with zero ads, subscriptions, or tracking. Your support motivates me to dedicate my time and build ambitious features!»</string>
+    <string name="roadmap_title">Roadmap</string>
+    <string name="roadmap_subtitle">What\'s coming in future OpenFy releases:</string>
+    <string name="roadmap_item_1_title">Bit-Perfect Hi-Res Audio Engine</string>
+    <string name="roadmap_item_1_desc">Direct audio output bypassing system mixer (24-bit/192kHz, DSD, FLAC, ALAC)</string>
+    <string name="roadmap_item_2_title">Local ID3 Tag Editor</string>
+    <string name="roadmap_item_2_desc">Edit metadata and embed album art directly into audio files</string>
+    <string name="roadmap_item_3_title">32-Band Parametric DSP</string>
+    <string name="roadmap_item_3_desc">Studio equalizer with local calibration presets for headphones</string>
+    <string name="roadmap_item_4_title">Interactive Widgets</string>
+    <string name="roadmap_item_4_desc">Stylish home screen widgets with Material You wave visualizer</string>
+    <string name="roadmap_item_5_title">Smart Local Crossfade</string>
+    <string name="roadmap_item_5_desc">Smooth seamless track transitions with hardware BPM analysis</string>
+    <string name="roadmap_item_6_title">100% Offline &amp; Privacy</string>
+    <string name="roadmap_item_6_desc">No clouds, trackers or background data leaks — everything stays on device</string>
+    <string name="support_project_header">SUPPORT PROJECT</string>
+    <string name="support_coffee_desc">Buy the developer a cup of coffee — best support for an independent FOSS player!</string>
+    <string name="support_bmac_btn">Buy Me a Coffee</string>
+    <string name="copy_bmac_link">Copy link buymeacoffee.com/ArtiomITPROGRAMING</string>
+    <string name="support_paypal_btn">Support via PayPal</string>
+    <string name="open_paypal_transfer">Open PayPal transfer</string>
+    <string name="copy_paypal_link">Copy link paypal.me/ArtiomCrudu2010</string>
+    <string name="contact_header">CONTACT DIRECTLY</string>
+    <string name="contact_title">Direct Contact</string>
+    <string name="contact_subtitle">Questions, ideas, suggestions and bug reports</string>
+    <string name="contact_text">I am open to feedback from every user. Send me an email or open a GitHub discussion:</string>
+    <string name="write_email_btn">Email artiomcrudu83@gmail.com</string>
+    <string name="copy_email_btn">Copy email (artiomcrudu83@gmail.com)</string>
+    <string name="github_profile_btn">Developer GitHub Profile</string>
+    <string name="github_issues_btn">Report a bug or request a feature</string>
+
+    <!-- Side Player Pane -->
+    <string name="side_select_track">Select track to play</string>
+    <string name="side_now_playing">Now Playing</string>
+    <string name="side_car_mode">Car Mode</string>
+    <string name="side_lyrics">Lyrics</string>
+    <string name="side_equalizer">Equalizer</string>
+    <string name="action_shuffle">Shuffle</string>
+    <string name="action_prev">Previous track</string>
+    <string name="action_next">Next track</string>
+    <string name="action_favorite">Favorite</string>
+
+    <!-- Network Consent Dialog -->
+    <string name="network_consent_title">Why does an offline player need Wi-Fi?</string>
+    <string name="network_consent_desc">OpenFy is 100% autonomous, but network enables convenient extra features:</string>
+    <string name="network_consent_p2p_title">Local Wi-Fi Sharing (P2P)</string>
+    <string name="network_consent_p2p_desc">Instant transfer of tracks and playlists between devices at high local speed without mobile data usage.</string>
+    <string name="network_consent_theme_title">Theme Catalog on GitHub</string>
+    <string name="network_consent_theme_desc">Download official skins, neon palettes and visual styles from the community repository.</string>
+    <string name="network_consent_stream_title">Streaming &amp; Online Radio</string>
+    <string name="network_consent_stream_desc">Playback of external audio streams and web radio stations only when you submit a link.</string>
+    <string name="network_consent_profile_title">Creator Profile Sync</string>
+    <string name="network_consent_profile_desc">Sign in via GitHub or Discord to publish your custom themes.</string>
+    <string name="network_consent_privacy_badge">0 Trackers • 0 Analytics • 100% Privacy</string>
+    <string name="network_consent_privacy_desc">Fully open-source (GPL v3). OpenFy never transmits your personal music to third parties.</string>
+    <string name="network_consent_btn_allow">Allow Network Access</string>
+    <string name="network_consent_btn_offline">Stay 100% Offline</string>
+
+    <!-- MainActivity Toasts -->
+    <string name="toast_auth_approved">Sign in confirmed! Security code: %1$s</string>
+    <string name="toast_theme_imported_applied">Theme «%1$s» successfully imported and applied!</string>
+    <string name="toast_theme_import_error">Theme import error: %1$s</string>
+    <string name="toast_theme_installing_from">Installing theme by @%1$s (your profile: @%2$s)</string>
+    <string name="toast_theme_installed_applied">Theme «%1$s» successfully installed and applied!</string>
+    <string name="toast_theme_install_error">Theme install error: %1$s</string>
+    <string name="toast_playlist_imported_format">Playlist «%1$s» successfully imported (%2$d tracks)!</string>
+    <string name="toast_theme_imported_format">Theme «%1$s» successfully imported!</string>
+    <string name="toast_track_received_format">Track «%1$s» received</string>
+    <string name="toast_auth_challenge_format">Sign in request for @%1$s</string>
+    <string name="toast_import_error_format">Import error: %1$s</string>
 </resources>

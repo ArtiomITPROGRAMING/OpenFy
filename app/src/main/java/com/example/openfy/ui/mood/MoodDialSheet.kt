@@ -68,11 +68,13 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.openfy.R
 import com.example.openfy.core.audio.model.Song
 import com.example.openfy.core.audio.service.PlaybackManager
 import kotlin.math.atan2
@@ -130,14 +132,14 @@ fun MoodDialSheet(
             ) {
                 Column {
                     Text(
-                        text = "ЗВУКОВОЙ КОМПАС",
+                        text = stringResource(R.string.sound_compass_header),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = animatedAccent,
                         letterSpacing = 1.5.sp
                     )
                     Text(
-                        text = "Музыка под ваше настроение",
+                        text = stringResource(R.string.sound_compass_subtitle),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -153,7 +155,7 @@ fun MoodDialSheet(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Закрыть",
+                        contentDescription = stringResource(R.string.action_close),
                         tint = Color.White,
                         modifier = Modifier.size(20.dp)
                     )
@@ -275,28 +277,28 @@ fun MoodDialSheet(
 
                 // Axis Labels
                 Text(
-                    text = "ЭНЕРГИЯ",
+                    text = stringResource(R.string.mood_axis_energy),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.White.copy(alpha = 0.45f),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.TopCenter).padding(top = 8.dp)
                 )
                 Text(
-                    text = "РЕЛАКС",
+                    text = stringResource(R.string.mood_axis_relax),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.White.copy(alpha = 0.45f),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp)
                 )
                 Text(
-                    text = "ТЬМА",
+                    text = stringResource(R.string.mood_axis_darkness),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.White.copy(alpha = 0.45f),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterStart).padding(start = 10.dp)
                 )
                 Text(
-                    text = "СВЕТ",
+                    text = stringResource(R.string.mood_axis_light),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.White.copy(alpha = 0.45f),
                     fontWeight = FontWeight.Bold,
@@ -318,21 +320,21 @@ fun MoodDialSheet(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = currentQuadrant.title,
+                        text = stringResource(currentQuadrant.titleRes),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = animatedAccent
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = currentQuadrant.description,
+                        text = stringResource(currentQuadrant.descriptionRes),
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.75f),
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "В очереди: ${matchedSongs.size} треков",
+                        text = stringResource(R.string.mood_queued_tracks, matchedSongs.size),
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.White.copy(alpha = 0.5f)
                     )
@@ -364,7 +366,7 @@ fun MoodDialSheet(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Запустить поток настроения",
+                    text = stringResource(R.string.mood_play_flow),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black

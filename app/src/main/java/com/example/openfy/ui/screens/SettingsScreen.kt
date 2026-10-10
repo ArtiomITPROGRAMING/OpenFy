@@ -618,7 +618,7 @@ fun SettingsScreen(
                             item {
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "ВСТРОЕННЫЕ ПРЕСЕТЫ",
+                                    text = stringResource(R.string.built_in_presets_header),
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = primaryAccent,
@@ -708,7 +708,7 @@ fun SettingsScreen(
                             item {
                                 Spacer(modifier = Modifier.height(10.dp))
                                 Text(
-                                    text = "ПЕРСОНАЛИЗАЦИЯ ИНТЕРФЕЙСА",
+                                    text = stringResource(R.string.ui_personalization_header),
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = primaryAccent,
@@ -729,13 +729,13 @@ fun SettingsScreen(
                                         ) {
                                             Column(modifier = Modifier.weight(1f)) {
                                                 Text(
-                                                    text = "Компактный вид списков",
+                                                    text = stringResource(R.string.compact_list_title),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     fontWeight = FontWeight.SemiBold,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
                                                 Text(
-                                                    text = "Уменьшает отступы для отображения большего числа треков на экране",
+                                                    text = stringResource(R.string.compact_list_desc),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
@@ -772,7 +772,7 @@ fun SettingsScreen(
                                                 Icon(AppIcons.speed, contentDescription = null, tint = primaryAccent, modifier = Modifier.size(20.dp))
                                                 Spacer(modifier = Modifier.width(8.dp))
                                                 Text(
-                                                    text = "Скорость воспроизведения",
+                                                    text = stringResource(R.string.playback_speed_title),
                                                     style = MaterialTheme.typography.titleMedium,
                                                     fontWeight = FontWeight.Bold,
                                                     color = MaterialTheme.colorScheme.onSurface
@@ -829,16 +829,16 @@ fun SettingsScreen(
                                         ) {
                                             Column {
                                                 Text(
-                                                    text = "Таймер сна",
+                                                    text = stringResource(R.string.sleep_timer_title),
                                                     style = MaterialTheme.typography.titleMedium,
                                                     fontWeight = FontWeight.Bold,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
                                                 Text(
                                                     text = if (sleepTimerSeconds != null) {
-                                                        if (sleepTimerSeconds == -1) "Остановится после текущего трека"
-                                                        else "Осталось: ${sleepTimerSeconds!! / 60} мин ${sleepTimerSeconds!! % 60} сек"
-                                                    } else "Выключен",
+                                                        if (sleepTimerSeconds == -1) stringResource(R.string.sleep_timer_end_of_track_info)
+                                                        else stringResource(R.string.sleep_timer_remaining_format, sleepTimerSeconds!! / 60, sleepTimerSeconds!! % 60)
+                                                    } else stringResource(R.string.sleep_timer_disabled),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = if (sleepTimerSeconds != null) primaryAccent else MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
@@ -850,7 +850,7 @@ fun SettingsScreen(
                                                     shape = RoundedCornerShape(10.dp),
                                                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
                                                 ) {
-                                                    Text("Отменить", fontSize = 12.sp)
+                                                    Text(stringResource(R.string.action_cancel), fontSize = 12.sp)
                                                 }
                                             }
                                         }
@@ -863,7 +863,7 @@ fun SettingsScreen(
                                                 FilterChip(
                                                     selected = false,
                                                     onClick = { playbackManager.startSleepTimer(min) },
-                                                    label = { Text("$min мин") },
+                                                    label = { Text(stringResource(R.string.minutes_format, min)) },
                                                     colors = FilterChipDefaults.filterChipColors(
                                                         containerColor = MaterialTheme.colorScheme.surfaceVariant
                                                     )
@@ -873,7 +873,7 @@ fun SettingsScreen(
                                                 FilterChip(
                                                     selected = false,
                                                     onClick = { playbackManager.setSleepTimerAfterCurrentTrack() },
-                                                    label = { Text("Конец трека") },
+                                                    label = { Text(stringResource(R.string.sleep_timer_end_of_track_btn)) },
                                                     colors = FilterChipDefaults.filterChipColors(
                                                         containerColor = MaterialTheme.colorScheme.surfaceVariant
                                                     )
@@ -900,13 +900,13 @@ fun SettingsScreen(
                                         ) {
                                             Column(modifier = Modifier.weight(1f)) {
                                                 Text(
-                                                    text = "Пауза при отключении наушников",
+                                                    text = stringResource(R.string.pause_on_headset_title),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     fontWeight = FontWeight.SemiBold,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
                                                 Text(
-                                                    text = "Автоматически ставить на паузу при отсоединении гарнитуры или Bluetooth",
+                                                    text = stringResource(R.string.pause_on_headset_desc),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
@@ -931,13 +931,13 @@ fun SettingsScreen(
                                         ) {
                                             Column(modifier = Modifier.weight(1f)) {
                                                 Text(
-                                                    text = "Воспроизведение без пауз (Gapless)",
+                                                    text = stringResource(R.string.gapless_title),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     fontWeight = FontWeight.SemiBold,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
                                                 Text(
-                                                    text = "Бесшовный переход между композициями для альбомов и живых записей",
+                                                    text = stringResource(R.string.gapless_desc),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
@@ -962,13 +962,13 @@ fun SettingsScreen(
                                         ) {
                                             Column(modifier = Modifier.weight(1f)) {
                                                 Text(
-                                                    text = "Плавное затухание (Fade In/Out)",
+                                                    text = stringResource(R.string.fade_title),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     fontWeight = FontWeight.SemiBold,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
                                                 Text(
-                                                    text = "Мягкое уменьшение и нарастание громкости при паузе и старте",
+                                                    text = stringResource(R.string.fade_desc),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
@@ -993,13 +993,13 @@ fun SettingsScreen(
                                         ) {
                                             Column(modifier = Modifier.weight(1f)) {
                                                 Text(
-                                                    text = "Интервал быстрой перемотки",
+                                                    text = stringResource(R.string.seek_interval_title),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     fontWeight = FontWeight.SemiBold,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
                                                 Text(
-                                                    text = "Шаг перемотки вперед и назад при двойном касании",
+                                                    text = stringResource(R.string.seek_interval_desc),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
@@ -1013,7 +1013,7 @@ fun SettingsScreen(
                                                 FilterChip(
                                                     selected = seekInterval == sec,
                                                     onClick = { settingsRepo.setSeekIntervalSeconds(sec) },
-                                                    label = { Text("$sec сек") }
+                                                    label = { Text(stringResource(R.string.seconds_format, sec)) }
                                                 )
                                             }
                                         }
@@ -1043,7 +1043,7 @@ fun SettingsScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(8.dp))
                                                 Text(
-                                                    text = "Режим «В автомобиле» & Auto",
+                                                    text = stringResource(R.string.car_mode_section_title),
                                                     style = MaterialTheme.typography.titleMedium,
                                                     fontWeight = FontWeight.Bold,
                                                     color = MaterialTheme.colorScheme.onSurface
@@ -1054,7 +1054,7 @@ fun SettingsScreen(
                                         Spacer(modifier = Modifier.height(8.dp))
 
                                         Text(
-                                            text = "Drive-Safe интерфейс с крупными элементами, жестами свайпа и удержанием экрана для безопасного вождения.",
+                                            text = stringResource(R.string.car_mode_section_desc),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -1073,7 +1073,7 @@ fun SettingsScreen(
                                                 modifier = Modifier.size(18.dp)
                                             )
                                             Spacer(modifier = Modifier.width(8.dp))
-                                            Text("Запустить автомобильный экран (Car Mode)", fontWeight = FontWeight.Bold)
+                                            Text(stringResource(R.string.car_mode_launch_btn), fontWeight = FontWeight.Bold)
                                         }
 
                                         Spacer(modifier = Modifier.height(14.dp))
@@ -1086,13 +1086,13 @@ fun SettingsScreen(
                                         ) {
                                             Column(modifier = Modifier.weight(1f)) {
                                                 Text(
-                                                    text = "Автозапуск при подключении авто",
+                                                    text = stringResource(R.string.car_mode_bluetooth_autostart_title),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     fontWeight = FontWeight.SemiBold,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
                                                 Text(
-                                                    text = "Автоматически открывать Car Mode при соединении с Bluetooth автомобиля",
+                                                    text = stringResource(R.string.car_mode_bluetooth_autostart_desc),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
@@ -1117,13 +1117,13 @@ fun SettingsScreen(
                                         ) {
                                             Column(modifier = Modifier.weight(1f)) {
                                                 Text(
-                                                    text = "Не выключать экран в Car Mode",
+                                                    text = stringResource(R.string.car_mode_keep_screen_title),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     fontWeight = FontWeight.SemiBold,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
                                                 Text(
-                                                    text = "Удерживает экран активным во время поездки без перехода в спящий режим",
+                                                    text = stringResource(R.string.car_mode_keep_screen_desc),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
@@ -1177,13 +1177,13 @@ fun SettingsScreen(
 
                                         Column(modifier = Modifier.weight(1f)) {
                                             Text(
-                                                text = "DSP Эквалайзер и Звуковые эффекты",
+                                                text = stringResource(R.string.dsp_effects_title),
                                                 style = MaterialTheme.typography.titleMedium,
                                                 fontWeight = FontWeight.Bold,
                                                 color = Color.White
                                             )
                                             Text(
-                                                text = "10-полосный эквалайзер, Virtualizer, Bass Boost",
+                                                text = stringResource(R.string.dsp_effects_desc),
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = Color.White.copy(alpha = 0.7f)
                                             )
@@ -1233,13 +1233,13 @@ fun SettingsScreen(
 
                                         Column(modifier = Modifier.weight(1f)) {
                                             Text(
-                                                text = "Очистка клонов и дубликатов",
+                                                text = stringResource(R.string.duplicate_cleaner_settings_title),
                                                 style = MaterialTheme.typography.titleMedium,
                                                 fontWeight = FontWeight.Bold,
                                                 color = Color.White
                                             )
                                             Text(
-                                                text = "Поиск похожих треков (Slowed, Sped Up, (1).mp3) и освобождение места",
+                                                text = stringResource(R.string.duplicate_cleaner_settings_desc),
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = Color.White.copy(alpha = 0.7f)
                                             )
@@ -1298,13 +1298,13 @@ fun SettingsScreen(
 
                                         Column(modifier = Modifier.weight(1f)) {
                                             Text(
-                                                text = "Фоновое воспроизведение без выгрузок",
+                                                text = stringResource(R.string.battery_unrestricted_title),
                                                 style = MaterialTheme.typography.titleMedium,
                                                 fontWeight = FontWeight.Bold,
                                                 color = Color.White
                                             )
                                             Text(
-                                                text = "Отключение оптимизации батареи Android для непрерывной музыки",
+                                                text = stringResource(R.string.battery_unrestricted_desc),
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = Color.White.copy(alpha = 0.7f)
                                             )
@@ -1335,13 +1335,13 @@ fun SettingsScreen(
                                         ) {
                                             Column(modifier = Modifier.weight(1f)) {
                                                 Text(
-                                                    text = "Игнорировать короткие аудио (<30 сек)",
+                                                    text = stringResource(R.string.filter_short_audio_title),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     fontWeight = FontWeight.SemiBold,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
                                                 Text(
-                                                    text = "Скрывает из медиатеки рингтоны, звуки уведомлений и голосовые сообщения",
+                                                    text = stringResource(R.string.filter_short_audio_desc),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
@@ -1367,9 +1367,9 @@ fun SettingsScreen(
                                                         Coil.imageLoader(context).memoryCache?.clear()
                                                         Coil.imageLoader(context).diskCache?.clear()
                                                     }
-                                                    Toast.makeText(context, "Кэш обложек успешно очищен", Toast.LENGTH_SHORT).show()
+                                                    Toast.makeText(context, context.getString(R.string.toast_cover_cache_cleared), Toast.LENGTH_SHORT).show()
                                                 } catch (e: Exception) {
-                                                    Toast.makeText(context, "Кэш пуст", Toast.LENGTH_SHORT).show()
+                                                    Toast.makeText(context, context.getString(R.string.toast_cover_cache_empty), Toast.LENGTH_SHORT).show()
                                                 }
                                             },
                                             modifier = Modifier.fillMaxWidth(),
@@ -1387,7 +1387,7 @@ fun SettingsScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(8.dp))
                                                 Text(
-                                                    text = "Очистить кэш обложек альбомов",
+                                                    text = stringResource(R.string.clear_cover_cache_title),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     fontWeight = FontWeight.SemiBold
                                                 )
@@ -1434,13 +1434,13 @@ fun SettingsScreen(
                                                 Spacer(modifier = Modifier.width(12.dp))
                                                 Column {
                                                     Text(
-                                                        text = "Сетевые функции и Wi-Fi P2P",
+                                                        text = stringResource(R.string.network_features_title),
                                                         style = MaterialTheme.typography.bodyMedium,
                                                         fontWeight = FontWeight.SemiBold,
                                                         color = MaterialTheme.colorScheme.onSurface
                                                     )
                                                     Text(
-                                                        text = if (networkConsentGranted) "Разрешено: P2P, каталог тем, радио" else "Ограничено: 100% строгий офлайн",
+                                                        text = if (networkConsentGranted) stringResource(R.string.network_allowed_desc) else stringResource(R.string.network_restricted_desc),
                                                         style = MaterialTheme.typography.bodySmall,
                                                         color = if (networkConsentGranted) primaryAccent else MaterialTheme.colorScheme.onSurfaceVariant
                                                     )
@@ -1473,7 +1473,7 @@ fun SettingsScreen(
                                             )
                                             Spacer(modifier = Modifier.width(8.dp))
                                             Text(
-                                                text = "Зачем офлайн-плееру сеть и Wi-Fi?",
+                                                text = stringResource(R.string.network_consent_dialog_why),
                                                 color = primaryAccent,
                                                 style = MaterialTheme.typography.bodySmall,
                                                 fontWeight = FontWeight.Medium
@@ -1531,13 +1531,13 @@ fun SettingsScreen(
 
                                             Column {
                                                 Text(
-                                                    text = "Артём (Artiom Crudu)",
+                                                    text = stringResource(R.string.developer_name),
                                                     style = MaterialTheme.typography.titleLarge,
                                                     fontWeight = FontWeight.Bold,
                                                     color = Color.White
                                                 )
                                                 Text(
-                                                    text = "Создатель и ведущий разработчик OpenFy",
+                                                    text = stringResource(R.string.developer_role),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = if (currentTheme == AppThemeStyle.SERIOUS_DARK) Color(0xFFAAAAAF) else Color(0xFF00E5FF)
                                                 )
@@ -1547,7 +1547,7 @@ fun SettingsScreen(
                                         Spacer(modifier = Modifier.height(14.dp))
 
                                         Text(
-                                            text = "«Привет! Я разрабатываю OpenFy как полностью независимый, бескомпромиссно быстрый и эстетичный плеер без рекламы, платных подписок и слежки. Ваша поддержка мотивирует меня уделять проекту максимум времени и реализовывать самые амбициозные идеи!»",
+                                            text = stringResource(R.string.developer_message),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = Color.White.copy(alpha = 0.85f),
                                             lineHeight = 19.sp
@@ -1573,7 +1573,7 @@ fun SettingsScreen(
                                             )
                                             Spacer(modifier = Modifier.width(8.dp))
                                             Text(
-                                                text = "Планы на будущее (Roadmap)",
+                                                text = stringResource(R.string.roadmap_title),
                                                 style = MaterialTheme.typography.titleMedium,
                                                 fontWeight = FontWeight.Bold,
                                                 color = Color.White
@@ -1581,7 +1581,7 @@ fun SettingsScreen(
                                         }
                                         Spacer(modifier = Modifier.height(4.dp))
                                         Text(
-                                            text = "Что появится в следующих обновлениях OpenFy:",
+                                            text = stringResource(R.string.roadmap_subtitle),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = Color.White.copy(alpha = 0.7f)
                                         )
@@ -1589,12 +1589,12 @@ fun SettingsScreen(
                                         Spacer(modifier = Modifier.height(12.dp))
 
                                         val roadmapItems = listOf(
-                                            Triple(AppIcons.music(currentIconPack), "Bit-Perfect Hi-Res Audio Engine", "Прямой вывод звука в обход системного микшера (24-bit/192kHz, DSD, FLAC, ALAC)"),
-                                            Triple(AppIcons.album(currentIconPack), "Локальный редактор ID3-тегов", "Редактирование метаданных и встраивание обложек прямо в аудиофайлы"),
-                                            Triple(AppIcons.equalizer(currentIconPack), "32-полосный параметрический DSP", "Студийный эквалайзер с локальными пресетами калибровки под наушники"),
-                                            Triple(AppIcons.home(currentIconPack), "Интерактивные виджеты", "Стильные виджеты на рабочий стол с визуализацией волн в стиле Material You"),
-                                            Triple(AppIcons.play(currentIconPack), "Умный локальный кроссфейд", "Плавное бесшовное сведение треков с аппаратным анализом BPM"),
-                                            Triple(AppIcons.security, "100% Офлайн и приватность", "Никаких облаков, трекеров и фоновых утечек данных — всё только на устройстве")
+                                            Triple(AppIcons.music(currentIconPack), stringResource(R.string.roadmap_item_1_title), stringResource(R.string.roadmap_item_1_desc)),
+                                            Triple(AppIcons.album(currentIconPack), stringResource(R.string.roadmap_item_2_title), stringResource(R.string.roadmap_item_2_desc)),
+                                            Triple(AppIcons.equalizer(currentIconPack), stringResource(R.string.roadmap_item_3_title), stringResource(R.string.roadmap_item_3_desc)),
+                                            Triple(AppIcons.home(currentIconPack), stringResource(R.string.roadmap_item_4_title), stringResource(R.string.roadmap_item_4_desc)),
+                                            Triple(AppIcons.play(currentIconPack), stringResource(R.string.roadmap_item_5_title), stringResource(R.string.roadmap_item_5_desc)),
+                                            Triple(AppIcons.security, stringResource(R.string.roadmap_item_6_title), stringResource(R.string.roadmap_item_6_desc))
                                         )
 
                                         roadmapItems.forEach { (icon, title, desc) ->
@@ -1635,7 +1635,7 @@ fun SettingsScreen(
                             item {
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
-                                    text = "ПОДДЕРЖАТЬ ПРОЕКТ",
+                                    text = stringResource(R.string.support_project_header),
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = primaryAccent,
@@ -1692,7 +1692,7 @@ fun SettingsScreen(
                                         Spacer(modifier = Modifier.height(6.dp))
 
                                         Text(
-                                            text = "Угостите разработчика чашечкой кофе — лучшая поддержка независимого FOSS-плеера!",
+                                            text = stringResource(R.string.support_coffee_desc),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = Color.White.copy(alpha = 0.75f),
                                             lineHeight = 17.sp,
@@ -1728,7 +1728,7 @@ fun SettingsScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(8.dp))
                                                 Text(
-                                                    text = "Угостить кофе (Buy Me a Coffee)",
+                                                    text = stringResource(R.string.support_bmac_btn),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     fontWeight = FontWeight.Bold
                                                 )
@@ -1754,7 +1754,7 @@ fun SettingsScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(6.dp))
                                                 Text(
-                                                    text = "Скопировать ссылку buymeacoffee.com/ArtiomITPROGRAMING",
+                                                    text = stringResource(R.string.copy_bmac_link),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = Color.White.copy(alpha = 0.9f)
                                                 )
@@ -1795,7 +1795,7 @@ fun SettingsScreen(
                                         Spacer(modifier = Modifier.height(10.dp))
 
                                         Text(
-                                            text = "Поддержать через PayPal",
+                                            text = stringResource(R.string.support_paypal_btn),
                                             style = MaterialTheme.typography.titleLarge,
                                             fontWeight = FontWeight.Bold,
                                             color = Color.White
@@ -1837,7 +1837,7 @@ fun SettingsScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(8.dp))
                                                 Text(
-                                                    text = "Открыть перевод в PayPal",
+                                                    text = stringResource(R.string.open_paypal_transfer),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     fontWeight = FontWeight.Bold
                                                 )
@@ -1863,7 +1863,7 @@ fun SettingsScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(6.dp))
                                                 Text(
-                                                    text = "Скопировать ссылку paypal.me/ArtiomCrudu2010",
+                                                    text = stringResource(R.string.copy_paypal_link),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = Color.White.copy(alpha = 0.9f)
                                                 )
@@ -1877,7 +1877,7 @@ fun SettingsScreen(
                             item {
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
-                                    text = "СВЯЗАТЬСЯ НАПРЯМУЮ СО МНОЙ",
+                                    text = stringResource(R.string.contact_header),
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = primaryAccent,
@@ -1915,13 +1915,13 @@ fun SettingsScreen(
 
                                             Column {
                                                 Text(
-                                                    text = "Прямая связь с разработчиком",
+                                                    text = stringResource(R.string.contact_title),
                                                     style = MaterialTheme.typography.titleMedium,
                                                     fontWeight = FontWeight.Bold,
                                                     color = Color.White
                                                 )
                                                 Text(
-                                                    text = "Вопросы, идеи, предложения и багрепорты",
+                                                    text = stringResource(R.string.contact_subtitle),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = if (currentTheme == AppThemeStyle.SERIOUS_DARK) Color(0xFFAAAAAF) else Color(0xFF00E5FF)
                                                 )
@@ -1931,7 +1931,7 @@ fun SettingsScreen(
                                         Spacer(modifier = Modifier.height(14.dp))
 
                                         Text(
-                                            text = "Я открыт к диалогу с каждым пользователем. Напишите мне на почту или откройте обсуждение на GitHub:",
+                                            text = stringResource(R.string.contact_text),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = Color.White.copy(alpha = 0.8f),
                                             lineHeight = 18.sp
@@ -1968,7 +1968,7 @@ fun SettingsScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(8.dp))
                                                 Text(
-                                                    text = "Написать на artiomcrudu83@gmail.com",
+                                                    text = stringResource(R.string.write_email_btn),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     fontWeight = FontWeight.Bold
                                                 )
@@ -1994,7 +1994,7 @@ fun SettingsScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(6.dp))
                                                 Text(
-                                                    text = "Скопировать email (artiomcrudu83@gmail.com)",
+                                                    text = stringResource(R.string.copy_email_btn),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = Color.White.copy(alpha = 0.9f)
                                                 )
@@ -2030,7 +2030,7 @@ fun SettingsScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(8.dp))
                                                 Text(
-                                                    text = "Профиль разработчика на GitHub",
+                                                    text = stringResource(R.string.github_profile_btn),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     fontWeight = FontWeight.SemiBold
                                                 )
@@ -2063,7 +2063,7 @@ fun SettingsScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(6.dp))
                                                 Text(
-                                                    text = "Сообщить об ошибке или предложить фичу",
+                                                    text = stringResource(R.string.github_issues_btn),
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = Color.White.copy(alpha = 0.9f)
                                                 )

@@ -85,7 +85,7 @@ class ThemeManager(
     suspend fun importTheme(uri: Uri): Result<ThemeMetadata> = withContext(Dispatchers.IO) {
         try {
             val inputStream = context.contentResolver.openInputStream(uri)
-                ?: return@withContext Result.failure(IllegalArgumentException("Не удалось открыть файл темы по URI: $uri"))
+                ?: return@withContext Result.failure(IllegalArgumentException("Failed to open theme file from URI: $uri"))
 
             val result = ThemeParser.parseAndExtractThm(inputStream, getThemesDirectory())
             result.onSuccess {

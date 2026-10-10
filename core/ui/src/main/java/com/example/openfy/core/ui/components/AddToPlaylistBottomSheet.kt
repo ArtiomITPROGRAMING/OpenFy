@@ -149,7 +149,7 @@ fun AddToPlaylistBottomSheet(
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = "${song.artist} • Добавить в плейлист",
+                        text = "${song.artist} • Add to playlist",
                         style = MaterialTheme.typography.bodySmall,
                         color = primaryAccent,
                         maxLines = 1,
@@ -179,7 +179,7 @@ fun AddToPlaylistBottomSheet(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Создать новый плейлист",
+                        text = "Create new playlist",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )
@@ -189,7 +189,7 @@ fun AddToPlaylistBottomSheet(
             Spacer(modifier = Modifier.height(14.dp))
 
             Text(
-                text = "Ваши плейлисты",
+                text = "Your playlists",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = Color.White.copy(alpha = 0.8f)
@@ -205,7 +205,7 @@ fun AddToPlaylistBottomSheet(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Плейлистов пока нет. Нажмите «Создать новый плейлист» выше!",
+                        text = "No playlists yet. Tap «Create new playlist» above!",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.6f)
                     )
@@ -230,10 +230,10 @@ fun AddToPlaylistBottomSheet(
                                 .clickable {
                                     if (isAlreadyInPlaylist) {
                                         playbackManager.playlistRepository.removeSongFromPlaylist(playlist.id, song.id)
-                                        Toast.makeText(context, "Удалено из «${playlist.name}»", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "Removed from «${playlist.name}»", Toast.LENGTH_SHORT).show()
                                     } else {
                                         playbackManager.playlistRepository.addSongToPlaylist(playlist.id, song.id)
-                                        Toast.makeText(context, "Добавлено в «${playlist.name}»", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "Added to «${playlist.name}»", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                                 .padding(horizontal = 14.dp, vertical = 10.dp),
@@ -270,7 +270,7 @@ fun AddToPlaylistBottomSheet(
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    text = "${playlist.songIds.size} треков",
+                                    text = "${playlist.songIds.size} tracks",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = Color.White.copy(alpha = 0.6f)
                                 )
@@ -313,12 +313,12 @@ fun AddToPlaylistBottomSheet(
     if (showCreateDialog) {
         AlertDialog(
             onDismissRequest = { showCreateDialog = false },
-            title = { Text("Новый плейлист") },
+            title = { Text("New Playlist") },
             text = {
                 OutlinedTextField(
                     value = newPlaylistName,
                     onValueChange = { newPlaylistName = it },
-                    placeholder = { Text("Название плейлиста") },
+                    placeholder = { Text("Playlist name") },
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = primaryAccent,
@@ -333,18 +333,18 @@ fun AddToPlaylistBottomSheet(
                         if (name.isNotEmpty()) {
                             val newPl = playbackManager.playlistRepository.createPlaylist(name)
                             playbackManager.playlistRepository.addSongToPlaylist(newPl.id, song.id)
-                            Toast.makeText(context, "Плейлист «$name» создан и трек добавлен!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Playlist «$name» created and track added!", Toast.LENGTH_SHORT).show()
                             showCreateDialog = false
                             newPlaylistName = ""
                         }
                     }
                 ) {
-                    Text("Создать", color = primaryAccent, fontWeight = FontWeight.Bold)
+                    Text("Create", color = primaryAccent, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showCreateDialog = false }) {
-                    Text("Отмена")
+                    Text("Cancel")
                 }
             }
         )

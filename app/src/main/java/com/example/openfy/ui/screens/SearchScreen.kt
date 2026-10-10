@@ -56,9 +56,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.openfy.R
 import com.example.openfy.core.audio.model.Album
 import com.example.openfy.core.audio.model.Artist
 import com.example.openfy.core.audio.model.FolderItem
@@ -71,12 +73,12 @@ import com.example.openfy.core.ui.components.SongListItem
 import com.example.openfy.core.ui.theme.AppIcons
 import com.example.openfy.core.ui.theme.GlassDarkSurface
 
-enum class SearchFilter(val title: String) {
-    ALL("Все"),
-    TRACKS("Треки"),
-    ALBUMS("Альбомы"),
-    ARTISTS("Исполнители"),
-    FOLDERS("Папки")
+enum class SearchFilter(val titleRes: Int) {
+    ALL(R.string.filter_all),
+    TRACKS(R.string.nav_tracks),
+    ALBUMS(R.string.nav_albums),
+    ARTISTS(R.string.nav_artists),
+    FOLDERS(R.string.nav_folders)
 }
 
 @Composable
@@ -134,7 +136,7 @@ fun SearchScreen(
                 .padding(horizontal = 20.dp, vertical = 12.dp)
         ) {
             Text(
-                text = "Поиск",
+                text = stringResource(R.string.nav_search),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
@@ -149,7 +151,7 @@ fun SearchScreen(
                     .fillMaxWidth()
                     .height(54.dp),
                 shape = RoundedCornerShape(27.dp),
-                placeholder = { Text("Название трека, артист, альбом...", fontSize = 14.sp) },
+                placeholder = { Text(stringResource(R.string.search_placeholder_detailed), fontSize = 14.sp) },
                 leadingIcon = {
                     Icon(
                         imageVector = AppIcons.search(iconPackStyle),
@@ -187,7 +189,7 @@ fun SearchScreen(
                     FilterChip(
                         selected = selectedFilter == filter,
                         onClick = { selectedFilter = filter },
-                        label = { Text(filter.title) },
+                        label = { Text(stringResource(filter.titleRes)) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = primaryAccent,
                             selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -215,7 +217,7 @@ fun SearchScreen(
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "Поиск по трекам, альбомам и исполнителям",
+                        text = stringResource(R.string.search_empty_prompt),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -231,7 +233,7 @@ fun SearchScreen(
                     modifier = Modifier.padding(horizontal = 24.dp)
                 ) {
                     Text(
-                        text = "По запросу «$query» ничего не найдено в медиатеке",
+                        text = stringResource(R.string.search_no_results_format, query),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -248,7 +250,7 @@ fun SearchScreen(
                     if (filteredSongs.isNotEmpty()) {
                         item {
                             Text(
-                                text = "Треки (${filteredSongs.size})",
+                                text = stringResource(R.string.search_tracks_header, filteredSongs.size),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = primaryAccent,
@@ -284,7 +286,7 @@ fun SearchScreen(
                         item {
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "Альбомы (${filteredAlbums.size})",
+                                text = stringResource(R.string.search_albums_header, filteredAlbums.size),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = primaryAccent,
@@ -312,7 +314,7 @@ fun SearchScreen(
                         item {
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "Исполнители (${filteredArtists.size})",
+                                text = stringResource(R.string.search_artists_header, filteredArtists.size),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = primaryAccent,

@@ -246,9 +246,9 @@ object LocalShareServer {
 
                     val success = themeReceivedHandler?.invoke(bodyString) ?: false
                     val jsonResponse = if (success) {
-                        "{\"success\":true,\"message\":\"Тема оформления успешно получена и применена в OpenFy!\"}"
+                        "{\"success\":true,\"message\":\"Theme configuration successfully received and applied in OpenFy!\"}"
                     } else {
-                        "{\"success\":false,\"message\":\"Ошибка распаковки конфигурации темы\"}"
+                        "{\"success\":false,\"message\":\"Failed to unpack theme configuration\"}"
                     }
                     val bytes = jsonResponse.toByteArray(Charsets.UTF_8)
                     val response = "HTTP/1.1 ${if (success) "200 OK" else "400 Bad Request"}\r\n" +
@@ -275,13 +275,13 @@ object LocalShareServer {
                     val userMatch = Regex("\"username\"\\s*:\\s*\"([^\"]+)\"").find(bodyString)
                         ?: Regex("\"user\"\\s*:\\s*\"([^\"]+)\"").find(bodyString)
                     val codeMatch = Regex("\"code\"\\s*:\\s*\"([^\"]+)\"").find(bodyString)
-                    val username = userMatch?.groupValues?.get(1) ?: "Пользователь"
+                    val username = userMatch?.groupValues?.get(1) ?: "User"
                     val incomingCode = codeMatch?.groupValues?.get(1)?.filter { it.isDigit() } ?: ""
                     val finalCode = if (incomingCode.length == 6) incomingCode else generateSecurityCode()
 
-                    postAuthChallenge(username, "Веб-витрина OpenFy", finalCode)
+                    postAuthChallenge(username, "OpenFy Web Showcase", finalCode)
 
-                    val jsonResponse = "{\"success\":true,\"code\":\"$finalCode\",\"message\":\"Запрос на подтверждение входа отправлен в приложение OpenFy\"}"
+                    val jsonResponse = "{\"success\":true,\"code\":\"$finalCode\",\"message\":\"Login confirmation request sent to OpenFy app\"}"
                     val bytes = jsonResponse.toByteArray(Charsets.UTF_8)
                     val response = "HTTP/1.1 200 OK\r\n" +
                             "Access-Control-Allow-Origin: *\r\n" +
@@ -333,7 +333,7 @@ object LocalShareServer {
                     val jsonResponse = if (isMatch) {
                         "{\"verified\":true,\"device\":\"OpenFy Mobile Player\",\"securityStatus\":\"PAIRED_2FA\"}"
                     } else {
-                        "{\"verified\":false,\"error\":\"Код безопасности не совпадает или истек\"}"
+                        "{\"verified\":false,\"error\":\"Security code does not match or has expired\"}"
                     }
                     val bytes = jsonResponse.toByteArray(Charsets.UTF_8)
                     val response = "HTTP/1.1 ${if (isMatch) "200 OK" else "401 Unauthorized"}\r\n" +
@@ -383,7 +383,7 @@ object LocalShareServer {
                 // HTML Web Preview Page
                 val html = """
                     <!DOCTYPE html>
-                    <html lang="ru">
+                    <html lang="en">
                     <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -391,8 +391,8 @@ object LocalShareServer {
                         <style>
                             body { background: #0A0A0E; color: #FFFFFF; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
                             .card { background: #14141A; border: 1px solid #00E5FF; border-radius: 20px; padding: 28px; max-width: 440px; text-align: center; box-shadow: 0 10px 30px rgba(0,229,255,0.2); }
-                            h1 { color: #00E5FF; font-size: 24px; margin-bottom: 6px; }
-                            p { color: #A0A0B0; font-size: 14px; margin-bottom: 20px; }
+                            <h1> { color: #00E5FF; font-size: 24px; margin-bottom: 6px; }
+                            <p> { color: #A0A0B0; font-size: 14px; margin-bottom: 20px; }
                             .btn { display: inline-block; background: #00E5FF; color: #000; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-size: 16px; transition: transform 0.2s; }
                             .btn:hover { transform: scale(1.05); }
                             .badge { display: inline-block; background: #262635; color: #00E5FF; padding: 4px 10px; border-radius: 6px; font-size: 12px; margin-bottom: 14px; font-weight: bold; }
@@ -402,8 +402,8 @@ object LocalShareServer {
                         <div class="card">
                             <div class="badge">${payload.type}</div>
                             <h1>${payload.title}</h1>
-                            <p>${payload.description ?: "Передано через локальную сеть OpenFy P2P Sync"}</p>
-                            <a href="/download" class="btn">⬇ Скачать для OpenFy</a>
+                            <p>${payload.description ?: "Transferred via OpenFy P2P Local Network Sync"}</p>
+                            <a href="/download" class="btn">⬇ Download for OpenFy</a>
                         </div>
                     </body>
                     </html>

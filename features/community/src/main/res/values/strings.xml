@@ -38,4 +38,16 @@
     <string name="qr_import_done">Done</string>
     <string name="profile_default_author">OpenFy Author</string>
     <string name="profile_share_p2p_desc">OpenFy P2P Community Profile</string>
+
+    <string name="share_title">Share</string>
+    <string name="share_close">Close</string>
+    <string name="share_tab_qr">QR Code</string>
+    <string name="share_tab_file">File</string>
+    <string name="share_qr_desc">QR code for sharing</string>
+    <string name="share_qr_too_large">Payload is too large for QR code.\nUse file sharing or Wi-Fi.</string>
+    <string name="share_qr_hint">Scan with camera on another device running OpenFy</string>
+    <string name="share_copy_clipboard">Copy code to clipboard</string>
+    <string name="share_file_hint">Share the file using any system app: Quick Share, Bluetooth, Telegram, or email.</string>
+    <string name="share_via_system">Share via System</string>
+    <string name="share_copy_link_json">Copy Link / JSON</string>
 </resources>

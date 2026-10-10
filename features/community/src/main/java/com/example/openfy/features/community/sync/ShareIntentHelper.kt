@@ -33,7 +33,7 @@ object ShareIntentHelper {
     fun shareAsFile(context: Context, payload: SharePayload) {
         try {
             val sharesDir = File(context.cacheDir, "shares").apply { mkdirs() }
-            val cleanTitle = payload.title.replace(Regex("[^a-zA-Z0-9а-яА-ЯёЁ_-]"), "_")
+            val cleanTitle = payload.title.replace(Regex("[^a-zA-Z0-9_-]"), "_")
             val extension = when (payload.type) {
                 ShareType.THEME -> "thm"
                 ShareType.PLAYLIST -> "openfy"
@@ -52,16 +52,16 @@ object ShareIntentHelper {
                 type = "application/octet-stream"
                 putExtra(Intent.EXTRA_STREAM, fileUri)
                 putExtra(Intent.EXTRA_SUBJECT, payload.title)
-                putExtra(Intent.EXTRA_TEXT, "Файл OpenFy: ${payload.title}")
+                putExtra(Intent.EXTRA_TEXT, "OpenFy File: ${payload.title}")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            val chooser = Intent.createChooser(shareIntent, "Поделиться «${payload.title}»").apply {
+            val chooser = Intent.createChooser(shareIntent, "Share \"${payload.title}\"").apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             context.startActivity(chooser)
         } catch (e: Exception) {
-            Toast.makeText(context, "Ошибка отправки файла: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "File sharing error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -73,9 +73,9 @@ object ShareIntentHelper {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText(label, text)
             clipboard.setPrimaryClip(clip)
-            Toast.makeText(context, "Скопировано в буфер обмена!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Copied to clipboard!", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Toast.makeText(context, "Ошибка копирования: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Copy error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
         }
     }
 }

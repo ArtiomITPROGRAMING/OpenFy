@@ -30,10 +30,10 @@ import kotlin.math.sin
 import kotlin.random.Random
 
 enum class NatureSoundType(val displayName: String, val description: String) {
-    NIGHT_RAIN("Ночной тёплый дождь", "Успокаивающий шум дождя с каплями для глубокого сна"),
-    OCEAN_WAVES("Океанский прибой", "Ритмичные морские волны с плавной динамикой"),
-    FOREST_WIND("Шелест леса и ветер", "Мягкие порывы ночного ветра и природный шелест"),
-    PINK_NOISE("Глубокий розовый шум", "Акустический 1/f спектр для дельта-фазы сна")
+    NIGHT_RAIN("Night Warm Rain", "Soothing rainfall acoustics for deep sleep"),
+    OCEAN_WAVES("Ocean Waves", "Rhythmic sea waves with gentle dynamics"),
+    FOREST_WIND("Forest Breeze", "Soft nocturnal wind gusts and natural foliage rustle"),
+    PINK_NOISE("Deep Pink Noise", "Acoustic 1/f spectrum for delta-wave sleep phase")
 }
 
 /**

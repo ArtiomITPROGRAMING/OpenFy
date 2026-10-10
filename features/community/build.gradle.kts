@@ -54,8 +54,7 @@ dependencies {
     implementation(libs.androidx.security.crypto)
     implementation(libs.androidx.credentials)
 
-    // Network & Serialization
-    implementation(libs.okhttp)
+    // Serialization & Coroutines
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)

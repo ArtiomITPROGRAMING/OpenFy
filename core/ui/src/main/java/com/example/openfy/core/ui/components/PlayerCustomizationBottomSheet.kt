@@ -151,13 +151,13 @@ fun PlayerCustomizationBottomSheet(
 
                     Column {
                         Text(
-                            text = "Персонализация плеера",
+                            text = "Player Customization",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                         Text(
-                            text = "Стили интерфейса и умные алгоритмы",
+                            text = "UI styles and smart audio algorithms",
                             style = MaterialTheme.typography.bodySmall,
                             color = Color.White.copy(alpha = 0.6f)
                         )
@@ -172,7 +172,7 @@ fun PlayerCustomizationBottomSheet(
                 }) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Закрыть",
+                        contentDescription = "Close",
                         tint = Color.White.copy(alpha = 0.7f)
                     )
                 }
@@ -188,7 +188,7 @@ fun PlayerCustomizationBottomSheet(
             ) {
                 item {
                     Text(
-                        text = "СТИЛЬ ПРОГРЕСС-БАРА",
+                        text = "PROGRESS BAR STYLE",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = primaryAccent,
@@ -246,7 +246,7 @@ fun PlayerCustomizationBottomSheet(
 
                 item {
                     Text(
-                        text = "СТИЛЬ ОБЛОЖКИ ТРЕКА",
+                        text = "ALBUM ART STYLE",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = primaryAccent,
@@ -304,7 +304,7 @@ fun PlayerCustomizationBottomSheet(
 
                 item {
                     Text(
-                        text = "УПРАВЛЕНИЕ С ВЫКЛЮЧЕННЫМ ЭКРАНОМ",
+                        text = "SCREEN-OFF GESTURES",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = primaryAccent,
@@ -362,7 +362,7 @@ fun PlayerCustomizationBottomSheet(
 
                 item {
                     Text(
-                        text = "БЕСШОВНЫЙ DJ-РЕЖИМ (HARMONIC FLOW)",
+                        text = "SEAMLESS DJ MODE (HARMONIC FLOW)",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = primaryAccent,
@@ -402,7 +402,7 @@ fun PlayerCustomizationBottomSheet(
                                             color = Color.White
                                         )
                                         Text(
-                                            text = "Бесшовное сведение треков с S-кривой громкости и фильтром частот",
+                                            text = "Seamless track transitions with S-curve volume and frequency filtering",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = Color.White.copy(alpha = 0.65f)
                                         )
@@ -427,12 +427,12 @@ fun PlayerCustomizationBottomSheet(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "Длительность перехода",
+                                        text = "Transition duration",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = Color.White.copy(alpha = 0.8f)
                                     )
                                     Text(
-                                        text = "$djTransitionDuration сек",
+                                        text = "$djTransitionDuration sec",
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = primaryAccent
@@ -457,7 +457,7 @@ fun PlayerCustomizationBottomSheet(
 
                 item {
                     Text(
-                        text = "УМНЫЙ СОН И ЗАЩИТА СЛУХА (SOMNOGUARD)",
+                        text = "SMART SLEEP & HEARING GUARD (SOMNOGUARD)",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = primaryAccent,
@@ -491,13 +491,13 @@ fun PlayerCustomizationBottomSheet(
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column {
                                         Text(
-                                            text = "Детектор засыпания в наушниках",
+                                            text = "In-Ear Sleep Detector",
                                             style = MaterialTheme.typography.bodyLarge,
                                             fontWeight = FontWeight.Bold,
                                             color = Color.White
                                         )
                                         Text(
-                                            text = "Определяет неподвижность и мягко гасит музыку, включая звуки природы",
+                                            text = "Detects inactivity and gently fades out music, transitioning into ambient nature sounds",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = Color.White.copy(alpha = 0.65f)
                                         )
@@ -517,7 +517,7 @@ fun PlayerCustomizationBottomSheet(
                             AnimatedVisibility(visible = smartSleepEnabled) {
                                 Column(modifier = Modifier.padding(top = 14.dp)) {
                                     Text(
-                                        text = "Звук природы при засыпании (100% Офлайн):",
+                                        text = "Sleep Nature Soundscape (100% Offline):",
                                         style = MaterialTheme.typography.bodySmall,
                                         fontWeight = FontWeight.SemiBold,
                                         color = primaryAccent
@@ -545,7 +545,7 @@ fun PlayerCustomizationBottomSheet(
                                     Spacer(modifier = Modifier.height(10.dp))
 
                                     Text(
-                                        text = "Интервал неподвижности до срабатывания:",
+                                        text = "Inactivity threshold before sleep mode:",
                                         style = MaterialTheme.typography.bodySmall,
                                         fontWeight = FontWeight.SemiBold,
                                         color = primaryAccent
@@ -559,7 +559,7 @@ fun PlayerCustomizationBottomSheet(
                                             FilterChip(
                                                 selected = isSelected,
                                                 onClick = { settingsRepo.setSmartSleepInactivityMinutes(min) },
-                                                label = { Text("$min мин") },
+                                                label = { Text("$min min") },
                                                 colors = natureChipColors
                                             )
                                         }
@@ -575,7 +575,7 @@ fun PlayerCustomizationBottomSheet(
                                             } else {
                                                 playbackManager.zenNatureAudioEngine.startNatureSound(smartSleepSound, volume = 0.35f)
                                                 isTestingNatureSound = true
-                                                Toast.makeText(context, "Воспроизведение: ${smartSleepSound.displayName}", Toast.LENGTH_SHORT).show()
+                                                Toast.makeText(context, "Playing: ${smartSleepSound.displayName}", Toast.LENGTH_SHORT).show()
                                             }
                                         },
                                         modifier = Modifier.fillMaxWidth(),
@@ -592,7 +592,7 @@ fun PlayerCustomizationBottomSheet(
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
-                                            text = if (isTestingNatureSound) "Остановить тест звука природы" else "Послушать ${smartSleepSound.displayName}",
+                                            text = if (isTestingNatureSound) "Stop nature sound preview" else "Preview ${smartSleepSound.displayName}",
                                             style = MaterialTheme.typography.bodyMedium,
                                             fontWeight = FontWeight.SemiBold
                                         )

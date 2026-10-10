@@ -19,11 +19,9 @@ package com.example.openfy.ui.screens
 
 import android.app.Activity
 import android.app.RecoverableSecurityException
-import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -73,10 +71,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.openfy.R
 import com.example.openfy.core.audio.data.AppThemeStyle
 import com.example.openfy.core.audio.data.DuplicateGroup
 import com.example.openfy.core.audio.data.DuplicateScanner
@@ -129,11 +129,11 @@ fun DuplicateCleanerScreen(
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            Toast.makeText(context, "Файлы успешно удалены", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.duplicate_files_deleted_success), Toast.LENGTH_SHORT).show()
             onRefreshAudio()
             runScan()
         } else {
-            Toast.makeText(context, "Удаление отменено пользователем", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.duplicate_deletion_cancelled), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -193,24 +193,11 @@ fun DuplicateCleanerScreen(
         }
 
         if (deletedCount > 0) {
-            Toast.makeText(context, "Успешно удалено $deletedCount файлов", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.duplicate_deleted_count, deletedCount), Toast.LENGTH_SHORT).show()
             onRefreshAudio()
             runScan()
         } else {
-            // Suggest All Files Access on Android 11+ if system restricted direct deletion
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !android.os.Environment.isExternalStorageManager()) {
-                try {
-                    val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
-                        data = Uri.parse("package:${context.packageName}")
-                    }
-                    context.startActivity(intent)
-                    Toast.makeText(context, "Предоставьте доступ к файлам для прямого удаления", Toast.LENGTH_LONG).show()
-                } catch (e: Exception) {
-                    Toast.makeText(context, "Не удалось удалить файлы. Проверьте разрешения в настройках Android", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(context, "Не удалось удалить файлы. Проверьте разрешения Android", Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(context, context.getString(R.string.duplicate_delete_failed), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -231,20 +218,20 @@ fun DuplicateCleanerScreen(
                 IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.action_back),
                         tint = Color.White
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
-                        text = "Очистка клонов и дубликатов",
+                        text = stringResource(R.string.duplicate_cleaner_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
                     Text(
-                        text = "Умный поиск похожих и одинаковых треков",
+                        text = stringResource(R.string.duplicate_cleaner_subtitle),
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.7f)
                     )
@@ -257,7 +244,7 @@ fun DuplicateCleanerScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Сканирование медиатеки на дубликаты...",
+                        text = stringResource(R.string.duplicate_scanning),
                         style = MaterialTheme.typography.bodyLarge,
                         color = primaryAccent
                     )
@@ -286,14 +273,14 @@ fun DuplicateCleanerScreen(
                             )
                             Spacer(modifier = Modifier.height(14.dp))
                             Text(
-                                text = "Дубликатов не найдено!",
+                                text = stringResource(R.string.duplicate_none_found_title),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
                             )
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(
-                                text = "Ваша медиатека идеальна: все треки уникальны и не занимают лишней памяти.",
+                                text = stringResource(R.string.duplicate_none_found_desc),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color.White.copy(alpha = 0.7f)
                             )
@@ -324,13 +311,13 @@ fun DuplicateCleanerScreen(
                             ) {
                                 Column {
                                     Text(
-                                        text = "Найдено групп дубликатов: ${duplicateGroups.size}",
+                                        text = stringResource(R.string.duplicate_groups_found, duplicateGroups.size),
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White
                                     )
                                     Text(
-                                        text = "Занимают лишней памяти: ~$totalWastedMb МБ",
+                                        text = stringResource(R.string.duplicate_wasted_memory, totalWastedMb),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = primaryAccent
                                     )
@@ -348,7 +335,7 @@ fun DuplicateCleanerScreen(
                                     shape = RoundedCornerShape(10.dp),
                                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
                                 ) {
-                                    Text("Выбрать лишние", fontSize = 11.sp)
+                                    Text(stringResource(R.string.duplicate_select_copies), fontSize = 11.sp)
                                 }
                             }
                         }
@@ -417,7 +404,11 @@ fun DuplicateCleanerScreen(
 
                                         Column(modifier = Modifier.weight(1f)) {
                                             Text(
-                                                text = if (index == 0) "★ Оригинал: ${song.title}" else "Клон: ${song.title}",
+                                                text = if (index == 0) {
+                                                    stringResource(R.string.duplicate_original_format, song.title)
+                                                } else {
+                                                    stringResource(R.string.duplicate_clone_format, song.title)
+                                                },
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 fontWeight = if (index == 0) FontWeight.Bold else FontWeight.Normal,
                                                 color = if (index == 0) Color.White else Color.White.copy(alpha = 0.85f),
@@ -451,7 +442,7 @@ fun DuplicateCleanerScreen(
                             if (selectedSongIdsToDelete.isNotEmpty()) {
                                 showConfirmDialog = true
                             } else {
-                                Toast.makeText(context, "Выберите хотя бы один дубликат для удаления", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.duplicate_select_at_least_one), Toast.LENGTH_SHORT).show()
                             }
                         },
                         modifier = Modifier
@@ -464,7 +455,7 @@ fun DuplicateCleanerScreen(
                         )
                     ) {
                         Text(
-                            text = "Удалить выбранные дубликаты (${selectedSongIdsToDelete.size})",
+                            text = stringResource(R.string.duplicate_delete_selected_btn, selectedSongIdsToDelete.size),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -476,9 +467,9 @@ fun DuplicateCleanerScreen(
         if (showConfirmDialog) {
             AlertDialog(
                 onDismissRequest = { showConfirmDialog = false },
-                title = { Text("Удаление дубликатов") },
+                title = { Text(stringResource(R.string.duplicate_dialog_delete_title)) },
                 text = {
-                    Text("Удалить ${selectedSongIdsToDelete.size} выбранных копий файлов с устройства?")
+                    Text(stringResource(R.string.duplicate_dialog_delete_msg, selectedSongIdsToDelete.size))
                 },
                 confirmButton = {
                     TextButton(
@@ -487,12 +478,12 @@ fun DuplicateCleanerScreen(
                             executeDeletion()
                         }
                     ) {
-                        Text("Удалить", color = NeonPink, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.action_delete), color = NeonPink, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showConfirmDialog = false }) {
-                        Text("Отмена")
+                        Text(stringResource(R.string.action_cancel))
                     }
                 }
             )

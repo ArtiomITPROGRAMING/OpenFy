@@ -38,4 +38,16 @@
     <string name="qr_import_done">Готово</string>
     <string name="profile_default_author">Автор OpenFy</string>
     <string name="profile_share_p2p_desc">Профиль OpenFy P2P Community</string>
+
+    <string name="share_title">Поделиться</string>
+    <string name="share_close">Закрыть</string>
+    <string name="share_tab_qr">QR-код</string>
+    <string name="share_tab_file">Файл</string>
+    <string name="share_qr_desc">QR-код для передачи</string>
+    <string name="share_qr_too_large">Пейлоад слишком велик для QR-кода.\nИспользуйте передачу файлом или Wi-Fi.</string>
+    <string name="share_qr_hint">Отсканируйте камерой на другом устройстве с OpenFy</string>
+    <string name="share_copy_clipboard">Скопировать код в буфер</string>
+    <string name="share_file_hint">Передайте файл через любое системное приложение: Quick Share, Bluetooth, Telegram или почту.</string>
+    <string name="share_via_system">Поделиться через систему</string>
+    <string name="share_copy_link_json">Скопировать ссылку / JSON</string>
 </resources>

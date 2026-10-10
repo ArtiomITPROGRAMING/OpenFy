@@ -261,7 +261,7 @@ fun SongListItem(
                 onDismissRequest = { showMenu = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("В плейлист") },
+                    text = { Text("Add to playlist") },
                     onClick = {
                         showMenu = false
                         onAddToPlaylist()
@@ -271,7 +271,7 @@ fun SongListItem(
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text(if (isFavorite) "Удалить из любимых" else "В любимые") },
+                    text = { Text(if (isFavorite) "Remove from favorites" else "Add to favorites") },
                     onClick = {
                         showMenu = false
                         onFavoriteToggle()
@@ -281,7 +281,7 @@ fun SongListItem(
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Удалить с устройства", color = MaterialTheme.colorScheme.error) },
+                    text = { Text("Delete from device", color = MaterialTheme.colorScheme.error) },
                     onClick = {
                         showMenu = false
                         onDeleteFromDevice()

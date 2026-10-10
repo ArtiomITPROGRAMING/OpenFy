@@ -83,7 +83,7 @@ object ThemeParser {
 
             val themeBytes = extractedFiles[THEME_CONFIG_FILE]
                 ?: extractedFiles[MANIFEST_CONFIG_FILE]
-                ?: return@withContext Result.failure(IllegalStateException("В файле темы отсутствуют корректные данные конфигурации '$THEME_CONFIG_FILE'"))
+                ?: return@withContext Result.failure(IllegalStateException("Theme file is missing valid configuration data '$THEME_CONFIG_FILE'"))
 
             val themeStr = themeBytes.decodeToString()
 
@@ -96,15 +96,15 @@ object ThemeParser {
                     try {
                         json.decodeFromString<ThemeMetadata>(manifestBytes.decodeToString())
                     } catch (_: Exception) {
-                        ThemeMetadata(id = "imported_theme", name = "Импортированная тема")
+                        ThemeMetadata(id = "imported_theme", name = "Imported Theme")
                     }
                 } else {
-                    ThemeMetadata(id = "imported_theme", name = "Импортированная тема")
+                    ThemeMetadata(id = "imported_theme", name = "Imported Theme")
                 }
             }
 
             if (metadata.id.isBlank() || metadata.name.isBlank()) {
-                return@withContext Result.failure(IllegalArgumentException("Поля 'id' и 'name' темы не могут быть пустыми"))
+                return@withContext Result.failure(IllegalArgumentException("Theme fields 'id' and 'name' cannot be empty"))
             }
 
             // Path Traversal Sanity Check
@@ -114,7 +114,7 @@ object ThemeParser {
             try {
                 json.decodeFromString<ThemeColorsConfig>(themeStr)
             } catch (e: Exception) {
-                return@withContext Result.failure(IllegalArgumentException("Ошибка в цветовой палитре темы: ${e.localizedMessage}"))
+                return@withContext Result.failure(IllegalArgumentException("Error in theme color palette: ${e.localizedMessage}"))
             }
 
             val destinationFolder = File(targetDir, sanitizedId)

@@ -44,7 +44,7 @@ data class OpenSourceTrack(
 object OpenSourceMusicCatalog {
 
     val GENRES = listOf(
-        "Все",
+        "All",
         "Lo-Fi",
         "Synthwave",
         "Chillout",
@@ -67,7 +67,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=500&auto=format&fit=crop&q=80",
             durationMs = 142000L,
             license = "CC0 / Pixabay Audio",
-            description = "Уютный мягкий Lo-Fi бит для концентрации и отдыха"
+            description = "Cozy smooth Lo-Fi beat for focus and relaxation"
         ),
         OpenSourceTrack(
             id = "lofi_02",
@@ -79,7 +79,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=500&auto=format&fit=crop&q=80",
             durationMs = 158000L,
             license = "CC0 / Pixabay Audio",
-            description = "Атмосферный ночной Lo-Fi с легким шумом дождя"
+            description = "Atmospheric night Lo-Fi with gentle rain sounds"
         ),
         OpenSourceTrack(
             id = "lofi_03",
@@ -91,7 +91,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=500&auto=format&fit=crop&q=80",
             durationMs = 135000L,
             license = "CC0 / Pixabay Audio",
-            description = "Спокойный теплый Lo-Fi с винтажным пианино"
+            description = "Calm warm Lo-Fi with vintage piano"
         ),
 
         // === Synthwave & Cyberpunk ===
@@ -105,7 +105,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=500&auto=format&fit=crop&q=80",
             durationMs = 210000L,
             license = "CC0 / Pixabay Audio",
-            description = "Энергичный 80s Synthwave с аналоговыми синтами"
+            description = "Energetic 80s Synthwave with analog synths"
         ),
         OpenSourceTrack(
             id = "synth_02",
@@ -117,7 +117,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500&auto=format&fit=crop&q=80",
             durationMs = 185000L,
             license = "CC0 / Pixabay Audio",
-            description = "Динамичный футуристичный ретровейв"
+            description = "Dynamic futuristic retrowave"
         ),
         OpenSourceTrack(
             id = "synth_03",
@@ -129,7 +129,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=500&auto=format&fit=crop&q=80",
             durationMs = 196000L,
             license = "CC0 / Pixabay Audio",
-            description = "Космический синтвейв для драйва"
+            description = "Cosmic synthwave drive"
         ),
 
         // === Chillout & Downtempo ===
@@ -143,7 +143,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&auto=format&fit=crop&q=80",
             durationMs = 175000L,
             license = "CC0 / Pixabay Audio",
-            description = "Мягкий чиллаут с атмосферными пэдами"
+            description = "Smooth chillout with atmospheric pads"
         ),
         OpenSourceTrack(
             id = "chill_02",
@@ -155,7 +155,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&auto=format&fit=crop&q=80",
             durationMs = 205000L,
             license = "CC0 / Pixabay Audio",
-            description = "Расслабляющая легкая лаунж-мелодия"
+            description = "Relaxing light lounge melody"
         ),
 
         // === Ambient & Deep Focus ===
@@ -169,7 +169,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=500&auto=format&fit=crop&q=80",
             durationMs = 240000L,
             license = "CC0 / Pixabay Audio",
-            description = "Глубокий эмбиент для медитации и глубокой работы"
+            description = "Deep ambient for meditation and deep focus"
         ),
         OpenSourceTrack(
             id = "amb_02",
@@ -181,7 +181,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=500&auto=format&fit=crop&q=80",
             durationMs = 220000L,
             license = "CC0 / Pixabay Audio",
-            description = "Медитативные звуки гармонии и природы"
+            description = "Meditative harmony and nature sounds"
         ),
 
         // === Electronic & Future Bass ===
@@ -195,7 +195,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&auto=format&fit=crop&q=80",
             durationMs = 182000L,
             license = "CC0 / Pixabay Audio",
-            description = "Современный электронный трек с сочным басом"
+            description = "Modern electronic track with punchy bass"
         ),
         OpenSourceTrack(
             id = "elec_02",
@@ -207,7 +207,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500&auto=format&fit=crop&q=80",
             durationMs = 164000L,
             license = "CC0 / Pixabay Audio",
-            description = "Динамичный электронный саундтрек"
+            description = "Dynamic electronic soundtrack"
         ),
 
         // === Classical Masterpieces (Open Audio / Public Domain) ===
@@ -221,7 +221,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1520523839898-507128fc536a?w=500&auto=format&fit=crop&q=80",
             durationMs = 304000L,
             license = "Public Domain (CC-PD)",
-            description = "Бессмертный шедевр импрессионизма для фортепиано"
+            description = "Timeless impressionist piano masterpiece"
         ),
         OpenSourceTrack(
             id = "class_02",
@@ -233,7 +233,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80",
             durationMs = 315000L,
             license = "Public Domain (CC-PD)",
-            description = "Лунная соната (1-я часть, Adagio sostenuto)"
+            description = "Moonlight Sonata (1st movement, Adagio sostenuto)"
         ),
         OpenSourceTrack(
             id = "class_03",
@@ -245,7 +245,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1513883049090-d0b7439799bf?w=500&auto=format&fit=crop&q=80",
             durationMs = 270000L,
             license = "Public Domain (CC-PD)",
-            description = "Знаменитый ноктюрн ми-бемоль мажор Шопена"
+            description = "Chopin's famous Nocturne in E-flat major"
         ),
 
         // === Jazz & Blues ===
@@ -259,7 +259,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=500&auto=format&fit=crop&q=80",
             durationMs = 195000L,
             license = "CC0 / Pixabay Audio",
-            description = "Теплый вечерний джаз с саксофоном и контрабасом"
+            description = "Warm evening jazz with saxophone and upright bass"
         ),
         OpenSourceTrack(
             id = "jazz_02",
@@ -271,7 +271,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=500&auto=format&fit=crop&q=80",
             durationMs = 180000L,
             license = "CC0 / Pixabay Audio",
-            description = "Уютный лаунж-джаз для релаксации"
+            description = "Cozy lounge jazz for relaxation"
         ),
 
         // === Rock & Indie ===
@@ -285,7 +285,7 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=500&auto=format&fit=crop&q=80",
             durationMs = 172000L,
             license = "CC0 / Pixabay Audio",
-            description = "Драйвовый инди-рок с перегруженными гитарами"
+            description = "Driving indie rock with overdriven guitars"
         ),
         OpenSourceTrack(
             id = "rock_02",
@@ -297,12 +297,12 @@ object OpenSourceMusicCatalog {
             coverUrl = "https://images.unsplash.com/photo-1464375117522-1311d6a5b81f?w=500&auto=format&fit=crop&q=80",
             durationMs = 188000L,
             license = "CC0 / Pixabay Audio",
-            description = "Энергичный современный рок-ритм"
+            description = "Energetic modern rock rhythm"
         )
     )
 
     fun getTracksByGenre(genre: String?): List<Song> {
-        val tracks = if (genre.isNullOrBlank() || genre.equals("Все", ignoreCase = true)) {
+        val tracks = if (genre.isNullOrBlank() || genre.equals("All", ignoreCase = true)) {
             TRACKS
         } else {
             TRACKS.filter { it.genre.equals(genre, ignoreCase = true) }

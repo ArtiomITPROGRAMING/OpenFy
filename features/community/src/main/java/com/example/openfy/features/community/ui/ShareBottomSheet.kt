@@ -67,8 +67,10 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.openfy.features.community.R
 import com.example.openfy.features.community.sync.QrCodeGenerator
 import com.example.openfy.features.community.sync.ShareIntentHelper
 import com.example.openfy.features.community.sync.SharePayload
@@ -114,7 +116,7 @@ fun ShareBottomSheet(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Поделиться",
+                        text = stringResource(R.string.share_title),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold,
@@ -146,7 +148,7 @@ fun ShareBottomSheet(
                 IconButton(onClick = onDismiss) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Закрыть",
+                        contentDescription = stringResource(R.string.share_close),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -163,13 +165,13 @@ fun ShareBottomSheet(
                 Tab(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    text = { Text("QR-код") },
+                    text = { Text(stringResource(R.string.share_tab_qr)) },
                     icon = { Icon(Icons.Default.QrCode2, contentDescription = null, modifier = Modifier.size(18.dp)) }
                 )
                 Tab(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    text = { Text("Файл") },
+                    text = { Text(stringResource(R.string.share_tab_file)) },
                     icon = { Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp)) }
                 )
             }
@@ -195,13 +197,13 @@ fun ShareBottomSheet(
                             ) {
                                 Image(
                                     bitmap = qrBitmap.asImageBitmap(),
-                                    contentDescription = "QR-код для передачи",
+                                    contentDescription = stringResource(R.string.share_qr_desc),
                                     modifier = Modifier.size(216.dp)
                                 )
                             }
                         } else {
                             Text(
-                                text = "Пейлоад слишком велик для QR-кода.\nИспользуйте передачу файлом или Wi-Fi.",
+                                text = stringResource(R.string.share_qr_too_large),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
                             )
@@ -209,7 +211,7 @@ fun ShareBottomSheet(
 
                         Spacer(modifier = Modifier.height(14.dp))
                         Text(
-                            text = "Отсканируйте камерой на другом устройстве с OpenFy",
+                            text = stringResource(R.string.share_qr_hint),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
@@ -224,7 +226,7 @@ fun ShareBottomSheet(
                         ) {
                             Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Скопировать код в буфер")
+                            Text(stringResource(R.string.share_copy_clipboard))
                         }
                     }
                 }
@@ -236,7 +238,7 @@ fun ShareBottomSheet(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "Передайте файл через любое системное приложение: Quick Share, Bluetooth, Telegram или почту.",
+                            text = stringResource(R.string.share_file_hint),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -252,7 +254,7 @@ fun ShareBottomSheet(
                         ) {
                             Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(10.dp))
-                            Text("Поделиться через систему", fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.share_via_system), fontWeight = FontWeight.Bold)
                         }
 
                         OutlinedButton(
@@ -266,7 +268,7 @@ fun ShareBottomSheet(
                         ) {
                             Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(10.dp))
-                            Text("Скопировать ссылку / JSON", fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.share_copy_link_json), fontWeight = FontWeight.Bold)
                         }
                     }
                 }

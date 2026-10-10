@@ -104,12 +104,12 @@ class DiscordAuthManagerTest {
 
         val guestProfile: UserProfile = UserProfile.Guest(
             guestId = "guest_001",
-            nickname = "Анонимный Слушатель"
+            nickname = "Anonymous Listener"
         )
         val encodedGuest = json.encodeToString(UserProfile.serializer(), guestProfile)
         val decodedGuest = json.decodeFromString<UserProfile>(encodedGuest)
         assertTrue(decodedGuest is UserProfile.Guest)
-        assertEquals("Анонимный Слушатель", decodedGuest.displayName)
+        assertEquals("Anonymous Listener", decodedGuest.displayName)
         assertEquals("Guest", decodedGuest.providerName)
     }
 }

@@ -79,7 +79,7 @@ fun AppIconSelectorSection(
 
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
-            text = "ИКОНКА ПРИЛОЖЕНИЯ В ЛАУНЧЕРЕ",
+            text = "APP LAUNCHER ICON",
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
             color = primaryAccent,
@@ -105,7 +105,7 @@ fun AppIconSelectorSection(
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                             AppIconManager.setAppIcon(context, icon)
                             settingsRepository.setAppLauncherIconKey(icon.key)
-                            Toast.makeText(context, "Иконка «${icon.title}» применена", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Icon \"${icon.title}\" applied", Toast.LENGTH_SHORT).show()
                         }
                     }
                 )
@@ -231,7 +231,7 @@ private fun AppIconPreviewCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "АКТИВНА",
+                            text = "ACTIVE",
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = innerIconColor,

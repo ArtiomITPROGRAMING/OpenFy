@@ -121,7 +121,7 @@ fun AuthChallengeDialog(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = "Запрос на вход в аккаунт",
+                            text = "Account Login Request",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
@@ -131,7 +131,7 @@ fun AuthChallengeDialog(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "С веб-сайта OpenFy поступил запрос на вход в профиль @${challenge.username}",
+                            text = "A login request for @${challenge.username} was received from OpenFy website",
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color(0xFF94A3B8),
                             textAlign = TextAlign.Center
@@ -147,20 +147,20 @@ fun AuthChallengeDialog(
                         ) {
                             Column {
                                 Text(
-                                    text = "Источник: ${challenge.device}",
+                                    text = "Source: ${challenge.device}",
                                     fontSize = 12.sp,
                                     color = Color(0xFFCBD5E1),
                                     fontWeight = FontWeight.Medium
                                 )
                                 if (challenge.ip.isNotBlank()) {
                                     Text(
-                                        text = "IP-адрес: ${challenge.ip}",
+                                        text = "IP Address: ${challenge.ip}",
                                         fontSize = 11.sp,
                                         color = Color(0xFF64748B)
                                     )
                                 }
                                 Text(
-                                    text = "Защита: Двухфакторный 6-значный PIN",
+                                    text = "Security: Two-Factor 6-digit PIN",
                                     fontSize = 11.sp,
                                     color = primaryGreen
                                 )
@@ -181,7 +181,7 @@ fun AuthChallengeDialog(
                             ) {
                                 Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Отклонить", fontSize = 13.sp)
+                                Text("Decline", fontSize = 13.sp)
                             }
 
                             Button(
@@ -195,7 +195,7 @@ fun AuthChallengeDialog(
                             ) {
                                 Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Подтвердить", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                Text("Confirm", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                             }
                         }
                     }
@@ -208,7 +208,7 @@ fun AuthChallengeDialog(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Код подтверждения входа",
+                            text = "Login Confirmation Code",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = primaryGreen,
@@ -218,7 +218,7 @@ fun AuthChallengeDialog(
                         Spacer(modifier = Modifier.height(6.dp))
 
                         Text(
-                            text = "Сверьте или введите этот 6-значный код на веб-сайте OpenFy для завершения входа:",
+                            text = "Check or enter this 6-digit code on the OpenFy website to complete login:",
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color(0xFF94A3B8),
                             textAlign = TextAlign.Center
@@ -250,7 +250,7 @@ fun AuthChallengeDialog(
                         Spacer(modifier = Modifier.height(14.dp))
 
                         Text(
-                            text = "Код действителен 5 минут • Совпадение подтверждает владение аккаунтом",
+                            text = "Code is valid for 5 minutes • Matching confirms account ownership",
                             fontSize = 11.sp,
                             color = Color(0xFF64748B),
                             textAlign = TextAlign.Center
@@ -267,7 +267,7 @@ fun AuthChallengeDialog(
                                 contentColor = Color.Black
                             )
                         ) {
-                            Text("Готово", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                            Text("Done", fontWeight = FontWeight.Bold, fontSize = 15.sp)
                         }
                     }
                 }

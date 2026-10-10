@@ -113,7 +113,7 @@ fun AlbumCard(album: Album, onClick: () -> Unit) {
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = "${album.artist} • ${album.songCount} треков",
+                text = "${album.artist} • ${album.songCount} tracks",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
@@ -161,7 +161,7 @@ fun ArtistCard(artist: Artist, onClick: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "${artist.songCount} треков • ${artist.albumCount} альбомов",
+                    text = "${artist.songCount} tracks • ${artist.albumCount} albums",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -216,7 +216,7 @@ fun FolderCard(folder: FolderItem, onClick: () -> Unit) {
                 )
             }
             Text(
-                text = "${folder.songCount} треков",
+                text = "${folder.songCount} tracks",
                 style = MaterialTheme.typography.labelSmall,
                 color = primaryAccent
             )
@@ -278,7 +278,7 @@ fun PlaylistCard(
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "Плейлист • $songCount треков",
+                    text = "Playlist • $songCount tracks",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -305,7 +305,7 @@ fun EmptyLibraryView(isLoading: Boolean) {
     ) {
         if (isLoading) {
             Text(
-                text = "Сканирование аудиофайлов...",
+                text = "Scanning audio files...",
                 style = MaterialTheme.typography.bodyLarge,
                 color = primaryAccent
             )
@@ -322,14 +322,14 @@ fun EmptyLibraryView(isLoading: Boolean) {
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "Музыка не найдена",
+                    text = "No music found",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Убедитесь, что на устройстве есть MP3/FLAC аудиофайлы.",
+                    text = "Make sure there are MP3/FLAC audio files on your device.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

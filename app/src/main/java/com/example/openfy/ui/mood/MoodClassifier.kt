@@ -18,6 +18,7 @@
 package com.example.openfy.ui.mood
 
 import androidx.compose.ui.graphics.Color
+import com.example.openfy.R
 import com.example.openfy.core.audio.model.Song
 import java.util.Locale
 import kotlin.math.abs
@@ -34,32 +35,32 @@ data class MoodPoint(
 )
 
 enum class MoodQuadrant(
-    val title: String,
-    val description: String,
+    val titleRes: Int,
+    val descriptionRes: Int,
     val accentColor: Color,
     val gradientColors: List<Color>
 ) {
     DRIVE_EUPHORIA(
-        title = "Драйв & Эйфория",
-        description = "Танцевальный пульс, позитив и яркая энергия",
+        titleRes = R.string.mood_drive_euphoria_title,
+        descriptionRes = R.string.mood_drive_euphoria_desc,
         accentColor = Color(0xFFFF9100), // Amber Gold
         gradientColors = listOf(Color(0xFFFF9100), Color(0xFFFF0055))
     ),
     REBEL_AGGRESSION(
-        title = "Бунт & Агрессия",
-        description = "Тяжёлый бас, драйв, ночная тьма и бунт",
+        titleRes = R.string.mood_rebel_aggression_title,
+        descriptionRes = R.string.mood_rebel_aggression_desc,
         accentColor = Color(0xFFFF0055), // Crimson Pink
         gradientColors = listOf(Color(0xFFFF0055), Color(0xFF7000FF))
     ),
     MELANCHOLY_NOSTALGIA(
-        title = "Меланхолия & Ностальгия",
-        description = "Тихая грусть, акустика, эмбиент и воспоминания",
+        titleRes = R.string.mood_melancholy_nostalgia_title,
+        descriptionRes = R.string.mood_melancholy_nostalgia_desc,
         accentColor = Color(0xFF00E5FF), // Cyan
         gradientColors = listOf(Color(0xFF00E5FF), Color(0xFF1A237E))
     ),
     WARMTH_CHILL(
-        title = "Тепло & Чилл",
-        description = "Уютный лаунж, мягкий джаз, соул и спокойствие",
+        titleRes = R.string.mood_warmth_chill_title,
+        descriptionRes = R.string.mood_warmth_chill_desc,
         accentColor = Color(0xFF00E676), // Emerald Mint
         gradientColors = listOf(Color(0xFF00E676), Color(0xFF00B0FF))
     );

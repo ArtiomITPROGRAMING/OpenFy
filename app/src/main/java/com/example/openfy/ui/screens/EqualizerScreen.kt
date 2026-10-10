@@ -79,9 +79,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.openfy.R
 import com.example.openfy.core.audio.data.AppThemeStyle
 import com.example.openfy.core.audio.model.Quadruple
 import com.example.openfy.core.audio.service.BandInfo
@@ -197,13 +199,13 @@ fun EqualizerScreen(
 
                     Column {
                         Text(
-                            text = "DSP Эквалайзер",
+                            text = stringResource(R.string.eq_title),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                         Text(
-                            text = if (isEnabled) "Аппаратный DSP активен" else "Звуковой движок выключен",
+                            text = if (isEnabled) stringResource(R.string.eq_dsp_active) else stringResource(R.string.eq_dsp_disabled),
                             style = MaterialTheme.typography.labelSmall,
                             color = if (isEnabled) primaryColor else Color.White.copy(alpha = 0.5f)
                         )
@@ -248,7 +250,7 @@ fun EqualizerScreen(
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "АЧХ Частотный спектр",
+                                text = stringResource(R.string.eq_frequency_spectrum),
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
@@ -289,7 +291,7 @@ fun EqualizerScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "ПРЕСЕТЫ",
+                    text = stringResource(R.string.eq_presets_header),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                     color = primaryColor,
@@ -312,7 +314,7 @@ fun EqualizerScreen(
                         modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "Сброс в 0 dB", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    Text(text = stringResource(R.string.eq_reset_0db), fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
 
@@ -352,7 +354,7 @@ fun EqualizerScreen(
             ) {
                 Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                     Text(
-                        text = "Полосы частот эквалайзера",
+                        text = stringResource(R.string.eq_frequency_bands),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -362,7 +364,7 @@ fun EqualizerScreen(
 
                     if (bands.isEmpty()) {
                         Text(
-                            text = "Инициализация аудиосессии...",
+                            text = stringResource(R.string.eq_initializing),
                             style = MaterialTheme.typography.bodySmall,
                             color = Color.White.copy(alpha = 0.6f)
                         )
@@ -443,7 +445,7 @@ fun EqualizerScreen(
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
-                                text = "Усилитель баса (Bass Boost)",
+                                text = stringResource(R.string.eq_bass_boost),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
@@ -501,7 +503,7 @@ fun EqualizerScreen(
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
-                                text = "3D Пространственный звук",
+                                text = stringResource(R.string.eq_spatial_audio),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
@@ -559,7 +561,7 @@ fun EqualizerScreen(
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
-                                text = "Усилитель громкости (Loudness)",
+                                text = stringResource(R.string.eq_loudness),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
@@ -568,7 +570,7 @@ fun EqualizerScreen(
 
                         val gainDb = loudnessGainMb / 100f
                         Text(
-                            text = if (gainDb > 0f) "+${"%.1f".format(gainDb)} dB" else "Выкл",
+                            text = if (gainDb > 0f) "+${"%.1f".format(gainDb)} dB" else stringResource(R.string.reverb_none),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             color = primaryColor
@@ -603,7 +605,7 @@ fun EqualizerScreen(
             ) {
                 Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                     Text(
-                        text = "Реверберация помещения (Reverb)",
+                        text = stringResource(R.string.eq_reverb),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -611,22 +613,22 @@ fun EqualizerScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     val reverbOptions = listOf(
-                        "Выкл" to PresetReverb.PRESET_NONE,
-                        "Комната" to PresetReverb.PRESET_SMALLROOM,
-                        "Большая комната" to PresetReverb.PRESET_MEDIUMROOM,
-                        "Зал" to PresetReverb.PRESET_LARGEROOM,
-                        "Концертный холл" to PresetReverb.PRESET_MEDIUMHALL,
-                        "Большой холл" to PresetReverb.PRESET_LARGEHALL,
-                        "Пластина" to PresetReverb.PRESET_PLATE
+                        R.string.reverb_none to PresetReverb.PRESET_NONE,
+                        R.string.reverb_small_room to PresetReverb.PRESET_SMALLROOM,
+                        R.string.reverb_medium_room to PresetReverb.PRESET_MEDIUMROOM,
+                        R.string.reverb_large_room to PresetReverb.PRESET_LARGEROOM,
+                        R.string.reverb_medium_hall to PresetReverb.PRESET_MEDIUMHALL,
+                        R.string.reverb_large_hall to PresetReverb.PRESET_LARGEHALL,
+                        R.string.reverb_plate to PresetReverb.PRESET_PLATE
                     )
 
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(reverbOptions) { (label, presetVal) ->
+                        items(reverbOptions) { (labelRes, presetVal) ->
                             val isSelected = reverbPreset == presetVal
                             FilterChip(
                                 selected = isSelected,
                                 onClick = { eqController.setReverbPreset(presetVal) },
-                                label = { Text(label) },
+                                label = { Text(stringResource(labelRes)) },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = primaryColor,
                                     selectedLabelColor = if (themeStyle == AppThemeStyle.SERIOUS_DARK || themeStyle == AppThemeStyle.RETRO_PIXEL) Color.Black else Color.White,

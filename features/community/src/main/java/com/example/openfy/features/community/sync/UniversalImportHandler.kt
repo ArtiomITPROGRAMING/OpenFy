@@ -70,9 +70,9 @@ object UniversalImportHandler {
             // 0. Handle 2FA Auth Challenge QR / Deep link: openfy://auth?user=...&code=...
             if (cleanInput.startsWith("openfy://auth")) {
                 val uri = Uri.parse(cleanInput)
-                val user = uri.getQueryParameter("user") ?: uri.getQueryParameter("username") ?: "Пользователь"
+                val user = uri.getQueryParameter("user") ?: uri.getQueryParameter("username") ?: "User"
                 val code = uri.getQueryParameter("code") ?: ""
-                LocalShareServer.postAuthChallenge(user, "QR-сканер OpenFy", code)
+                LocalShareServer.postAuthChallenge(user, "OpenFy QR Scanner", code)
                 return@withContext Result.success(ImportResult.AuthChallengeReceived(user, code))
             }
 
@@ -80,7 +80,7 @@ object UniversalImportHandler {
             if (cleanInput.startsWith("content://") || cleanInput.startsWith("file://")) {
                 val uri = Uri.parse(cleanInput)
                 val stream = context.contentResolver.openInputStream(uri)
-                    ?: return@withContext Result.failure(IllegalArgumentException("Не удалось открыть URI: $cleanInput"))
+                ?: return@withContext Result.failure(IllegalArgumentException("Failed to open URI: $cleanInput"))
 
                 val fileBytes = stream.use { it.readBytes() }
                 val fileContent = fileBytes.decodeToString()
@@ -131,7 +131,7 @@ object UniversalImportHandler {
                     } else if (themeId.isNotBlank()) {
                         ThemeCatalogRepository.installCatalogThemeById(context, effectiveSettings, themeId)
                     } else {
-                        Result.failure(IllegalArgumentException("В ссылке не указан id или url темы"))
+                        Result.failure(IllegalArgumentException("Theme id or url is not specified in the link"))
                     }
 
                     return@withContext installResult.map { meta ->
@@ -188,7 +188,7 @@ object UniversalImportHandler {
     ): Result<ImportResult> {
         val payloadResult = SharePayload.fromCompressedString(rawString)
         if (payloadResult.isFailure) {
-            return Result.failure(payloadResult.exceptionOrNull() ?: IllegalArgumentException("Неизвестный формат данных OpenFy"))
+            return Result.failure(payloadResult.exceptionOrNull() ?: IllegalArgumentException("Unknown OpenFy data format"))
         }
 
         val payload = payloadResult.getOrThrow()
@@ -203,7 +203,7 @@ object UniversalImportHandler {
                     )
                     Result.success(ImportResult.PlaylistImported(newPlaylist.name, newPlaylist.songIds.size))
                 } catch (e: Exception) {
-                    Result.failure(IllegalArgumentException("Ошибка импорта плейлиста: ${e.localizedMessage}"))
+                    Result.failure(IllegalArgumentException("Playlist import error: ${e.localizedMessage}"))
                 }
             }
 
@@ -219,7 +219,7 @@ object UniversalImportHandler {
 
                     Result.success(ImportResult.ThemeImported(payload.title, sanitizedId))
                 } catch (e: Exception) {
-                    Result.failure(IllegalArgumentException("Ошибка импорта темы: ${e.localizedMessage}"))
+                    Result.failure(IllegalArgumentException("Theme import error: ${e.localizedMessage}"))
                 }
             }
 

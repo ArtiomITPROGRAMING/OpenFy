@@ -78,9 +78,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.openfy.R
 import com.example.openfy.core.audio.data.AppThemeStyle
 import com.example.openfy.core.audio.model.Song
 import com.example.openfy.core.audio.service.PlaybackManager
@@ -157,7 +159,7 @@ fun PlaylistDetailScreen(
                 }
 
                 Text(
-                    text = "Плейлист",
+                    text = stringResource(R.string.playlist_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -167,7 +169,7 @@ fun PlaylistDetailScreen(
                     IconButton(onClick = { showShareSheet = true }) {
                         Icon(
                             imageVector = Icons.Default.Share,
-                            contentDescription = "Поделиться плейлистом",
+                            contentDescription = stringResource(R.string.share_playlist_desc),
                             tint = primaryAccent
                         )
                     }
@@ -227,7 +229,7 @@ fun PlaylistDetailScreen(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
-                            text = "Плейлист • ${playlistSongs.size} треков • $totalMinutes мин",
+                            text = stringResource(R.string.playlist_stats_format, playlistSongs.size, totalMinutes),
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.White.copy(alpha = 0.7f)
                         )
@@ -287,7 +289,7 @@ fun PlaylistDetailScreen(
                 item {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Треки",
+                        text = stringResource(R.string.nav_tracks),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
@@ -304,7 +306,7 @@ fun PlaylistDetailScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "В этом плейлисте пока нет треков.\nДобавьте их через меню любого трека (3 точки -> В плейлист)",
+                                text = stringResource(R.string.empty_playlist_tracks_hint),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color.White.copy(alpha = 0.6f),
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -359,7 +361,7 @@ fun PlaylistDetailScreen(
                 SharePayload(
                     type = ShareType.PLAYLIST,
                     title = playlist.name,
-                    description = "Плейлист OpenFy • ${playlistSongs.size} треков",
+                    description = context.getString(R.string.playlist_share_description, playlistSongs.size),
                     jsonData = jsonObject.toString()
                 )
             }
@@ -373,23 +375,23 @@ fun PlaylistDetailScreen(
         if (showDeletePlaylistDialog) {
             AlertDialog(
                 onDismissRequest = { showDeletePlaylistDialog = false },
-                title = { Text("Удалить плейлист") },
-                text = { Text("Вы действительно хотите удалить плейлист «${playlist.name}»?") },
+                title = { Text(stringResource(R.string.dialog_delete_playlist_title)) },
+                text = { Text(stringResource(R.string.dialog_delete_playlist_msg_format, playlist.name)) },
                 confirmButton = {
                     TextButton(
                         onClick = {
                             showDeletePlaylistDialog = false
                             playbackManager.playlistRepository.deletePlaylist(playlist.id)
-                            Toast.makeText(context, "Плейлист удален", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.toast_playlist_deleted), Toast.LENGTH_SHORT).show()
                             onBack()
                         }
                     ) {
-                        Text("Удалить", color = NeonPink, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.action_delete), color = NeonPink, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showDeletePlaylistDialog = false }) {
-                        Text("Отмена")
+                        Text(stringResource(R.string.action_cancel))
                     }
                 }
             )

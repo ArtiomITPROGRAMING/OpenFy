@@ -51,8 +51,7 @@ dependencies {
     implementation(libs.media3.common)
     implementation(libs.media3.datasource)
 
-    // Network & Image
-    implementation(libs.okhttp)
+    // Image & Serialization
     implementation(libs.coil.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.core)

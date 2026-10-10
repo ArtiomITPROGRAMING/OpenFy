@@ -68,10 +68,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.openfy.R
 import com.example.openfy.core.audio.service.PlaybackManager
 import com.example.openfy.core.ui.components.visualizer.MilkdropVisualizer
 import com.example.openfy.core.ui.components.visualizer.VisualizerPreset
@@ -180,7 +182,7 @@ fun FullScreenVisualizerScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Закрыть визуал",
+                            contentDescription = stringResource(R.string.visualizer_close),
                             tint = Color.White
                         )
                     }
@@ -220,7 +222,7 @@ fun FullScreenVisualizerScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Следующий пресет",
+                            contentDescription = stringResource(R.string.visualizer_next_preset),
                             tint = Color.White
                         )
                     }
@@ -242,7 +244,7 @@ fun FullScreenVisualizerScreen(
                             border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFF0055))
                         ) {
                             Text(
-                                text = "DJ HARMONIC FLOW: СВЕДЕНИЕ ТРЕКОВ",
+                                text = stringResource(R.string.visualizer_dj_transition),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White,
@@ -255,7 +257,7 @@ fun FullScreenVisualizerScreen(
 
                     // Track Title & Artist
                     Text(
-                        text = currentSong?.title ?: "Без трека",
+                        text = currentSong?.title ?: stringResource(R.string.no_track_selected),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
@@ -264,7 +266,7 @@ fun FullScreenVisualizerScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = currentSong?.artist ?: "Неизвестный исполнитель",
+                        text = currentSong?.artist ?: stringResource(R.string.unknown_artist),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.7f),
                         maxLines = 1,
@@ -281,7 +283,7 @@ fun FullScreenVisualizerScreen(
                         IconButton(onClick = { playbackManager.skipPrev() }) {
                             Icon(
                                 imageVector = Icons.Default.SkipPrevious,
-                                contentDescription = "Назад",
+                                contentDescription = stringResource(R.string.action_back),
                                 tint = Color.White,
                                 modifier = Modifier.size(32.dp)
                             )
@@ -296,7 +298,7 @@ fun FullScreenVisualizerScreen(
                         ) {
                             Icon(
                                 imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                                contentDescription = if (isPlaying) "Пауза" else "Играть",
+                                contentDescription = stringResource(if (isPlaying) R.string.action_pause else R.string.action_play),
                                 tint = Color.Black,
                                 modifier = Modifier.size(32.dp)
                             )
@@ -305,7 +307,7 @@ fun FullScreenVisualizerScreen(
                         IconButton(onClick = { playbackManager.skipNext() }) {
                             Icon(
                                 imageVector = Icons.Default.SkipNext,
-                                contentDescription = "Вперед",
+                                contentDescription = stringResource(R.string.action_forward),
                                 tint = Color.White,
                                 modifier = Modifier.size(32.dp)
                             )
@@ -314,7 +316,7 @@ fun FullScreenVisualizerScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Свайп влево/вправо для смены пресета",
+                        text = stringResource(R.string.visualizer_swipe_hint),
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.White.copy(alpha = 0.4f)
                     )

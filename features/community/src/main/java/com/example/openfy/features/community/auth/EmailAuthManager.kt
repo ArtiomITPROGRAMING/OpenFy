@@ -57,7 +57,7 @@ object EmailAuthManager {
     fun sendOtp(email: String): Result<String> {
         val cleanEmail = email.trim().lowercase()
         if (!isValidEmail(cleanEmail)) {
-            return Result.failure(IllegalArgumentException("Некорректный формат email"))
+            return Result.failure(IllegalArgumentException("Invalid email format"))
         }
 
         val existing = activeSessions[cleanEmail]
@@ -65,7 +65,7 @@ object EmailAuthManager {
 
         if (existing != null && (now - existing.createdAt) < RESEND_COOLDOWN_MS) {
             val remainingSec = ((RESEND_COOLDOWN_MS - (now - existing.createdAt)) / 1000).toInt() + 1
-            return Result.failure(IllegalStateException("Повторная отправка возможна через $remainingSec сек."))
+            return Result.failure(IllegalStateException("Resend available in $remainingSec sec."))
         }
 
         // Generate cryptographically secure 6-digit numeric OTP code
@@ -89,25 +89,25 @@ object EmailAuthManager {
         val cleanCode = code.trim()
 
         if (!isValidEmail(cleanEmail)) {
-            return Result.failure(IllegalArgumentException("Некорректный email"))
+            return Result.failure(IllegalArgumentException("Invalid email format"))
         }
 
         if (cleanCode.length != 6 || !cleanCode.all { it.isDigit() }) {
-            return Result.failure(IllegalArgumentException("Код должен состоять из 6 цифр"))
+            return Result.failure(IllegalArgumentException("Code must be 6 digits"))
         }
 
         val session = activeSessions[cleanEmail]
-            ?: return Result.failure(IllegalStateException("Код не был отправлен или срок его действия истек"))
+            ?: return Result.failure(IllegalStateException("Code was not sent or has expired"))
 
         val now = System.currentTimeMillis()
         if (now - session.createdAt > CODE_EXPIRATION_MS) {
             activeSessions.remove(cleanEmail)
-            return Result.failure(IllegalStateException("Срок действия кода истек. Запросите новый код"))
+            return Result.failure(IllegalStateException("Code expired. Request a new code"))
         }
 
         if (session.attemptsLeft <= 0) {
             activeSessions.remove(cleanEmail)
-            return Result.failure(IllegalStateException("Превышено количество попыток. Запросите код повторно"))
+            return Result.failure(IllegalStateException("Too many attempts. Request a new code"))
         }
 
         if (session.code != cleanCode) {
@@ -115,8 +115,8 @@ object EmailAuthManager {
             val attemptsRemaining = session.attemptsLeft
             return Result.failure(
                 IllegalArgumentException(
-                    if (attemptsRemaining > 0) "Неверный код. Осталось попыток: $attemptsRemaining"
-                    else "Неверный код. Попытки исчерпаны, запросите новый код"
+                    if (attemptsRemaining > 0) "Invalid code. Remaining attempts: $attemptsRemaining"
+                    else "Invalid code. Attempts exhausted, request a new code"
                 )
             )
         }

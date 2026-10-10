@@ -85,17 +85,17 @@ class EqualizerController(context: Context) {
     // Calibrated 5-band gain curves (in mB: 100 mB = 1 dB)
     private val tunedPresets = mapOf(
         "Flat" to listOf(0, 0, 0, 0, 0),
-        "Бас" to listOf(600, 400, 100, 0, 0),
-        "Клуб" to listOf(700, 500, 0, 200, 300),
-        "Рок" to listOf(450, 200, -100, 250, 400),
-        "Поп" to listOf(-150, 200, 400, 200, -100),
-        "Электроника" to listOf(500, 350, 0, 300, 450),
-        "Вокал" to listOf(-200, 100, 500, 400, 200),
-        "Классика" to listOf(400, 250, -150, 250, 350),
-        "Джаз" to listOf(350, 150, -100, 150, 300),
-        "Акустика" to listOf(350, 250, 100, 250, 300),
-        "Хип-хоп" to listOf(600, 350, 0, 150, 300),
-        "Усиление ВЧ" to listOf(-200, 0, 150, 450, 700)
+        "Bass" to listOf(600, 400, 100, 0, 0),
+        "Club" to listOf(700, 500, 0, 200, 300),
+        "Rock" to listOf(450, 200, -100, 250, 400),
+        "Pop" to listOf(-150, 200, 400, 200, -100),
+        "Electronic" to listOf(500, 350, 0, 300, 450),
+        "Vocal" to listOf(-200, 100, 500, 400, 200),
+        "Classical" to listOf(400, 250, -150, 250, 350),
+        "Jazz" to listOf(350, 150, -100, 150, 300),
+        "Acoustic" to listOf(350, 250, 100, 250, 300),
+        "Hip-hop" to listOf(600, 350, 0, 150, 300),
+        "Treble Boost" to listOf(-200, 0, 150, 450, 700)
     )
 
     init {
@@ -109,7 +109,7 @@ class EqualizerController(context: Context) {
         // Initialize presets list
         val presetList = mutableListOf<String>()
         presetList.addAll(tunedPresets.keys)
-        presetList.add("Пользовательский")
+        presetList.add("Custom")
         _presets.value = presetList
 
         loadPresetsAndBands()
@@ -254,8 +254,8 @@ class EqualizerController(context: Context) {
                     presetNames.add(pName)
                 }
             }
-            if (!presetNames.contains("Пользовательский")) {
-                presetNames.add("Пользовательский")
+            if (!presetNames.contains("Custom")) {
+                presetNames.add("Custom")
             }
             _presets.value = presetNames
         } catch (e: Exception) {
@@ -293,8 +293,8 @@ class EqualizerController(context: Context) {
             }
 
             if (fromUserSlider) {
-                _currentPreset.value = "Пользовательский"
-                prefs.edit().putString(KEY_CURRENT_PRESET, "Пользовательский").apply()
+                _currentPreset.value = "Custom"
+                prefs.edit().putString(KEY_CURRENT_PRESET, "Custom").apply()
             }
 
             val map = _bands.value.associate { it.index to it.currentLevelMb }
@@ -328,13 +328,13 @@ class EqualizerController(context: Context) {
         val customCurve = tunedPresets[presetName]
         if (customCurve != null) {
             applyCustomGainMap(customCurve)
-            if (presetName == "Бас") {
+            if (presetName == "Bass") {
                 setBassBoostStrength(600)
-            } else if (presetName == "Клуб") {
+            } else if (presetName == "Club") {
                 setBassBoostStrength(750)
-            } else if (presetName == "Вокал") {
+            } else if (presetName == "Vocal") {
                 setVirtualizerStrength(350)
-            } else if (presetName == "Электроника") {
+            } else if (presetName == "Electronic") {
                 setVirtualizerStrength(450)
             }
             return

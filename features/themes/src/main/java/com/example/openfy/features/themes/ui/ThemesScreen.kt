@@ -145,9 +145,9 @@ fun ThemesScreen(
                 result.onSuccess { manifest ->
                     refreshInstalledThemes()
                     settingsRepository.setCustomThemeId(manifest.id)
-                    Toast.makeText(context, "Тема «${manifest.name}» успешно установлена и применена!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Theme \"${manifest.name}\" successfully installed and applied!", Toast.LENGTH_LONG).show()
                 }.onFailure { error ->
-                    Toast.makeText(context, "Ошибка импорта темы: ${error.localizedMessage}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Theme import error: ${error.localizedMessage}", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -173,20 +173,20 @@ fun ThemesScreen(
                 IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Назад",
+                        contentDescription = "Back",
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
-                        text = "Темы оформления",
+                        text = "Themes",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "Кастомизация, цветовые схемы и импорт .thm",
+                        text = "Customization, color schemes, and .thm import",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -226,13 +226,13 @@ fun ThemesScreen(
                                 Spacer(modifier = Modifier.width(14.dp))
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
-                                        text = "Импортировать тему (.thm)",
+                                        text = "Import theme (.thm)",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
-                                        text = "Установка сторонних ZIP/THM тем с палитрами",
+                                        text = "Install custom ZIP/THM themes with palettes",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -263,7 +263,7 @@ fun ThemesScreen(
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
-                                        text = "Выбрать файл",
+                                        text = "Select file",
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -274,7 +274,7 @@ fun ThemesScreen(
                                         if (customThemeId != null) {
                                             ThemeEngine.shareThemeFile(context, customThemeId!!)
                                         } else {
-                                            Toast.makeText(context, "Выберите тему из установленных для экспорта", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(context, "Select an installed theme to export", Toast.LENGTH_SHORT).show()
                                         }
                                     },
                                     modifier = Modifier.weight(1f),
@@ -287,7 +287,7 @@ fun ThemesScreen(
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
-                                        text = "Экспорт (.thm)",
+                                        text = "Export (.thm)",
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -306,7 +306,7 @@ fun ThemesScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "КАТАЛОГ ТЕМ OPENFY (ОФЛАЙН)",
+                            text = "OPENFY THEME CATALOG (OFFLINE)",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = primaryAccent,
@@ -347,15 +347,15 @@ fun ThemesScreen(
                                 installingThemeId = null
                                 result.onSuccess {
                                     refreshInstalledThemes()
-                                    Toast.makeText(context, "Тема «${item.name}» успешно установлена и применена!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Theme \"${item.name}\" successfully installed and applied!", Toast.LENGTH_SHORT).show()
                                 }.onFailure { err ->
-                                    Toast.makeText(context, "Ошибка установки темы: ${err.localizedMessage}", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(context, "Theme installation error: ${err.localizedMessage}", Toast.LENGTH_LONG).show()
                                 }
                             }
                         },
                         onApply = {
                             settingsRepository.setCustomThemeId(item.id)
-                            Toast.makeText(context, "Применена тема «${item.name}»", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Applied theme \"${item.name}\"", Toast.LENGTH_SHORT).show()
                         }
                     )
                 }
@@ -370,7 +370,7 @@ fun ThemesScreen(
                 item {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "ВСТРОЕННЫЕ ТЕМЫ OPENFY",
+                        text = "BUILT-IN OPENFY THEMES",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = primaryAccent,
@@ -385,7 +385,7 @@ fun ThemesScreen(
                         isActive = isActive,
                         onClick = {
                             settingsRepository.setThemeStyle(style)
-                            Toast.makeText(context, "Применена тема «${style.displayName}»", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Applied theme \"${style.displayName}\"", Toast.LENGTH_SHORT).show()
                         }
                     )
                 }
@@ -394,7 +394,7 @@ fun ThemesScreen(
                 item {
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = "УСТАНОВЛЕННЫЕ ПОЛЬЗОВАТЕЛЬСКИЕ ТЕМЫ (.THM)",
+                        text = "INSTALLED CUSTOM THEMES (.THM)",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = primaryAccent,
@@ -411,7 +411,7 @@ fun ThemesScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "Сторонние темы пока не установлены.\nНажмите кнопку «Импортировать тему (.thm)» выше!",
+                                text = "No custom themes installed yet.\nTap \"Import theme (.thm)\" above!",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -432,7 +432,7 @@ fun ThemesScreen(
                             isActive = isActive,
                             onClick = {
                                 settingsRepository.setCustomThemeId(theme.id)
-                                Toast.makeText(context, "Применена тема «${theme.name}»", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Applied theme \"${theme.name}\"", Toast.LENGTH_SHORT).show()
                             },
                             onDelete = {
                                 themeToDelete = theme
@@ -455,8 +455,8 @@ fun ThemesScreen(
     themeToDelete?.let { theme ->
         AlertDialog(
             onDismissRequest = { themeToDelete = null },
-            title = { Text("Удалить тему?") },
-            text = { Text("Вы действительно хотите удалить тему «${theme.name}» (версия ${theme.version})?") },
+            title = { Text("Delete theme?") },
+            text = { Text("Are you sure you want to delete theme \"${theme.name}\" (version ${theme.version})?") },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -466,15 +466,15 @@ fun ThemesScreen(
                         ThemeEngine.deleteTheme(context, theme.id)
                         refreshInstalledThemes()
                         themeToDelete = null
-                        Toast.makeText(context, "Тема «${theme.name}» удалена", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Theme \"${theme.name}\" deleted", Toast.LENGTH_SHORT).show()
                     }
                 ) {
-                    Text("Удалить", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+                    Text("Delete", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { themeToDelete = null }) {
-                    Text("Отмена")
+                    Text("Cancel")
                 }
             }
         )
@@ -562,7 +562,7 @@ private fun BuiltInThemeCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "АКТИВНА",
+                            text = "ACTIVE",
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = primaryAccent
@@ -656,7 +656,7 @@ private fun CustomThemeCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "АКТИВНА",
+                            text = "ACTIVE",
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = primaryAccent
@@ -668,7 +668,7 @@ private fun CustomThemeCard(
             IconButton(onClick = onExport) {
                 Icon(
                     imageVector = Icons.Default.Share,
-                    contentDescription = "Экспортировать тему (.thm)",
+                    contentDescription = "Export theme (.thm)",
                     tint = primaryAccent
                 )
             }
@@ -676,7 +676,7 @@ private fun CustomThemeCard(
             IconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Default.DeleteOutline,
-                    contentDescription = "Удалить тему",
+                    contentDescription = "Delete theme",
                     tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
                 )
             }
@@ -760,7 +760,7 @@ private fun CatalogThemeCard(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "АКТИВНА",
+                                text = "ACTIVE",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = accentColor
@@ -822,7 +822,7 @@ private fun CatalogThemeCard(
                         ),
                         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 4.dp)
                     ) {
-                        Text("Применить", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Text("Apply", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                     }
                 } else {
                     Button(
@@ -840,7 +840,7 @@ private fun CatalogThemeCard(
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Установить", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("Install", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }

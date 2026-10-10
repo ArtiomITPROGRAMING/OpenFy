@@ -117,7 +117,7 @@ fun StreamScreen(
     val neonCyan = Color(0xFF00E5FF)
     val neonPurple = Color(0xFFB388FF)
 
-    var selectedCategory by remember { mutableStateOf(initialGenre ?: "Все") }
+    var selectedCategory by remember { mutableStateOf(initialGenre ?: "All") }
     var searchQuery by remember { mutableStateOf(initialQuery ?: "") }
     var searchResults by remember { mutableStateOf<List<Song>>(emptyList()) }
     var isSearching by remember { mutableStateOf(false) }
@@ -176,7 +176,7 @@ fun StreamScreen(
             result.onSuccess { meta ->
                 resolvedCustomMetadata = meta
             }.onFailure { err ->
-                customUrlError = err.localizedMessage ?: "Не удалось распознать ссылку"
+                customUrlError = err.localizedMessage ?: "Failed to recognize link"
             }
         }
     }
@@ -189,11 +189,11 @@ fun StreamScreen(
     }
 
     val categories = remember {
-        listOf("Все", "Lo-Fi", "Synthwave", "Chillout", "Ambient", "Electronic", "Classical", "Jazz", "Rock", "Избранное")
+        listOf("All", "Lo-Fi", "Synthwave", "Chillout", "Ambient", "Electronic", "Classical", "Jazz", "Rock", "Favorites")
     }
 
     val currentCategoryTracks = remember(selectedCategory) {
-        StreamRepository.getCatalogTracks(if (selectedCategory == "Все") null else selectedCategory)
+        StreamRepository.getCatalogTracks(if (selectedCategory == "All") null else selectedCategory)
     }
 
     LazyColumn(
@@ -218,7 +218,7 @@ fun StreamScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = "Открытая музыка",
+                            text = "Open Music",
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onBackground
@@ -238,7 +238,7 @@ fun StreamScreen(
                         }
                     }
                     Text(
-                        text = "Свободные треки, альбомы и открытая медиатека",
+                        text = "Free tracks, albums, and open media library",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -253,7 +253,7 @@ fun StreamScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Link,
-                        contentDescription = "Своя ссылка",
+                        contentDescription = "Custom link",
                         tint = if (showCustomUrlCard) neonCyan else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -271,7 +271,7 @@ fun StreamScreen(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
                     Text(
-                        text = "Поиск по открытым трекам, жанрам и авторам...",
+                        text = "Search open tracks, genres, and artists...",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                     )
@@ -291,7 +291,7 @@ fun StreamScreen(
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "Очистить",
+                                contentDescription = "Clear",
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -321,7 +321,7 @@ fun StreamScreen(
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
                         Text(
-                            text = "Воспроизведение прямого аудиофайла (URL)",
+                            text = "Play direct audio file (URL)",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
@@ -344,8 +344,8 @@ fun StreamScreen(
                                         customUrlInput = clip
                                         resolveCustomUrl(clip)
                                     }
-                                }) {
-                                    Icon(imageVector = Icons.Default.ContentPaste, contentDescription = "Вставить", tint = primaryAccent)
+                                 }) {
+                                    Icon(imageVector = Icons.Default.ContentPaste, contentDescription = "Paste", tint = primaryAccent)
                                 }
                             }
                         )
@@ -357,7 +357,7 @@ fun StreamScreen(
                             ) {
                                 CircularProgressIndicator(modifier = Modifier.size(16.dp), color = neonCyan, strokeWidth = 2.dp)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Проверка трека...", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("Verifying track...", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
 
@@ -372,7 +372,7 @@ fun StreamScreen(
                             ) {
                                 Icon(Icons.Default.PlayArrow, contentDescription = null)
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Играть «${meta.title}»")
+                                Text("Play \"${meta.title}\"")
                             }
                         }
 
@@ -404,7 +404,7 @@ fun StreamScreen(
                             selected = isSelected,
                             onClick = {
                                 selectedCategory = cat
-                                if (cat == "Избранное") refreshFavorites()
+                                if (cat == "Favorites") refreshFavorites()
                             },
                             label = {
                                 Text(
@@ -413,7 +413,7 @@ fun StreamScreen(
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                                 )
                             },
-                            leadingIcon = if (cat == "Избранное") {
+                            leadingIcon = if (cat == "Favorites") {
                                 { Icon(Icons.Default.Favorite, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color(0xFFFF4081)) }
                             } else null,
                             colors = FilterChipDefaults.filterChipColors(
@@ -455,7 +455,7 @@ fun StreamScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "По запросу «$searchQuery» ничего не найдено",
+                            text = "No results found for \"$searchQuery\"",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -464,7 +464,7 @@ fun StreamScreen(
             } else {
                 item {
                     Text(
-                        text = "Результаты поиска (${searchResults.size})",
+                        text = "Search results (${searchResults.size})",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
@@ -487,7 +487,7 @@ fun StreamScreen(
                     )
                 }
             }
-        } else if (selectedCategory == "Избранное") {
+        } else if (selectedCategory == "Favorites") {
             // FAVORITES VIEW
             if (favoriteStreams.isEmpty()) {
                 item {
@@ -506,12 +506,12 @@ fun StreamScreen(
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "Нет сохраненных онлайн-треков",
+                                text = "No saved online tracks",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "Нажмите сердечко рядом с любым открытым треком",
+                                text = "Tap the heart icon next to any open track",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                             )
@@ -665,7 +665,7 @@ private fun StreamSongCard(
             ) {
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Избранное",
+                    contentDescription = "Favorites",
                     tint = if (isFavorite) Color(0xFFFF4081) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                     modifier = Modifier.size(20.dp)
                 )
@@ -681,7 +681,7 @@ private fun StreamSongCard(
             ) {
                 Icon(
                     imageVector = if (isPlayingCurrent) Icons.Default.GraphicEq else Icons.Default.PlayArrow,
-                    contentDescription = "Воспроизвести",
+                    contentDescription = "Play",
                     tint = if (isPlayingCurrent) Color.Black else MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(20.dp)
                 )

@@ -58,10 +58,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.openfy.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,7 +132,7 @@ fun NetworkConsentBottomSheet(
             Spacer(modifier = Modifier.height(14.dp))
 
             Text(
-                text = "Зачем офлайн-плееру Wi-Fi?",
+                text = stringResource(R.string.network_consent_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -140,7 +142,7 @@ fun NetworkConsentBottomSheet(
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                text = "OpenFy на 100% автономен, но сеть открывает удобные дополнительные возможности:",
+                text = stringResource(R.string.network_consent_desc),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -152,8 +154,8 @@ fun NetworkConsentBottomSheet(
             // Reason 1: P2P Local Share
             NetworkFeatureItem(
                 icon = Icons.Default.WifiTethering,
-                title = "Локальный обмен по Wi-Fi (P2P)",
-                description = "Мгновенная передача треков и плейлистов между устройствами на высокой скорости домашнего роутера без расхода мобильного интернета."
+                title = stringResource(R.string.network_consent_p2p_title),
+                description = stringResource(R.string.network_consent_p2p_desc)
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -161,8 +163,8 @@ fun NetworkConsentBottomSheet(
             // Reason 2: Theme Catalog
             NetworkFeatureItem(
                 icon = Icons.Default.Palette,
-                title = "Каталог тем на GitHub",
-                description = "Загрузка официальных скинов, неоновых палитр и визуальных стилей оформления из открытого репозитория сообщества."
+                title = stringResource(R.string.network_consent_theme_title),
+                description = stringResource(R.string.network_consent_theme_desc)
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -170,8 +172,8 @@ fun NetworkConsentBottomSheet(
             // Reason 3: Streaming & Radio
             NetworkFeatureItem(
                 icon = Icons.Default.Radio,
-                title = "Стриминг и онлайн-радио",
-                description = "Воспроизведение внешних аудиопотоков и веб-радиостанций, только когда вы сами отправляете ссылку в плеер."
+                title = stringResource(R.string.network_consent_stream_title),
+                description = stringResource(R.string.network_consent_stream_desc)
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -179,8 +181,8 @@ fun NetworkConsentBottomSheet(
             // Reason 4: Profile Sync
             NetworkFeatureItem(
                 icon = Icons.Default.AccountCircle,
-                title = "Синхронизация профиля автора",
-                description = "Авторизация через GitHub или Discord для публикации созданных вами тем в веб-витрине."
+                title = stringResource(R.string.network_consent_profile_title),
+                description = stringResource(R.string.network_consent_profile_desc)
             )
 
             Spacer(modifier = Modifier.height(18.dp))
@@ -205,14 +207,14 @@ fun NetworkConsentBottomSheet(
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
-                            text = "0 трекеров • 0 аналитики • 100% приватность",
+                            text = stringResource(R.string.network_consent_privacy_badge),
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "Исходный код полностью открыт (GPL v3). OpenFy никогда не передает вашу личную музыку третьим лицам.",
+                            text = stringResource(R.string.network_consent_privacy_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             lineHeight = 16.sp
@@ -242,7 +244,7 @@ fun NetworkConsentBottomSheet(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Разрешить доступ к сети",
+                    text = stringResource(R.string.network_consent_btn_allow),
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp
                 )
@@ -259,7 +261,7 @@ fun NetworkConsentBottomSheet(
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.35f))
             ) {
                 Text(
-                    text = "Оставаться 100% офлайн",
+                    text = stringResource(R.string.network_consent_btn_offline),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp

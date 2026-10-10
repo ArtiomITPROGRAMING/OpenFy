@@ -179,7 +179,7 @@ fun AuthOnboardingScreen(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "Твой автономный аудиоплеер с душой",
+                        text = "Your offline music player crafted with soul",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -194,8 +194,8 @@ fun AuthOnboardingScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
                     ) {
                         FeatureHighlightChip(label = "100% Offline")
-                        FeatureHighlightChip(label = "Без слежки")
-                        FeatureHighlightChip(label = "P2P Обмен")
+                        FeatureHighlightChip(label = "No Tracking")
+                        FeatureHighlightChip(label = "P2P Sharing")
                         FeatureHighlightChip(label = "32-Bit DSP")
                     }
                 }
@@ -216,7 +216,7 @@ fun AuthOnboardingScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Войдите в профиль OpenFy",
+                            text = "Sign in to OpenFy Profile",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
@@ -225,7 +225,7 @@ fun AuthOnboardingScreen(
                         Spacer(modifier = Modifier.height(6.dp))
 
                         Text(
-                            text = "Для обмена темами (.thm), плейлистами по QR/P2P и персонализации",
+                            text = "To share themes (.thm), playlists via QR/P2P, and personalization",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
@@ -252,7 +252,7 @@ fun AuthOnboardingScreen(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                                     )
                                 },
-                                label = { Text("Email адрес") },
+                                label = { Text("Email address") },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.Email,
@@ -268,7 +268,7 @@ fun AuthOnboardingScreen(
                                         }) {
                                             Icon(
                                                 imageVector = Icons.Default.Close,
-                                                contentDescription = "Очистить",
+                                                contentDescription = "Clear",
                                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
@@ -310,7 +310,7 @@ fun AuthOnboardingScreen(
                                             }
                                         )
                                     } else {
-                                        emailError = "Введите корректный email (например, name@domain.com)"
+                                        emailError = "Enter a valid email (e.g., name@domain.com)"
                                     }
                                 },
                                 enabled = !isSendingEmail && emailInput.isNotBlank(),
@@ -331,7 +331,7 @@ fun AuthOnboardingScreen(
                                     )
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Text(
-                                        text = "Отправка кода...",
+                                        text = "Sending code...",
                                         style = MaterialTheme.typography.bodyLarge,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -343,7 +343,7 @@ fun AuthOnboardingScreen(
                                     )
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Text(
-                                        text = "Продолжить по Email",
+                                        text = "Continue with Email",
                                         style = MaterialTheme.typography.bodyLarge,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -367,7 +367,7 @@ fun AuthOnboardingScreen(
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Text(
-                                    text = "Авторизация...",
+                                    text = "Authorizing...",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -395,7 +395,7 @@ fun AuthOnboardingScreen(
                 ) {
                     OutlinedButton(
                         onClick = {
-                            viewModel.continueAsGuest("Гость OpenFy")
+                            viewModel.continueAsGuest("OpenFy Guest")
                             onContinueWithoutAccount()
                         },
                         modifier = Modifier
@@ -407,7 +407,7 @@ fun AuthOnboardingScreen(
                         )
                     ) {
                         Text(
-                            text = "Продолжить без аккаунта",
+                            text = "Continue without account",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -433,7 +433,7 @@ fun AuthOnboardingScreen(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Все функции плеера доступны офлайн без обязательного входа",
+                            text = "All player features are available offline without sign in",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                             textAlign = TextAlign.Center

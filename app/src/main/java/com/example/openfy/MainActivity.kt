@@ -110,7 +110,7 @@ class MainActivity : ComponentActivity() {
                                 com.example.openfy.features.community.sync.LocalShareServer.approveChallenge(code)
                                 android.widget.Toast.makeText(
                                     this@MainActivity,
-                                    "Вход подтверждён! Код безопасности: $code",
+                                    getString(R.string.toast_auth_approved, code),
                                     android.widget.Toast.LENGTH_LONG
                                 ).show()
                             },
@@ -171,13 +171,13 @@ class MainActivity : ComponentActivity() {
                     themeManager.applyTheme(meta.id)
                     android.widget.Toast.makeText(
                         this@MainActivity,
-                        "Тема «${meta.name}» успешно импортирована и применена!",
+                        getString(R.string.toast_theme_imported_applied, meta.name),
                         android.widget.Toast.LENGTH_LONG
                     ).show()
                 }.onFailure { err ->
                     android.widget.Toast.makeText(
                         this@MainActivity,
-                        "Ошибка импорта темы: ${err.localizedMessage}",
+                        getString(R.string.toast_theme_import_error, err.localizedMessage),
                         android.widget.Toast.LENGTH_LONG
                     ).show()
                 }
@@ -189,9 +189,9 @@ class MainActivity : ComponentActivity() {
             profileViewModel.handleOAuthRedirect(uri)
         } else if (scheme == "openfy" && host == "auth") {
             // Handle 2FA Auth Challenge deep link: openfy://auth?user=...&code=...
-            val user = uri.getQueryParameter("user") ?: uri.getQueryParameter("username") ?: "Пользователь"
+            val user = uri.getQueryParameter("user") ?: uri.getQueryParameter("username") ?: "User"
             val code = uri.getQueryParameter("code") ?: ""
-            com.example.openfy.features.community.sync.LocalShareServer.postAuthChallenge(user, "Веб-витрина OpenFy", code)
+            com.example.openfy.features.community.sync.LocalShareServer.postAuthChallenge(user, "OpenFy Web Showcase", code)
         } else if (scheme == "openfy" && host == "theme") {
             // 3. Handle theme installation deep link: openfy://theme/install?id=...&url=...
             val themeId = uri.getQueryParameter("id") ?: ""
@@ -208,7 +208,7 @@ class MainActivity : ComponentActivity() {
             if (creator.isNotBlank() && currentUsername.isNotBlank() && !creator.equals(currentUsername, ignoreCase = true)) {
                 android.widget.Toast.makeText(
                     this@MainActivity,
-                    "Установка темы от @$creator (ваш профиль: @$currentUsername)",
+                    getString(R.string.toast_theme_installing_from, creator, currentUsername),
                     android.widget.Toast.LENGTH_SHORT
                 ).show()
             }
@@ -238,19 +238,19 @@ class MainActivity : ComponentActivity() {
                         themeId = themeId
                     )
                 } else {
-                    Result.failure(IllegalArgumentException("Не указан идентификатор или ссылка на тему"))
+                    Result.failure(IllegalArgumentException("Missing theme ID or URL"))
                 }
 
                 result.onSuccess { meta ->
                     android.widget.Toast.makeText(
                         this@MainActivity,
-                        "Тема «${meta.name}» успешно установлена и применена!",
+                        getString(R.string.toast_theme_installed_applied, meta.name),
                         android.widget.Toast.LENGTH_LONG
                     ).show()
                 }.onFailure { err ->
                     android.widget.Toast.makeText(
                         this@MainActivity,
-                        "Ошибка установки темы: ${err.localizedMessage}",
+                        getString(R.string.toast_theme_install_error, err.localizedMessage),
                         android.widget.Toast.LENGTH_LONG
                     ).show()
                 }
@@ -268,17 +268,17 @@ class MainActivity : ComponentActivity() {
                 result.onSuccess { importResult ->
                     val msg = when (importResult) {
                         is com.example.openfy.features.community.sync.ImportResult.PlaylistImported ->
-                            "Плейлист «${importResult.playlistName}» успешно импортирован (${importResult.trackCount} треков)!"
+                            getString(R.string.toast_playlist_imported_format, importResult.playlistName, importResult.trackCount)
                         is com.example.openfy.features.community.sync.ImportResult.ThemeImported ->
-                            "Тема «${importResult.themeName}» успешно импортирована!"
+                            getString(R.string.toast_theme_imported_format, importResult.themeName)
                         is com.example.openfy.features.community.sync.ImportResult.TrackMetaImported ->
-                            "Трек «${importResult.title}» получен"
+                            getString(R.string.toast_track_received_format, importResult.title)
                         is com.example.openfy.features.community.sync.ImportResult.AuthChallengeReceived ->
-                            "Запрос на вход в аккаунт для @${importResult.username}"
+                            getString(R.string.toast_auth_challenge_format, importResult.username)
                     }
                     android.widget.Toast.makeText(this@MainActivity, msg, android.widget.Toast.LENGTH_LONG).show()
                 }.onFailure { err ->
-                    android.widget.Toast.makeText(this@MainActivity, "Ошибка импорта: ${err.localizedMessage}", android.widget.Toast.LENGTH_LONG).show()
+                    android.widget.Toast.makeText(this@MainActivity, getString(R.string.toast_import_error_format, err.localizedMessage), android.widget.Toast.LENGTH_LONG).show()
                 }
             }
         }

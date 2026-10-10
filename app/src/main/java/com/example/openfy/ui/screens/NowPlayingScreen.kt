@@ -115,10 +115,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.openfy.R
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -199,7 +201,7 @@ fun NowPlayingScreen(
                 .background(MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.Center
         ) {
-            Text("Ничего не воспроизводится", color = MaterialTheme.colorScheme.onBackground)
+            Text(stringResource(R.string.nothing_playing), color = MaterialTheme.colorScheme.onBackground)
         }
         return
     }
@@ -304,14 +306,14 @@ fun NowPlayingScreen(
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "СЕЙЧАС ИГРАЕТ",
+                        text = stringResource(R.string.now_playing_header),
                         style = MaterialTheme.typography.labelSmall,
                         color = primaryAccent,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 1.5.sp
                     )
                     Text(
-                        text = song.album.ifBlank { "Локальный трек" },
+                        text = song.album.ifBlank { stringResource(R.string.local_track) },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
@@ -324,7 +326,7 @@ fun NowPlayingScreen(
                     IconButton(onClick = { showFullScreenVisualizer = true }) {
                         Icon(
                             imageVector = AppIcons.visualizer,
-                            contentDescription = "Визуализатор Milkdrop 2.0",
+                            contentDescription = stringResource(R.string.visualizer_milkdrop_desc),
                             tint = primaryAccent,
                             modifier = Modifier.size(24.dp)
                         )
@@ -334,7 +336,7 @@ fun NowPlayingScreen(
                     IconButton(onClick = { showCustomizationSheet = true }) {
                         Icon(
                             imageVector = Icons.Default.Tune,
-                            contentDescription = "Персонализация плеера",
+                            contentDescription = stringResource(R.string.player_customization_desc),
                             tint = primaryAccent,
                             modifier = Modifier.size(24.dp)
                         )
@@ -682,7 +684,7 @@ fun NowPlayingScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
-                            contentDescription = "Добавить в плейлист",
+                            contentDescription = stringResource(R.string.add_to_playlist_desc),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(26.dp)
                         )
@@ -880,7 +882,7 @@ fun NowPlayingScreen(
                 ) {
                     PlayerDockItem(
                         icon = Icons.Default.Tune,
-                        label = "Студия",
+                        label = stringResource(R.string.tab_studio),
                         isActive = false,
                         accentColor = primaryAccent,
                         onClick = onNavigateToStudio
@@ -913,9 +915,10 @@ fun NowPlayingScreen(
                         onClick = { showQueueSheet = true }
                     )
 
+                    val sleepLabel = if (sleepTimerSeconds != null) "${sleepTimerSeconds!! / 60}m" else stringResource(R.string.tab_sleep)
                     PlayerDockItem(
                         icon = Icons.Default.Timer,
-                        label = if (sleepTimerSeconds != null) "${sleepTimerSeconds!! / 60}м" else "Сон",
+                        label = sleepLabel,
                         isActive = sleepTimerSeconds != null,
                         accentColor = primaryAccent,
                         onClick = { showSleepTimerSheet = true }
@@ -923,7 +926,7 @@ fun NowPlayingScreen(
 
                     PlayerDockItem(
                         icon = Icons.Default.DirectionsCar,
-                        label = "Авто",
+                        label = stringResource(R.string.tab_auto),
                         isActive = false,
                         accentColor = primaryAccent,
                         onClick = onNavigateToCarMode
@@ -989,7 +992,7 @@ fun NowPlayingScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Таймер сна",
+                            text = stringResource(R.string.sleep_timer_title),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
@@ -1007,9 +1010,9 @@ fun NowPlayingScreen(
 
                     Text(
                         text = if (sleepTimerSeconds != null) {
-                            if (sleepTimerSeconds == -1) "Музыка выключится после окончания текущего трека"
-                            else "Осталось времени: ${sleepTimerSeconds!! / 60} мин ${sleepTimerSeconds!! % 60} сек"
-                        } else "Таймер сна выключен",
+                            if (sleepTimerSeconds == -1) stringResource(R.string.sleep_timer_end_of_track_info)
+                            else stringResource(R.string.sleep_timer_remaining_format, sleepTimerSeconds!! / 60, sleepTimerSeconds!! % 60)
+                        } else stringResource(R.string.sleep_timer_disabled),
                         style = MaterialTheme.typography.bodyMedium,
                         color = if (sleepTimerSeconds != null) primaryAccent else Color.White.copy(alpha = 0.6f)
                     )
@@ -1028,7 +1031,7 @@ fun NowPlayingScreen(
                                     playbackManager.startSleepTimer(min)
                                     showSleepTimerSheet = false
                                 },
-                                label = { Text("$min мин") },
+                                label = { Text(stringResource(R.string.minutes_format, min)) },
                                 colors = FilterChipDefaults.filterChipColors(
                                     containerColor = Color.White.copy(alpha = 0.08f)
                                 )
@@ -1058,13 +1061,13 @@ fun NowPlayingScreen(
                         ) {
                             Column {
                                 Text(
-                                    text = "В конце этого трека",
+                                    text = stringResource(R.string.sleep_timer_end_of_track_btn),
                                     style = MaterialTheme.typography.bodyLarge,
                                     fontWeight = FontWeight.SemiBold,
                                     color = Color.White
                                 )
                                 Text(
-                                    text = "С плавным затуханием в конце композиции",
+                                    text = stringResource(R.string.sleep_timer_fade_desc),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = Color.White.copy(alpha = 0.6f)
                                 )
@@ -1088,7 +1091,7 @@ fun NowPlayingScreen(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(14.dp)
                         ) {
-                            Text("Отключить таймер", color = Color(0xFFFF5555))
+                            Text(stringResource(R.string.sleep_timer_turn_off), color = Color(0xFFFF5555))
                         }
                     }
 
@@ -1119,13 +1122,13 @@ fun NowPlayingScreen(
                     ) {
                         Column {
                             Text(
-                                text = "Очередь воспроизведения",
+                                text = stringResource(R.string.playback_queue_title),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
                             )
                             Text(
-                                text = "${queue.size} треков • Сейчас играет ${currentIndex + 1}-й",
+                                text = stringResource(R.string.playback_queue_status, queue.size, currentIndex + 1),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = primaryAccent
                             )
@@ -1175,7 +1178,10 @@ fun NowPlayingScreen(
         // SHARE TRACK BOTTOM SHEET
         // ==========================================
         if (showShareSheet) {
-            val trackPayload = remember(song) {
+            val singleAlbumStr = stringResource(R.string.single_album)
+            val albumName = song.album.ifBlank { singleAlbumStr }
+            val trackShareDesc = stringResource(R.string.track_share_format, albumName)
+            val trackPayload = remember(song, trackShareDesc) {
                 val jsonObject = buildJsonObject {
                     put("id", JsonPrimitive(song.id))
                     put("title", JsonPrimitive(song.title))
@@ -1186,7 +1192,7 @@ fun NowPlayingScreen(
                 SharePayload(
                     type = ShareType.TRACK_META,
                     title = "${song.artist} - ${song.title}",
-                    description = "Трек OpenFy • ${song.album.ifBlank { "Сингл" }}",
+                    description = trackShareDesc,
                     jsonData = jsonObject.toString()
                 )
             }

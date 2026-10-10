@@ -40,7 +40,7 @@ enum class VisualizerPreset(
     CYBER_TUNNEL(
         id = "cyber_tunnel",
         displayName = "Cyber Neon Tunnel",
-        subtitle = "Фрактальный тоннель сквозь киберпространство",
+        subtitle = "Fractal tunnel through cyberspace",
         primaryColor = Color(0xFF00E5FF), // Neon Cyan
         secondaryColor = Color(0xFFFF0055), // Neon Pink
         agslShader = """
@@ -71,7 +71,7 @@ enum class VisualizerPreset(
     AURORA_BOREALIS(
         id = "aurora",
         displayName = "Aurora Borealis",
-        subtitle = "Текучие волны северного сияния",
+        subtitle = "Flowing waves of northern lights",
         primaryColor = Color(0xFF00FF88), // Aurora Green
         secondaryColor = Color(0xFF7000FF), // Deep Violet
         agslShader = """
@@ -102,7 +102,7 @@ enum class VisualizerPreset(
     LIQUID_METAL(
         id = "liquid_metal",
         displayName = "Liquid Metal / Chrome",
-        subtitle = "Расплавленная ртуть с реактивной рябью",
+        subtitle = "Molten mercury with reactive ripples",
         primaryColor = Color(0xFFE0E0E0), // Liquid Chrome
         secondaryColor = Color(0xFF00B0FF), // Electric Blue
         agslShader = """
@@ -131,7 +131,7 @@ enum class VisualizerPreset(
     SYNTHWAVE_SUNSET(
         id = "synthwave",
         displayName = "Synthwave Sunset 80s",
-        subtitle = "Винтажная ретро-сетка и неоновое солнце",
+        subtitle = "Vintage retro-grid and neon sun",
         primaryColor = Color(0xFFFF8800), // Solar Orange
         secondaryColor = Color(0xFFFF007F), // Neon Magenta
         agslShader = """
@@ -175,7 +175,7 @@ enum class VisualizerPreset(
     HYPNOTIC_KALEIDOSCOPE(
         id = "kaleidoscope",
         displayName = "Hypnotic Kaleidoscope",
-        subtitle = "Психоделическая сакральная геометрия",
+        subtitle = "Psychedelic sacred geometry",
         primaryColor = Color(0xFF9D00FF), // Ultraviolet
         secondaryColor = Color(0xFF00FFCC), // Turquoise
         agslShader = """
@@ -210,7 +210,7 @@ enum class VisualizerPreset(
     BEAT_SUBWOOFER(
         id = "beat_subwoofer",
         displayName = "Bass Cannon & Beat Shockwave",
-        subtitle = "Мощный сабвуфер с пульсацией точно под бит трека",
+        subtitle = "Heavy subwoofer pulsing to the music beat",
         primaryColor = Color(0xFF00FF66), // Acid Neon Lime
         secondaryColor = Color(0xFFFF0055), // Electric Shock Pink
         agslShader = """
@@ -259,7 +259,7 @@ enum class VisualizerPreset(
     COSMIC_SUPERNOVA(
         id = "cosmic_supernova",
         displayName = "Cosmic Supernova & Black Hole",
-        subtitle = "Гравитационная сингулярность и взрыв сверхновой",
+        subtitle = "Gravitational singularity and supernova burst",
         primaryColor = Color(0xFFFF6600), // Stellar Gold / Flame
         secondaryColor = Color(0xFF00E5FF), // Relativistic Cyan
         agslShader = """
@@ -308,7 +308,7 @@ enum class VisualizerPreset(
     CYBER_MATRIX(
         id = "cyber_matrix",
         displayName = "Cyber Matrix Rain",
-        subtitle = "Цифровой каскад символов с лазерным сканированием",
+        subtitle = "Digital symbol cascade with laser scanlines",
         primaryColor = Color(0xFF00FF41), // Matrix Phosphor Green
         secondaryColor = Color(0xFFE0FFE5), // Bright Jade
         agslShader = """
@@ -354,7 +354,7 @@ enum class VisualizerPreset(
     PLASMA_ORB(
         id = "plasma_orb",
         displayName = "Tesla Plasma Orb",
-        subtitle = "Электрические разряды и дуги плазменного шара",
+        subtitle = "Electric arcs and plasma sphere filaments",
         primaryColor = Color(0xFFB000FF), // Electric Violet
         secondaryColor = Color(0xFF00F5FF), // Tesla Arc Cyan
         agslShader = """

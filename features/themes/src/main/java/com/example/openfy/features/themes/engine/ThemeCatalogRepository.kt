@@ -145,11 +145,11 @@ object ThemeCatalogRepository {
     val BUILT_IN_CATALOG = listOf(
         CatalogThemeItem(
             id = "emerald-matrix",
-            name = "Изумрудная Матрица (Cyber Emerald)",
+            name = "Cyber Emerald",
             author = "OpenFy Team",
             version = "1.0.0",
             isDark = true,
-            description = "Кибернетический изумрудный терминал в стиле научной фантастики и матричного кода",
+            description = "Cybernetic emerald terminal in sci-fi matrix style",
             previewAccentHex = "#00FF66",
             previewColors = listOf("#00FF66", "#00E5FF", "#050B07", "#0C1810"),
             downloadUrl = "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/emerald-matrix.thm",
@@ -179,11 +179,11 @@ object ThemeCatalogRepository {
         ),
         CatalogThemeItem(
             id = "nordic-frost",
-            name = "Северное Сияние (Nordic Frost)",
+            name = "Nordic Frost",
             author = "OpenFy Team",
             version = "1.0.0",
             isDark = true,
-            description = "Холодная арктическая эстетика с мерцанием полярного сияния и ледяным акцентом",
+            description = "Cold arctic aesthetic with northern lights shimmer and icy accent",
             previewAccentHex = "#38BDF8",
             previewColors = listOf("#38BDF8", "#A855F7", "#0B1120", "#131D33"),
             downloadUrl = "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/nordic-frost.thm",
@@ -213,11 +213,11 @@ object ThemeCatalogRepository {
         ),
         CatalogThemeItem(
             id = "sunset-synthwave",
-            name = "Закатный Синтвейв (Sunset Synthwave)",
+            name = "Sunset Synthwave",
             author = "OpenFy Team",
             version = "1.0.0",
             isDark = true,
-            description = "Неоновые закаты Майами 80-х, тёплый янтарь и винтажная лазерная сетка",
+            description = "Neon 80s Miami sunsets, warm amber and vintage laser grid",
             previewAccentHex = "#FF7A00",
             previewColors = listOf("#FF7A00", "#FF007A", "#12091A", "#1F102B"),
             downloadUrl = "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/sunset-synthwave.thm",
@@ -247,11 +247,11 @@ object ThemeCatalogRepository {
         ),
         CatalogThemeItem(
             id = "tokyo-night",
-            name = "Токийская Ночь (Tokyo Night & Sakura)",
+            name = "Tokyo Night & Sakura",
             author = "OpenFy Team",
             version = "1.0.0",
             isDark = true,
-            description = "Атмосфера ночного Сибуя: неоновые вывески, лепестки сакуры и глубокая полночь",
+            description = "Atmosphere of night Shibuya: neon signs, sakura petals and midnight vibes",
             previewAccentHex = "#F43F5E",
             previewColors = listOf("#F43F5E", "#818CF8", "#0D0F18", "#161926"),
             downloadUrl = "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/tokyo-night.thm",
@@ -281,11 +281,11 @@ object ThemeCatalogRepository {
         ),
         CatalogThemeItem(
             id = "pure-gold-luxury",
-            name = "Королевский Оникс (Obsidian & Royal Gold)",
+            name = "Obsidian & Royal Gold",
             author = "OpenFy Team",
             version = "1.0.0",
             isDark = true,
-            description = "Премиальный минимализм чистого золота на бархатном ониксовом фоне",
+            description = "Premium minimalism of pure gold on velvet obsidian background",
             previewAccentHex = "#FFD700",
             previewColors = listOf("#FFD700", "#FFA000", "#080808", "#141414"),
             downloadUrl = "https://raw.githubusercontent.com/ArtiomITPROGRAMING/OpenFy/main/themes/pure-gold-luxury.thm",
@@ -370,7 +370,7 @@ object ThemeCatalogRepository {
         themeId: String
     ): Result<ThemeMetadata> {
         val item = BUILT_IN_CATALOG.find { it.id.equals(themeId, ignoreCase = true) }
-            ?: return Result.failure(IllegalArgumentException("Тема с ID '$themeId' не найдена в каталоге"))
+            ?: return Result.failure(IllegalArgumentException("Theme with ID '$themeId' not found in catalog"))
         return installCatalogTheme(context, settingsRepository, item)
     }
 
@@ -383,6 +383,6 @@ object ThemeCatalogRepository {
         settingsRepository: SettingsRepository,
         urlStr: String
     ): Result<ThemeMetadata> = withContext(Dispatchers.IO) {
-        Result.failure(IllegalStateException("Работает в автономном режиме без подключения к сети"))
+        Result.failure(IllegalStateException("Running in offline mode without network connectivity"))
     }
 }

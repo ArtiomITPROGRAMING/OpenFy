@@ -35,13 +35,13 @@ class AuthStorageOnboardingTest {
 
     @Test
     fun `Guest user profile serializes correctly`() {
-        val guest = UserProfile.Guest(guestId = "guest_123", nickname = "Артём")
+        val guest = UserProfile.Guest(guestId = "guest_123", nickname = "Artiom")
         val serialized = json.encodeToString(UserProfile.serializer(), guest)
         val deserialized = json.decodeFromString<UserProfile>(serialized)
 
         assertTrue(deserialized is UserProfile.Guest)
         assertEquals("guest_123", deserialized.id)
-        assertEquals("Артём", deserialized.displayName)
+        assertEquals("Artiom", deserialized.displayName)
         assertEquals("Guest", deserialized.providerName)
     }
 
@@ -62,14 +62,14 @@ class AuthStorageOnboardingTest {
     @Test
     fun `Discord user profile serializes correctly`() {
         val discord = UserProfile.Discord(
-            DiscordUser(id = "1543312561355620352", username = "artiom_c", globalName = "Артём", avatar = "abc12345")
+            DiscordUser(id = "1543312561355620352", username = "artiom_c", globalName = "Artiom", avatar = "abc12345")
         )
         val serialized = json.encodeToString(UserProfile.serializer(), discord)
         val deserialized = json.decodeFromString<UserProfile>(serialized)
 
         assertTrue(deserialized is UserProfile.Discord)
         assertEquals("1543312561355620352", deserialized.id)
-        assertEquals("Артём", deserialized.displayName)
+        assertEquals("Artiom", deserialized.displayName)
         assertEquals("Discord", deserialized.providerName)
     }
 
@@ -77,14 +77,14 @@ class AuthStorageOnboardingTest {
     fun `Email user profile serializes correctly`() {
         val emailProfile = UserProfile.Email(
             email = "artiom@openfy.org",
-            customNickname = "Артём"
+            customNickname = "Artiom"
         )
         val serialized = json.encodeToString(UserProfile.serializer(), emailProfile)
         val deserialized = json.decodeFromString<UserProfile>(serialized)
 
         assertTrue(deserialized is UserProfile.Email)
         assertEquals("artiom@openfy.org", deserialized.id)
-        assertEquals("Артём", deserialized.displayName)
+        assertEquals("Artiom", deserialized.displayName)
         assertEquals("Email", deserialized.providerName)
     }
 }

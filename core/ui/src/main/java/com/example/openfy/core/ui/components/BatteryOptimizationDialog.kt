@@ -83,7 +83,7 @@ fun BatteryOptimizationDialog(
         },
         title = {
             Text(
-                text = "Фоновая работа (${brand.displayName})",
+                text = "Background Playback (${brand.displayName})",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -101,8 +101,8 @@ fun BatteryOptimizationDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = if (isIgnoring) "Оптимизация отключена — воспроизведение не будет прерываться"
-                            else "Внимание: система может останавливать музыку при выключенном экране",
+                            text = if (isIgnoring) "Optimization disabled — playback will not be interrupted"
+                            else "Notice: the system may pause music when the screen is turned off",
                             style = MaterialTheme.typography.bodySmall,
                             color = if (isIgnoring) Color(0xFF00C853) else MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = FontWeight.Medium
@@ -113,7 +113,7 @@ fun BatteryOptimizationDialog(
                 Spacer(modifier = Modifier.height(14.dp))
 
                 Text(
-                    text = "Рекомендация для вашего устройства:",
+                    text = "Recommendation for your device:",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -143,7 +143,7 @@ fun BatteryOptimizationDialog(
                 ) {
                     Icon(imageVector = Icons.Default.Launch, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Отключить оптимизацию батареи")
+                    Text("Disable battery optimization")
                 }
 
                 if (brand != OemBrand.GENERIC) {
@@ -156,14 +156,14 @@ fun BatteryOptimizationDialog(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Настройки автозапуска ${brand.displayName}")
+                        Text("Autostart settings (${brand.displayName})")
                     }
                 }
             }
         },
         confirmButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Закрыть")
+                Text("Close")
             }
         }
     )

@@ -69,11 +69,13 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.openfy.R
 import com.example.openfy.core.audio.data.AppThemeStyle
 import com.example.openfy.core.audio.data.IconPackStyle
 import com.example.openfy.core.audio.model.Song
@@ -162,7 +164,7 @@ fun ExpandedSidePlayerPane(
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "Выберите трек для воспроизведения",
+                        text = stringResource(R.string.side_select_track),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -211,7 +213,7 @@ fun ExpandedSidePlayerPane(
                         }
                     } else {
                         Text(
-                            text = "Сейчас играет",
+                            text = stringResource(R.string.side_now_playing),
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = accentColor
@@ -222,21 +224,21 @@ fun ExpandedSidePlayerPane(
                         IconButton(onClick = onNavigateToCarMode) {
                             Icon(
                                 imageVector = AppIcons.car,
-                                contentDescription = "Автомобильный режим",
+                                contentDescription = stringResource(R.string.side_car_mode),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         IconButton(onClick = onNavigateToLyrics) {
                             Icon(
                                 imageVector = Icons.Default.Lyrics,
-                                contentDescription = "Текст песни",
+                                contentDescription = stringResource(R.string.side_lyrics),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         IconButton(onClick = onNavigateToEqualizer) {
                             Icon(
                                 imageVector = Icons.Default.Equalizer,
-                                contentDescription = "Эквалайзер",
+                                contentDescription = stringResource(R.string.side_equalizer),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -368,7 +370,7 @@ fun ExpandedSidePlayerPane(
                     IconButton(onClick = { playbackManager.toggleShuffle() }) {
                         Icon(
                             imageVector = AppIcons.shuffle(iconPackStyle),
-                            contentDescription = "Перемешать",
+                            contentDescription = stringResource(R.string.action_shuffle),
                             tint = if (isShuffle) accentColor else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
                     }
@@ -376,7 +378,7 @@ fun ExpandedSidePlayerPane(
                     IconButton(onClick = { playbackManager.skipPrev() }) {
                         Icon(
                             imageVector = AppIcons.previous(iconPackStyle),
-                            contentDescription = "Предыдущий трек",
+                            contentDescription = stringResource(R.string.action_prev),
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(30.dp)
                         )
@@ -395,7 +397,7 @@ fun ExpandedSidePlayerPane(
                     ) {
                         Icon(
                             imageVector = if (isPlaying) AppIcons.pause(iconPackStyle) else AppIcons.play(iconPackStyle),
-                            contentDescription = if (isPlaying) "Пауза" else "Воспроизведение",
+                            contentDescription = stringResource(if (isPlaying) R.string.action_pause else R.string.action_play),
                             modifier = Modifier.size(28.dp)
                         )
                     }
@@ -403,7 +405,7 @@ fun ExpandedSidePlayerPane(
                     IconButton(onClick = { playbackManager.skipNext() }) {
                         Icon(
                             imageVector = AppIcons.next(iconPackStyle),
-                            contentDescription = "Следующий трек",
+                            contentDescription = stringResource(R.string.action_next),
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(30.dp)
                         )
@@ -412,7 +414,7 @@ fun ExpandedSidePlayerPane(
                     IconButton(onClick = { playbackManager.playlistRepository.toggleFavorite(song.id) }) {
                         Icon(
                             imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = "Избранное",
+                            contentDescription = stringResource(R.string.action_favorite),
                             tint = if (isFavorite) NeonPink else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
                     }

@@ -107,11 +107,11 @@ class OpenFyPlaybackService : MediaLibraryService() {
             return when (parentId) {
                 MEDIA_ROOT_ID -> {
                     val rootCategories = listOf(
-                        createFolderItem(MEDIA_ALL_TRACKS, "Все треки", "Локальная музыка", MediaMetadata.MEDIA_TYPE_FOLDER_MIXED),
-                        createFolderItem(MEDIA_FAVORITES, "Избранное", "Любимые композиции", MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS),
-                        createFolderItem(MEDIA_RECENT, "Недавние", "История прослушивания", MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS),
-                        createFolderItem(MEDIA_ALBUMS, "Альбомы", "Коллекции по альбомам", MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS),
-                        createFolderItem(MEDIA_PLAYLISTS, "Плейлисты", "Пользовательские подборки", MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS)
+                        createFolderItem(MEDIA_ALL_TRACKS, "All Tracks", "Local audio library", MediaMetadata.MEDIA_TYPE_FOLDER_MIXED),
+                        createFolderItem(MEDIA_FAVORITES, "Favorites", "Liked songs", MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS),
+                        createFolderItem(MEDIA_RECENT, "Recently Played", "Playback history", MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS),
+                        createFolderItem(MEDIA_ALBUMS, "Albums", "Collections by album", MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS),
+                        createFolderItem(MEDIA_PLAYLISTS, "Playlists", "User playlists", MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS)
                     )
                     Futures.immediateFuture(LibraryResult.ofItemList(ImmutableList.copyOf(rootCategories), params))
                 }
@@ -137,7 +137,7 @@ class OpenFyPlaybackService : MediaLibraryService() {
                 MEDIA_PLAYLISTS -> {
                     val playlists = playbackManager.playlistRepository.playlists.value
                     val items = playlists.map { pl ->
-                        createFolderItem("playlist_${pl.id}", pl.name, "${pl.songIds.size} треков", MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS)
+                        createFolderItem("playlist_${pl.id}", pl.name, "${pl.songIds.size} tracks", MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS)
                     }
                     Futures.immediateFuture(LibraryResult.ofItemList(ImmutableList.copyOf(items), params))
                 }
@@ -343,7 +343,7 @@ class OpenFyPlaybackService : MediaLibraryService() {
         val currentItem = player.currentMediaItem ?: return
 
         val title = currentItem.mediaMetadata.title?.toString() ?: "OpenFy Player"
-        val artist = currentItem.mediaMetadata.artist?.toString() ?: "Неизвестный исполнитель"
+        val artist = currentItem.mediaMetadata.artist?.toString() ?: "Unknown Artist"
         val album = currentItem.mediaMetadata.albumTitle?.toString() ?: ""
 
         val isPlaying = player.isPlaying
@@ -394,17 +394,17 @@ class OpenFyPlaybackService : MediaLibraryService() {
             .setStyle(mediaStyle)
             .addAction(
                 android.R.drawable.ic_media_previous,
-                "Назад",
+                "Previous",
                 prevPendingIntent
             )
             .addAction(
                 if (isPlaying) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play,
-                if (isPlaying) "Пауза" else "Играть",
+                if (isPlaying) "Pause" else "Play",
                 playPausePendingIntent
             )
             .addAction(
                 android.R.drawable.ic_media_next,
-                "Вперед",
+                "Next",
                 nextPendingIntent
             )
 
@@ -431,10 +431,10 @@ class OpenFyPlaybackService : MediaLibraryService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "OpenFy Воспроизведение",
+                "OpenFy Playback",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Управление воспроизведением OpenFy для Google Pixel, One UI, HyperOS, Android Auto"
+                description = "Playback controls for OpenFy on Android Auto, Pixel, One UI, HyperOS"
                 setShowBadge(false)
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
             }

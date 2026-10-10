@@ -76,7 +76,7 @@ class ProfileViewModel(
         clientId: String = GITHUB_CLIENT_ID
     ) {
         if (clientId.isBlank()) {
-            _uiState.value = ProfileUiState.Error("Сетевая авторизация через GitHub недоступна в офлайн-версии F-Droid.")
+            _uiState.value = ProfileUiState.Error("Network authorization via GitHub is not available in F-Droid offline build.")
             return
         }
         pendingAuthProvider = "github"
@@ -89,7 +89,7 @@ class ProfileViewModel(
         clientId: String = DISCORD_CLIENT_ID
     ) {
         if (clientId.isBlank()) {
-            _uiState.value = ProfileUiState.Error("Сетевая авторизация через Discord недоступна в офлайн-версии F-Droid.")
+            _uiState.value = ProfileUiState.Error("Network authorization via Discord is not available in F-Droid offline build.")
             return
         }
         pendingAuthProvider = "discord"
@@ -115,7 +115,7 @@ class ProfileViewModel(
     fun continueAsGuest(nickname: String) {
         val guestProfile = UserProfile.Guest(
             guestId = "author_${System.currentTimeMillis()}",
-            nickname = nickname.ifBlank { "Автор OpenFy" }
+            nickname = nickname.ifBlank { "OpenFy Author" }
         )
         authStorage.saveProfile(guestProfile)
         _uiState.value = ProfileUiState.Authorized(guestProfile)
@@ -123,10 +123,10 @@ class ProfileViewModel(
 
     fun loginWithGitHubPersonalToken(token: String) {
         if (token.isBlank()) {
-            _uiState.value = ProfileUiState.Error("Токен не может быть пустым")
+            _uiState.value = ProfileUiState.Error("Token cannot be empty")
             return
         }
-        _uiState.value = ProfileUiState.Error("Сетевая авторизация недоступна в офлайн-версии F-Droid.")
+        _uiState.value = ProfileUiState.Error("Network authorization is not available in F-Droid offline build.")
     }
 
     fun loginWithGitHubPAT(token: String) = loginWithGitHubPersonalToken(token)
@@ -140,7 +140,7 @@ class ProfileViewModel(
         result.onSuccess {
             onSuccess()
         }.onFailure { err ->
-            onError(err.localizedMessage ?: "Ошибка отправки кода")
+            onError(err.localizedMessage ?: "Failed to send code")
         }
     }
 
@@ -159,7 +159,7 @@ class ProfileViewModel(
                 onSuccess()
             }.onFailure { err ->
                 _uiState.value = ProfileUiState.Unauthenticated
-                onError(err.localizedMessage ?: "Неверный код подтверждения")
+                onError(err.localizedMessage ?: "Invalid verification code")
             }
         }
     }
@@ -173,7 +173,7 @@ class ProfileViewModel(
         result.onSuccess {
             onSuccess()
         }.onFailure { err ->
-            onError(err.localizedMessage ?: "Ошибка повторной отправки кода")
+            onError(err.localizedMessage ?: "Failed to resend code")
         }
     }
 
@@ -191,7 +191,7 @@ class ProfileViewModel(
 
         val code = uri.getQueryParameter("code")
         if (code.isNullOrBlank()) {
-            _uiState.value = ProfileUiState.Error("Код авторизации не найден в ответе")
+            _uiState.value = ProfileUiState.Error("Authorization code not found in response")
             return
         }
 
@@ -207,7 +207,7 @@ class ProfileViewModel(
 
             if (provider == "discord") {
                 if (DISCORD_CLIENT_ID.isBlank() || discordClientSecret.isBlank()) {
-                    _uiState.value = ProfileUiState.Error("Сетевая авторизация Discord недоступна в офлайн-версии F-Droid.")
+                    _uiState.value = ProfileUiState.Error("Network authorization via Discord is not available in F-Droid offline build.")
                     return@launch
                 }
                 val tokenResult = DiscordAuthManager.exchangeCodeForToken(
@@ -225,14 +225,14 @@ class ProfileViewModel(
                         authStorage.saveProfile(profile)
                         _uiState.value = ProfileUiState.Authorized(profile)
                     }.onFailure { err ->
-                        _uiState.value = ProfileUiState.Error("Ошибка получения профиля Discord: ${err.localizedMessage}")
+                        _uiState.value = ProfileUiState.Error("Failed to get Discord profile: ${err.localizedMessage}")
                     }
                 }.onFailure { err ->
-                    _uiState.value = ProfileUiState.Error("Ошибка авторизации Discord: ${err.localizedMessage}")
+                    _uiState.value = ProfileUiState.Error("Discord authorization error: ${err.localizedMessage}")
                 }
             } else {
                 if (GITHUB_CLIENT_ID.isBlank() || githubClientSecret.isBlank()) {
-                    _uiState.value = ProfileUiState.Error("Сетевая авторизация GitHub недоступна в офлайн-версии F-Droid.")
+                    _uiState.value = ProfileUiState.Error("Network authorization via GitHub is not available in F-Droid offline build.")
                     return@launch
                 }
                 val tokenResult = GitHubAuthManager.exchangeCodeForToken(
@@ -249,10 +249,10 @@ class ProfileViewModel(
                         authStorage.saveProfile(profile)
                         _uiState.value = ProfileUiState.Authorized(profile)
                     }.onFailure { err ->
-                        _uiState.value = ProfileUiState.Error("Ошибка получения профиля GitHub: ${err.localizedMessage}")
+                        _uiState.value = ProfileUiState.Error("Failed to get GitHub profile: ${err.localizedMessage}")
                     }
                 }.onFailure { err ->
-                    _uiState.value = ProfileUiState.Error("Ошибка авторизации GitHub: ${err.localizedMessage}")
+                    _uiState.value = ProfileUiState.Error("GitHub authorization error: ${err.localizedMessage}")
                 }
             }
         }

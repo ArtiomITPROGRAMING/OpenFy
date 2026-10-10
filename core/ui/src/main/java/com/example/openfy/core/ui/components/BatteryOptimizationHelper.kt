@@ -27,12 +27,12 @@ import android.os.PowerManager
 import android.provider.Settings
 
 enum class OemBrand(val displayName: String, val tip: String) {
-    XIAOMI("Xiaomi / HyperOS / MIUI", "Разрешите «Автозапуск» и выберите режим энергосбережения «Нет ограничений» в Центре безопасности."),
-    SAMSUNG("Samsung OneUI", "Добавьте OpenFy в «Никогда не спящие приложения» в настройках батареи Device Care."),
-    HUAWEI("Huawei / Honor (EMUI)", "Включите «Ручное управление» (Автозапуск, Косвенный запуск, Работа в фоне) в Диспетчере телефона."),
-    ONEPLUS_OPPO("OnePlus / Oppo / Realme", "Отключите оптимизацию батареи и разрешите работу в фоновом режиме в настройках приложения."),
-    VIVO("Vivo / iQOO (FuntouchOS)", "Разрешите высокий расход батареи в фоне в настройках диспетчера."),
-    GENERIC("Android / Pixel / AOSP", "Отключите ограничение фоновой активности для бесперебойного воспроизведения музыки.")
+    XIAOMI("Xiaomi / HyperOS / MIUI", "Allow «Autostart» and choose «No restrictions» battery saver mode in Security Center."),
+    SAMSUNG("Samsung OneUI", "Add OpenFy to «Never sleeping apps» in Device Care battery settings."),
+    HUAWEI("Huawei / Honor (EMUI)", "Enable «Manage manually» (Auto-launch, Secondary launch, Run in background) in Phone Manager."),
+    ONEPLUS_OPPO("OnePlus / Oppo / Realme", "Disable battery optimization and allow background activity in app info settings."),
+    VIVO("Vivo / iQOO (FuntouchOS)", "Allow high background power consumption in iManager settings."),
+    GENERIC("Android / Pixel / AOSP", "Disable background activity restrictions for uninterrupted music playback.")
 }
 
 object BatteryOptimizationHelper {

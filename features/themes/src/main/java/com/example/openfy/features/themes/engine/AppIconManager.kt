@@ -32,28 +32,28 @@ enum class AppLauncherIcon(
         key = "MIDNIGHT_PLAY",
         title = "Midnight Play",
         aliasSuffix = "MainActivityMidnight",
-        description = "Темный матовый фон с фиолетово-неоновым незамкнутым кольцом и символом Play",
+        description = "Dark matte background with violet-neon open ring and Play symbol",
         primaryColorHex = "#C084FC"
     ),
     NEON_CORE(
         key = "NEON_CORE",
         title = "Neon Core",
         aliasSuffix = "MainActivityNeon",
-        description = "Фирменный неоновый стиль Cyan & Electric Pink с двойным кольцом",
+        description = "Signature neon Cyan & Electric Pink style with dual ring",
         primaryColorHex = "#00E5FF"
     ),
     TITANIUM_STUDIO(
         key = "TITANIUM_STUDIO",
         title = "Titanium Studio",
         aliasSuffix = "MainActivityTitanium",
-        description = "Матовый титан, полированная сталь и лаконичная геометрия",
+        description = "Matte titanium, polished steel and sleek geometry",
         primaryColorHex = "#FFFFFF"
     ),
     SPECTRUM_WAVE(
         key = "SPECTRUM_WAVE",
         title = "Spectrum Wave",
         aliasSuffix = "MainActivitySpectrum",
-        description = "Круговой эквалайзер с аудио-лучами и спектральным импульсом",
+        description = "Circular equalizer with audio beams and spectral pulse",
         primaryColorHex = "#FF0077"
     );
 
